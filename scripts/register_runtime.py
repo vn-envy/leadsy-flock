@@ -94,7 +94,12 @@ def register_agent(api_url: str) -> dict:
             "--format=json",
         )
         attempts.append(
-            {"op": "list", "location": loc, "code": listed.returncode, "err": (listed.stderr or "")[-400]}
+            {
+                "op": "list",
+                "location": loc,
+                "code": listed.returncode,
+                "err": (listed.stderr or listed.stdout or "")[-400:],
+            }
         )
         if listed.returncode == 0:
             try:
@@ -123,8 +128,8 @@ def register_agent(api_url: str) -> dict:
                 "op": "create",
                 "location": loc,
                 "code": created.returncode,
-                "out": (created.stdout or "")[-400],
-                "err": (created.stderr or "")[-800],
+                "out": (created.stdout or "")[-400:],
+                "err": (created.stderr or "")[-800:],
             }
         )
         if created.returncode == 0:

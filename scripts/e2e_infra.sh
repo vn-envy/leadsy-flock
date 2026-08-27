@@ -37,6 +37,7 @@ python3 - <<'PY'
 import json, time, urllib.request, os, sys
 url = os.environ["API_URL"] + "/v1/campaigns/" + os.environ["CAMPAIGN_ID"]
 want = {"plan", "approve", "scout"}
+    # Launch bundle continues through ad_kit; don't fail the smoke if later hops lag.
 last = None
 for i in range(24):
     with urllib.request.urlopen(url, timeout=20) as resp:

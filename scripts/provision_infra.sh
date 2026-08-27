@@ -36,6 +36,7 @@ gcloud services enable \
   secretmanager.googleapis.com \
   iam.googleapis.com \
   modelarmor.googleapis.com \
+  agentregistry.googleapis.com \
   --project="${PROJECT}"
 
 echo "==> Pub/Sub topics"
@@ -59,22 +60,38 @@ for b in "${MEDIA_BUCKET}" "${LOGS_BUCKET}"; do
   fi
 done
 
-echo "==> Model Armor template ${ARMOR_TEMPLATE} in ${REGION}"
+echo "==> Model Armor template ${ARMOR_TEMPLATE}"
+ARMOR_LOC="${REGION}"
 if gcloud model-armor templates describe "${ARMOR_TEMPLATE}" \
-    --location="${REGION}" --project="${PROJECT}" >/dev/null 2>&1; then
-  echo "    template exists"
+    --location="${ARMOR_LOC}" --project="${PROJECT}" >/dev/null 2>&1; then
+  echo "    template exists in ${ARMOR_LOC}"
+elif gcloud model-armor templates describe "${ARMOR_TEMPLATE}" \
+    --location="${RUNTIME_REGION}" --project="${PROJECT}" >/dev/null 2>&1; then
+  ARMOR_LOC="${RUNTIME_REGION}"
+  echo "    template exists in ${ARMOR_LOC}"
 else
-  # asia-south1 does not support malicious-uri filters. RAI + PI/jailbreak only.
-  gcloud model-armor templates create "${ARMOR_TEMPLATE}" \
-    --location="${REGION}" \
-    --project="${PROJECT}" \
-    --rai-settings-filters=confidenceLevel=medium-and-above,filterType=hate-speech \
-    --rai-settings-filters=confidenceLevel=medium-and-above,filterType=harassment \
-    --rai-settings-filters=confidenceLevel=medium-and-above,filterType=sexually-explicit \
-    --rai-settings-filters=confidenceLevel=medium-and-above,filterType=dangerous \
-    --pi-and-jailbreak-filter-settings-enforcement=enabled \
-    --pi-and-jailbreak-filter-settings-confidence-level=medium-and-above
+  create_armor() {
+    local loc="$1"
+    gcloud model-armor templates create "${ARMOR_TEMPLATE}" \
+      --location="${loc}" \
+      --project="${PROJECT}" \
+      --rai-settings-filters=confidenceLevel=medium-and-above,filterType=hate-speech \
+      --rai-settings-filters=confidenceLevel=medium-and-above,filterType=harassment \
+      --rai-settings-filters=confidenceLevel=medium-and-above,filterType=sexually-explicit \
+      --rai-settings-filters=confidenceLevel=medium-and-above,filterType=dangerous \
+      --pi-and-jailbreak-filter-settings-enforcement=enabled \
+      --pi-and-jailbreak-filter-settings-confidence-level=medium-and-above
+  }
+  # asia-south1 may deny Model Armor writes even when Editor can write us-central1.
+  if create_armor "${REGION}"; then
+    ARMOR_LOC="${REGION}"
+  else
+    echo "    ${REGION} write denied; creating in ${RUNTIME_REGION}"
+    create_armor "${RUNTIME_REGION}"
+    ARMOR_LOC="${RUNTIME_REGION}"
+  fi
 fi
+echo "    using Model Armor location ${ARMOR_LOC}"
 
 echo "==> Pub/Sub push service account"
 if gcloud iam service-accounts describe "${PUSH_SA}" --project="${PROJECT}" >/dev/null 2>&1; then
@@ -111,25 +128,40 @@ gcloud projects add-iam-policy-binding "${PROJECT}" \
   --quiet >/dev/null || true
 
 echo "==> Push subscription (needs FLOCK_WORKER_URL after first worker deploy)"
+PUSH_AUTH_MODE="none"
 if [[ -n "${WORKER_URL}" ]]; then
   ENDPOINT="${WORKER_URL%/}/internal/pubsub/campaign-steps"
-  if gcloud pubsub subscriptions describe "${SUB}" --project="${PROJECT}" >/dev/null 2>&1; then
-    gcloud pubsub subscriptions update "${SUB}" \
-      --project="${PROJECT}" \
-      --push-endpoint="${ENDPOINT}" \
-      --push-auth-service-account="${PUSH_SA}" \
-      --ack-deadline=60 \
-      --dead-letter-topic="${DLQ}" \
-      --max-delivery-attempts=5
+  create_or_update_sub() {
+    local auth_args=()
+    if [[ "${1:-}" == "oidc" ]]; then
+      auth_args+=(--push-auth-service-account="${PUSH_SA}")
+    fi
+    if gcloud pubsub subscriptions describe "${SUB}" --project="${PROJECT}" >/dev/null 2>&1; then
+      gcloud pubsub subscriptions update "${SUB}" \
+        --project="${PROJECT}" \
+        --push-endpoint="${ENDPOINT}" \
+        --ack-deadline=60 \
+        --dead-letter-topic="${DLQ}" \
+        --max-delivery-attempts=5 \
+        "${auth_args[@]}"
+    else
+      gcloud pubsub subscriptions create "${SUB}" \
+        --project="${PROJECT}" \
+        --topic="${TOPIC}" \
+        --push-endpoint="${ENDPOINT}" \
+        --ack-deadline=60 \
+        --dead-letter-topic="${DLQ}" \
+        --max-delivery-attempts=5 \
+        "${auth_args[@]}"
+    fi
+  }
+  if create_or_update_sub oidc; then
+    PUSH_AUTH_MODE="oidc"
+    echo "    push auth: OIDC as ${PUSH_SA}"
   else
-    gcloud pubsub subscriptions create "${SUB}" \
-      --project="${PROJECT}" \
-      --topic="${TOPIC}" \
-      --push-endpoint="${ENDPOINT}" \
-      --push-auth-service-account="${PUSH_SA}" \
-      --ack-deadline=60 \
-      --dead-letter-topic="${DLQ}" \
-      --max-delivery-attempts=5
+    echo "    OIDC push needs iam.serviceAccounts.setIamPolicy (token creator). Falling back to unauthenticated push."
+    create_or_update_sub none
+    PUSH_AUTH_MODE="unauthenticated"
   fi
 else
   echo "    skip subscription — set FLOCK_WORKER_URL and re-run"
@@ -153,9 +185,10 @@ doc = {
   },
   "subscription": "${SUB}",
   "buckets": {"media": "${MEDIA_BUCKET}", "logs": "${LOGS_BUCKET}"},
-  "modelArmor": {"location": "${REGION}", "template": "${ARMOR_TEMPLATE}"},
+  "modelArmor": {"location": "${ARMOR_LOC}", "template": "${ARMOR_TEMPLATE}"},
   "firestoreDatabase": "(default)",
   "cloudRun": {"api": "flock-api", "worker": "flock-worker"},
+  "pushAuth": "${PUSH_AUTH_MODE}",
 }
 open(path, "w").write(json.dumps(doc, indent=2) + "\n")
 print("wrote", path)

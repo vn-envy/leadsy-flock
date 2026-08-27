@@ -1,0 +1,17 @@
+{
+  "memoryBank": {
+    "ok": true,
+    "location": "us-central1",
+    "resourceName": "projects/533880600838/locations/us-central1/reasoningEngines/6581665058995044352",
+    "id": "6581665058995044352"
+  },
+  "agentRegistry": {
+    "ok": true,
+    "location": "us-central1",
+    "serviceId": "leadsy-flock",
+    "displayName": "Leadsy Flock (Flo)",
+    "card": "https://flock-api-533880600838.asia-south1.run.app/a2a/app/.well-known/agent-card.json"
+  },
+  "e2eCampaignId": "peak-gym-1f7d7f56",
+  "pipeline": ["plan", "approve", "scout", "inka", "creative_gate", "stella", "ad_kit"]
+}

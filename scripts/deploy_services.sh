@@ -18,6 +18,12 @@ export PATH="${HOME}/.local/bin:/tmp/google-cloud-sdk/bin:${PATH}"
 gcloud config set project "${PROJECT}" >/dev/null
 cd "${ROOT}"
 
+PROJECT_NUMBER="$(gcloud projects describe "${PROJECT}" --format='value(projectNumber)')"
+API_PUBLIC_URL="https://flock-api-${PROJECT_NUMBER}.${REGION}.run.app"
+if [[ -z "${MEMORY_BANK_ID}" && -f "${ROOT}/infra/memory-bank.json" ]]; then
+  MEMORY_BANK_ID="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("id") or "")' "${ROOT}/infra/memory-bank.json")"
+fi
+
 COMMON_ENV=$(cat <<EOF
 GOOGLE_CLOUD_PROJECT=${PROJECT}
 GOOGLE_CLOUD_LOCATION=global
@@ -28,10 +34,11 @@ CAMPAIGN_STEPS_DLQ_TOPIC=campaign-steps-dlq
 FOUNDER_ALERTS_TOPIC=founder-alerts
 MEDIA_BUCKET_NAME=${MEDIA_BUCKET}
 LOGS_BUCKET_NAME=${LOGS_BUCKET}
-MODEL_ARMOR_LOCATION=${REGION}
+MODEL_ARMOR_LOCATION=${MODEL_ARMOR_LOCATION:-us-central1}
 MODEL_ARMOR_TEMPLATE=leadsy-inbound
 ADK_CAPTURE_MESSAGE_CONTENT_IN_SPANS=true
 OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT=NO_CONTENT
+APP_URL=${API_PUBLIC_URL}
 EOF
 )
 if [[ -n "${MEMORY_BANK_ID}" ]]; then
@@ -75,10 +82,20 @@ gcloud run services add-iam-policy-binding flock-worker \
   --region="${REGION}" \
   --member="serviceAccount:${PUSH_SA}" \
   --role="roles/run.invoker" \
-  --quiet >/dev/null
+  --quiet >/dev/null || true
 
 echo "==> Attach push subscription"
 FLOCK_WORKER_URL="${WORKER_URL}" bash "${ROOT}/scripts/provision_infra.sh"
+PUSH_AUTH="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("pushAuth") or "")' "${ROOT}/infra/runtime.json")"
+if [[ "${PUSH_AUTH}" == "unauthenticated" ]]; then
+  echo "    opening flock-worker for unauthenticated Pub/Sub push (OIDC token creator unavailable)"
+  gcloud run services add-iam-policy-binding flock-worker \
+    --project="${PROJECT}" \
+    --region="${REGION}" \
+    --member="allUsers" \
+    --role="roles/run.invoker" \
+    --quiet >/dev/null || true
+fi
 
 API_URL="$(gcloud run services describe flock-api --project="${PROJECT}" --region="${REGION}" --format='value(status.url)')"
 echo "flock-api    ${API_URL}"

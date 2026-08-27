@@ -1,0 +1,16 @@
+{
+    "project": "leadsy-flock",
+    "region": "asia-south1",
+    "firestore": "(default)",
+    "topics": {
+        "campaignSteps": "projects/leadsy-flock/topics/campaign-steps",
+        "dlq": "projects/leadsy-flock/topics/campaign-steps-dlq",
+        "alerts": "projects/leadsy-flock/topics/founder-alerts"
+    },
+    "buckets": {
+        "media": "leadsy-flock-media-asia-south1",
+        "logs": "leadsy-flock-logs-asia-south1"
+    },
+    "modelArmor": "projects/leadsy-flock/locations/us-central1/templates/leadsy-inbound",
+    "memoryBankId": "6581665058995044352"
+}

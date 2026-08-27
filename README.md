@@ -11,12 +11,13 @@ One chat message in. A researched, gated, consented campaign out. Every action o
 
 Hello Flo is live, and the Google Cloud runtime is wired:
 
-- **API:** https://flock-api-ehbzbxie5a-el.a.run.app — Flo (`gemini-3.5-flash`) + `/v1/campaigns`
-- **Worker:** `flock-worker` — Pub/Sub `campaign-steps` push, OIDC-only
+- **API:** https://flock-api-533880600838.asia-south1.run.app — Flo (`gemini-3.5-flash`) + `/v1/campaigns`
+- **Worker:** https://flock-worker-533880600838.asia-south1.run.app — Pub/Sub `campaign-steps` push, OIDC
 - `GET /health` — liveness (`/healthz` is intercepted by Cloud Run's frontend)
-- `GET /v1/infra` — runtime inventory
+- `GET /v1/infra` — runtime inventory (Firestore, topics, Model Armor, Memory Bank)
 - `POST /run_sse` — native ADK chat
 - Firestore receipts, Model Armor inbound screen, Cloud Trace (`otel_to_cloud=True`)
+- Agent Registry: `Leadsy Flock (Flo)` in `us-central1`
 - Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md)
 
 ## Mandatory stack

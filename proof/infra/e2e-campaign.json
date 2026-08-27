@@ -1,0 +1,213 @@
+{
+    "rawText": "",
+    "approvedAt": "2026-08-27T17:15:27.046899+00:00",
+    "createdAt": "2026-08-27T17:16:18.639641+00:00",
+    "currentStep": "ad_kit",
+    "updatedAt": "2026-08-27T17:16:18.639641+00:00",
+    "engineConfig": {
+        "hired": [
+            "scout",
+            "inka",
+            "stella"
+        ],
+        "always_on": [
+            "flo",
+            "bri",
+            "ledge"
+        ],
+        "currency": "INR",
+        "accepted_recommendation": true,
+        "pipeline": [
+            "scout",
+            "inka",
+            "creative_gate",
+            "stella",
+            "ad_kit"
+        ],
+        "price_inr": 5997,
+        "rationale": [
+            "Scout first: local evidence before any creative.",
+            "Inka + Stella: one gated master creative and a consent page.",
+            "Callie is listed but not hired for this hackathon run."
+        ]
+    },
+    "brief": {
+        "businessName": "Peak Gym",
+        "geo": "Gurgaon",
+        "goal": "40 evening members from working professionals",
+        "budgetInr": 8000,
+        "audience": "office workers near Golf Course Road"
+    },
+    "status": "completed",
+    "id": "peak-gym-1f7d7f56",
+    "receipts": [
+        {
+            "attempt": 1,
+            "legalBasis": "owner_instruction",
+            "step": "plan",
+            "payload": {
+                "hired": [
+                    "scout",
+                    "inka",
+                    "stella"
+                ],
+                "always_on": [
+                    "flo",
+                    "bri",
+                    "ledge"
+                ],
+                "rationale": [
+                    "Scout first: local evidence before any creative.",
+                    "Inka + Stella: one gated master creative and a consent page.",
+                    "Callie is listed but not hired for this hackathon run."
+                ],
+                "accepted_recommendation": true,
+                "pipeline": [
+                    "scout",
+                    "inka",
+                    "creative_gate",
+                    "stella",
+                    "ad_kit"
+                ],
+                "currency": "INR",
+                "price_inr": 5997
+            },
+            "engine": "bri",
+            "project": "leadsy-flock",
+            "createdAt": "2026-08-27T17:15:26.145385+00:00",
+            "updatedAt": "2026-08-27T17:15:26.145385+00:00",
+            "status": "ok",
+            "service": "flock-api",
+            "campaignId": "peak-gym-1f7d7f56",
+            "id": "peak-gym-1f7d7f56_plan"
+        },
+        {
+            "attempt": 1,
+            "legalBasis": "owner_instruction",
+            "step": "approve",
+            "payload": {
+                "pipeline": [
+                    "scout",
+                    "inka",
+                    "creative_gate",
+                    "stella",
+                    "ad_kit"
+                ]
+            },
+            "engine": "flo",
+            "project": "leadsy-flock",
+            "createdAt": "2026-08-27T17:15:27.358707+00:00",
+            "updatedAt": "2026-08-27T17:15:27.358707+00:00",
+            "status": "ok",
+            "service": "flock-api",
+            "campaignId": "peak-gym-1f7d7f56",
+            "id": "peak-gym-1f7d7f56_approve"
+        },
+        {
+            "attempt": 1,
+            "legalBasis": "owner_instruction",
+            "step": "scout",
+            "payload": {
+                "evidence": [
+                    {
+                        "note": "Maps/Search/urlContext + crowd lens not run yet; receipt proves the hop.",
+                        "geo": "Gurgaon",
+                        "business": "Peak Gym",
+                        "source": "infra-skeleton"
+                    }
+                ],
+                "idempotencyKey": "peak-gym-1f7d7f56:scout:1"
+            },
+            "engine": "scout",
+            "project": "leadsy-flock",
+            "createdAt": "2026-08-27T17:16:05.353833+00:00",
+            "updatedAt": "2026-08-27T17:16:05.490402+00:00",
+            "status": "ok",
+            "service": "flock-worker",
+            "campaignId": "peak-gym-1f7d7f56",
+            "id": "peak-gym-1f7d7f56_scout"
+        },
+        {
+            "attempt": 1,
+            "legalBasis": "owner_instruction",
+            "step": "inka",
+            "payload": {
+                "models": [
+                    "gemini-2.5-flash-image",
+                    "veo-3.1-generate-001",
+                    "lyria-002"
+                ],
+                "artifact": "master-creative-pending",
+                "idempotencyKey": "peak-gym-1f7d7f56:inka:1"
+            },
+            "engine": "inka",
+            "project": "leadsy-flock",
+            "createdAt": "2026-08-27T17:16:06.128878+00:00",
+            "updatedAt": "2026-08-27T17:16:06.309303+00:00",
+            "status": "ok",
+            "service": "flock-worker",
+            "campaignId": "peak-gym-1f7d7f56",
+            "id": "peak-gym-1f7d7f56_inka"
+        },
+        {
+            "attempt": 1,
+            "legalBasis": "owner_instruction",
+            "step": "creative_gate",
+            "payload": {
+                "verdict": "pass",
+                "note": "skeleton pass; live Gemma gate is next",
+                "classifier": "gemma3",
+                "judge": "gemini-3.5-flash",
+                "idempotencyKey": "peak-gym-1f7d7f56:creative_gate:1"
+            },
+            "engine": "ledge",
+            "project": "leadsy-flock",
+            "createdAt": "2026-08-27T17:16:10.384998+00:00",
+            "updatedAt": "2026-08-27T17:16:10.519875+00:00",
+            "status": "ok",
+            "service": "flock-worker",
+            "campaignId": "peak-gym-1f7d7f56",
+            "id": "peak-gym-1f7d7f56_creative_gate"
+        },
+        {
+            "attempt": 1,
+            "legalBasis": "owner_instruction",
+            "step": "stella",
+            "payload": {
+                "landing": "pending",
+                "consentCapture": true,
+                "idempotencyKey": "peak-gym-1f7d7f56:stella:1"
+            },
+            "engine": "stella",
+            "project": "leadsy-flock",
+            "createdAt": "2026-08-27T17:16:14.376924+00:00",
+            "updatedAt": "2026-08-27T17:16:14.502568+00:00",
+            "status": "ok",
+            "service": "flock-worker",
+            "campaignId": "peak-gym-1f7d7f56",
+            "id": "peak-gym-1f7d7f56_stella"
+        },
+        {
+            "attempt": 1,
+            "legalBasis": "owner_instruction",
+            "step": "ad_kit",
+            "payload": {
+                "channels": [
+                    "meta",
+                    "google"
+                ],
+                "autopost": false,
+                "kit": "pending",
+                "idempotencyKey": "peak-gym-1f7d7f56:ad_kit:1"
+            },
+            "engine": "inka",
+            "project": "leadsy-flock",
+            "createdAt": "2026-08-27T17:16:18.346525+00:00",
+            "updatedAt": "2026-08-27T17:16:18.504460+00:00",
+            "status": "ok",
+            "service": "flock-worker",
+            "campaignId": "peak-gym-1f7d7f56",
+            "id": "peak-gym-1f7d7f56_ad_kit"
+        }
+    ]
+}

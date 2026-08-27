@@ -48,7 +48,7 @@ def load_settings() -> Settings:
         alerts_topic=_req("FOUNDER_ALERTS_TOPIC", "founder-alerts"),
         media_bucket=_req("MEDIA_BUCKET_NAME", ""),
         logs_bucket=_req("LOGS_BUCKET_NAME", ""),
-        armor_location=_req("MODEL_ARMOR_LOCATION", "asia-south1"),
+        armor_location=_req("MODEL_ARMOR_LOCATION", "us-central1"),
         armor_template=_req("MODEL_ARMOR_TEMPLATE", "leadsy-inbound"),
         memory_bank_id=_req("MEMORY_BANK_ID", ""),
         memory_bank_location=_req("MEMORY_BANK_LOCATION", "us-central1"),

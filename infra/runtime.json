@@ -1,0 +1,27 @@
+{
+  "project": "leadsy-flock",
+  "region": "asia-south1",
+  "vertexRuntimeRegion": "us-central1",
+  "serviceAccount": "leadsy-agent@leadsy-flock.iam.gserviceaccount.com",
+  "pubsubPushServiceAccount": "leadsy-pubsub-push@leadsy-flock.iam.gserviceaccount.com",
+  "topics": {
+    "campaignSteps": "campaign-steps",
+    "campaignStepsDlq": "campaign-steps-dlq",
+    "founderAlerts": "founder-alerts"
+  },
+  "subscription": "campaign-steps-worker",
+  "buckets": {
+    "media": "leadsy-flock-media-asia-south1",
+    "logs": "leadsy-flock-logs-asia-south1"
+  },
+  "modelArmor": {
+    "location": "us-central1",
+    "template": "leadsy-inbound"
+  },
+  "firestoreDatabase": "(default)",
+  "cloudRun": {
+    "api": "flock-api",
+    "worker": "flock-worker"
+  },
+  "pushAuth": "oidc"
+}
