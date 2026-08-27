@@ -111,3 +111,4 @@ proof/trace/
 
 # Cursor
 .cursor/
+web/tsconfig.tsbuildinfo
