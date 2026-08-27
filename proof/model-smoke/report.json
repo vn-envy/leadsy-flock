@@ -1,0 +1,19 @@
+{
+  "project": "leadsy-flock",
+  "location": "us-central1",
+  "lyria": {
+    "ok": false,
+    "model": "lyria-002",
+    "location": "us-central1",
+    "seconds": 0.25,
+    "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Quota exceeded for aiplatform.googleapis.com/generate_content_requests_per_minute_per_project_per_base_model with base model: lyria-002. Please submit a quota increase request. https://cloud.google.com/vertex-ai/docs/generative-ai/quotas-genai.', 'status': 'RESOURCE_EXHAUSTED'}}"
+  },
+  "veo": {
+    "ok": true,
+    "model": "veo-3.1-generate-001",
+    "location": "us-central1",
+    "seconds": 33.78,
+    "status": "finished",
+    "video_bytes": 1687882
+  }
+}

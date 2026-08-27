@@ -1,0 +1,113 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyc
+*$py.class
+**/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Environments
+.env
+!.env.example
+.venv
+.venv*
+env/
+venv/
+ENV/
+
+# ty (Astral's type checker)
+.ty/
+
+# macOS
+.DS_Store
+
+# Terraform
+.terraform*
+.Terraform*
+tmp*
+.agents-cli-scripts/
+
+# Node
+**/node_modules
+web/.next/
+npm-debug.log
+yarn-error.log
+
+# IDEs
+.idea
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# ADK / agents-cli
+.adk/
+.persist_vector_store
+tests/load_test/.results/*.html
+tests/load_test/.results/*.csv
+.locust_env
+my_env.tfvars
+.saved_chats
+.google-agents-cli/
+tools/a2a-inspector/
+
+# Credentials
+*.pem
+*-key.json
+credentials*.json
+
+# Generated proof binaries (keep JSON reports)
+proof/model-smoke/*
+!proof/model-smoke/report.json
+!proof/model-smoke/README.md
+proof/run-ledger.json
+proof/trace/
+
+# Cursor
+.cursor/
