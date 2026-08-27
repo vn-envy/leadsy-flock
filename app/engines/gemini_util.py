@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import os
 import re
+from functools import lru_cache
 from typing import Any
 
 from google import genai
@@ -22,7 +23,9 @@ LYRIA_MODEL = os.environ.get("LYRIA_MODEL", "lyria-002")
 GEMMA_MODEL = os.environ.get("GEMMA_MODEL", "gemma-3-12b-it")
 
 
+@lru_cache(maxsize=2)
 def text_client() -> genai.Client:
+    """Keep one Vertex client alive. google-genai 2.x closes ephemeral clients."""
     s = load_settings()
     return genai.Client(
         vertexai=True,
@@ -31,6 +34,7 @@ def text_client() -> genai.Client:
     )
 
 
+@lru_cache(maxsize=2)
 def media_client() -> genai.Client:
     s = load_settings()
     loc = os.environ.get("GOOGLE_CLOUD_MEDIA_LOCATION") or "us-central1"

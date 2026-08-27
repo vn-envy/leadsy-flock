@@ -25,6 +25,7 @@ Judge surfaces:
 - Stagehand / Browserbase is not in this hop (no key). Maps + Search + urlContext still carry Scout.
 - last30days engine not vendored; crowd insight is Gemini Search-grounded, not the MIT scraper.
 - **Worker Inka skips Veo and Lyria by default** (`INKA_SKIP_VEO=1`, `INKA_SKIP_LYRIA=1`). Waiting on Veo LROs blew the Cloud Run 540s budget and stampeded Pub/Sub. Veo/Lyria remain proven via `scripts/smoke_models.py`; the worker still generates a Gemini still + copy, and records skip receipts for clip/jingle.
+- Vertex clients are process-cached. Ephemeral `genai.Client()` objects in google-genai 2.x raise `Cannot send a request, as the client has been closed` before Inka/Gemma/the judge can run.
 - Gemma is invoked on `us-central1`; if the publisher model 404s, the regex + Gemini judge still fail-closed.
 - Remotion derivatives and zip/paste-guide are day-4 surface area; this kit is copy + dimensions + UTMs + GCS masters.
 - Telegram webhook is wired (`POST /v1/telegram/webhook`) but inactive until `TELEGRAM_BOT_TOKEN` is set on Cloud Run.

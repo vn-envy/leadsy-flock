@@ -7,7 +7,7 @@ from unittest.mock import patch
 from app.engines.gate import banned_hits, run as gate_run
 from app.engines.adkit import variant, CHANNELS
 from app.engines.stella import render_html
-from app.engines import inka, outreach, scout, scout
+from app.engines import inka, outreach, scout
 
 
 def test_banned_hits_catches_guaranteed() -> None:
@@ -60,11 +60,13 @@ def test_scout_run_never_raises() -> None:
     assert out["errors"]
 
 
-def test_scout_run_never_raises() -> None:
-    with patch.object(scout, "_run_inner", side_effect=RuntimeError("no vertex")):
-        out = scout.run({"brief": {"businessName": "Peak Gym", "geo": "Gurgaon"}})
-    assert out["brandSpec"]["tagline"]
-    assert out["errors"]
+def test_gemini_clients_are_cached() -> None:
+    from app.engines import gemini_util as g
+
+    g.text_client.cache_clear()
+    g.media_client.cache_clear()
+    assert g.text_client() is g.text_client()
+    assert g.media_client() is g.media_client()
 
 
 def test_call_timeout_none_fallback() -> None:

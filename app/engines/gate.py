@@ -85,7 +85,8 @@ def _gemma_classify(text: str) -> dict[str, Any]:
         f"COPY:\n{text}"
     )
     try:
-        resp = g.media_client().models.generate_content(
+        client = g.media_client()
+        resp = client.models.generate_content(
             model=g.GEMMA_MODEL,
             contents=prompt,
             config=types.GenerateContentConfig(temperature=0.1),
@@ -106,7 +107,8 @@ def _gemini_judge(headline: str, primary: str, hits: list[str]) -> dict[str, Any
         f"HEADLINE: {headline}\nPRIMARY: {primary}\nREGEX_HITS: {hits}"
     )
     try:
-        resp = g.text_client().models.generate_content(
+        client = g.text_client()
+        resp = client.models.generate_content(
             model=g.TEXT_MODEL,
             contents=prompt,
             config=types.GenerateContentConfig(temperature=0.1),

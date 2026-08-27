@@ -77,21 +77,18 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
         audience=brief.get("audience") or "",
         attempt=campaign.get("inkaRevisions") or 1,
     )
-    text_resp = _call_timeout(
-        lambda: g.text_client().models.generate_content(
+    errors: list[str] = []
+    client = g.text_client()
+    try:
+        text_resp = client.models.generate_content(
             model=g.TEXT_MODEL,
             contents=prompt,
             config=types.GenerateContentConfig(temperature=0.8),
-        ),
-        25,
-        None,
-    )
-    copy = None
-    if text_resp is not None:
-        try:
-            copy = g.extract_json(g.response_text(text_resp))
-        except Exception:
-            copy = None
+        )
+        copy = g.extract_json(g.response_text(text_resp))
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"copy:{type(exc).__name__}:{exc}")
+        copy = None
     if not isinstance(copy, dict):
         copy = {
             "draftHeadline": "Guaranteed transformation this month",
@@ -106,7 +103,6 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
 
     campaign_id = campaign.get("id") or "campaign"
     assets: dict[str, Any] = {}
-    errors: list[str] = []
     skip_veo = os.environ.get("INKA_SKIP_VEO", "1") == "1"
     skip_lyria = os.environ.get("INKA_SKIP_LYRIA", "1") == "1"
     skip_still = os.environ.get("INKA_SKIP_STILL", "0") == "1"
@@ -114,27 +110,15 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
     if skip_still:
         assets["still"] = {"ok": False, "skipped": True, "model": g.IMAGE_MODEL}
     else:
-        assets["still"] = _call_timeout(
-            lambda: _still(campaign_id, copy.get("imagePrompt") or "", brand, errors),
-            40,
-            {"ok": False, "error": "timeout", "model": g.IMAGE_MODEL},
-        )
+        assets["still"] = _still(campaign_id, copy.get("imagePrompt") or "", brand, errors)
     if skip_veo:
         assets["clip"] = {"ok": False, "skipped": True, "model": g.VEO_MODEL, "note": "INKA_SKIP_VEO=1; use smoke_models.py for Veo proof"}
     else:
-        assets["clip"] = _call_timeout(
-            lambda: _veo_start(campaign_id, copy.get("veoPrompt") or "", errors),
-            45,
-            {"ok": False, "error": "timeout", "model": g.VEO_MODEL},
-        )
+        assets["clip"] = _veo_start(campaign_id, copy.get("veoPrompt") or "", errors)
     if skip_lyria:
         assets["jingle"] = {"ok": False, "skipped": True, "model": g.LYRIA_MODEL, "note": "INKA_SKIP_LYRIA=1; Lyria often 429"}
     else:
-        assets["jingle"] = _call_timeout(
-            lambda: _lyria(campaign_id, copy.get("lyriaPrompt") or "", errors),
-            20,
-            {"ok": False, "error": "timeout", "model": g.LYRIA_MODEL},
-        )
+        assets["jingle"] = _lyria(campaign_id, copy.get("lyriaPrompt") or "", errors)
 
     return {
         "model": g.TEXT_MODEL,
@@ -175,7 +159,8 @@ def _still(campaign_id: str, prompt: str, brand: dict, errors: list[str]) -> dic
     palette = ", ".join(brand.get("palette") or [])
     full = f"{prompt}\nColor palette: {palette}. No letters, logos, or watermarks."
     try:
-        resp = g.media_client().models.generate_content(
+        client = g.media_client()
+        resp = client.models.generate_content(
             model=g.IMAGE_MODEL,
             contents=full,
             config=types.GenerateContentConfig(response_modalities=["IMAGE", "TEXT"]),
@@ -235,7 +220,8 @@ def _veo_start(campaign_id: str, prompt: str, errors: list[str]) -> dict[str, An
 
 def _lyria(campaign_id: str, prompt: str, errors: list[str]) -> dict[str, Any]:
     try:
-        resp = g.media_client().models.generate_content(
+        client = g.media_client()
+        resp = client.models.generate_content(
             model=g.LYRIA_MODEL,
             contents=prompt or "A 2-second bright instrumental sting, no vocals.",
             config=types.GenerateContentConfig(response_modalities=["AUDIO"]),
