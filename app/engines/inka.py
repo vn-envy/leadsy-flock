@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import time
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
 from typing import Any
 
 from google.genai import types
@@ -78,9 +79,9 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
     assets: dict[str, Any] = {}
     errors: list[str] = []
 
-    assets["still"] = _still(campaign_id, copy.get("imagePrompt") or "", brand, errors)
-    assets["clip"] = _veo(campaign_id, copy.get("veoPrompt") or "", errors)
-    assets["jingle"] = _lyria(campaign_id, copy.get("lyriaPrompt") or "", errors)
+    assets["still"] = _call_timeout(lambda: _still(campaign_id, copy.get("imagePrompt") or "", brand, errors), 40, {"ok": False, "error": "timeout", "model": g.IMAGE_MODEL})
+    assets["clip"] = _call_timeout(lambda: _veo_start(campaign_id, copy.get("veoPrompt") or "", errors), 45, {"ok": False, "error": "timeout", "model": g.VEO_MODEL})
+    assets["jingle"] = _call_timeout(lambda: _lyria(campaign_id, copy.get("lyriaPrompt") or "", errors), 20, {"ok": False, "error": "timeout", "model": g.LYRIA_MODEL})
 
     return {
         "model": g.TEXT_MODEL,
@@ -137,8 +138,19 @@ def _still(campaign_id: str, prompt: str, brand: dict, errors: list[str]) -> dic
         return {"ok": False, "model": g.IMAGE_MODEL, "error": str(exc)[:300]}
 
 
-def _veo(campaign_id: str, prompt: str, errors: list[str]) -> dict[str, Any]:
-    wait = int(__import__("os").environ.get("VEO_WAIT_SECONDS", "90"))
+def _call_timeout(fn, seconds: int, fallback: dict[str, Any]) -> dict[str, Any]:
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        fut = pool.submit(fn)
+        try:
+            return fut.result(timeout=seconds)
+        except FuturesTimeout:
+            fallback = dict(fallback)
+            fallback["error"] = f"timeout_{seconds}s"
+            return fallback
+
+
+def _veo_start(campaign_id: str, prompt: str, errors: list[str]) -> dict[str, Any]:
+    """Kick off Veo without blocking the rest of the flock."""
     t0 = time.time()
     try:
         client = g.media_client()
@@ -147,36 +159,13 @@ def _veo(campaign_id: str, prompt: str, errors: list[str]) -> dict[str, Any]:
             prompt=prompt or "Empty modern gym, morning light, no people, no text.",
             config=types.GenerateVideosConfig(number_of_videos=1, duration_seconds=4),
         )
-        deadline = time.time() + wait
-        while not operation.done and time.time() < deadline:
-            time.sleep(6)
-            operation = client.operations.get(operation)
-        elapsed = round(time.time() - t0, 1)
-        if not operation.done:
-            return {
-                "ok": True,
-                "model": g.VEO_MODEL,
-                "status": "started_not_finished",
-                "operation": getattr(operation, "name", None),
-                "seconds": elapsed,
-            }
-        response = operation.response
-        generated = getattr(response, "generated_videos", None) if response else None
-        if not generated:
-            errors.append("veo:no_video")
-            return {"ok": False, "model": g.VEO_MODEL, "seconds": elapsed}
-        video = generated[0].video
-        data = getattr(video, "video_bytes", None)
-        if not data:
-            errors.append("veo:empty_bytes")
-            return {"ok": False, "model": g.VEO_MODEL, "seconds": elapsed}
-        uri = media.put_bytes(media.campaign_path(campaign_id, "clip.mp4"), data, "video/mp4")
         return {
             "ok": True,
             "model": g.VEO_MODEL,
-            "gcs": uri,
-            "bytes": len(data),
-            "seconds": elapsed,
+            "status": "started" if not getattr(operation, "done", False) else "done",
+            "operation": getattr(operation, "name", None),
+            "seconds": round(time.time() - t0, 1),
+            "campaignId": campaign_id,
         }
     except Exception as exc:  # noqa: BLE001
         errors.append(f"veo:{type(exc).__name__}:{exc}")

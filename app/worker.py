@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import Any
 
 from opentelemetry import trace
@@ -38,6 +39,10 @@ def handle_step(message: dict[str, Any]) -> dict[str, Any]:
     if existing and existing.get("status") == "ok" and not force:
         nxt = publish_next(campaign_id, step, pipeline)
         return {"status": "already_done", "campaignId": campaign_id, "step": step, "next": nxt}
+    if existing and existing.get("status") == "started" and not force:
+        age = _age_seconds(existing.get("updatedAt") or existing.get("createdAt") or "")
+        if age < 180:
+            return {"status": "in_flight", "campaignId": campaign_id, "step": step}
 
     ledger.write_receipt(
         campaign_id=campaign_id,
@@ -125,6 +130,18 @@ def _revise_or_block(campaign_id: str, pipeline: list[str], result: dict[str, An
         "step": "creative_gate",
         "result": result,
     }
+
+
+def _age_seconds(iso: str) -> float:
+    if not iso:
+        return 10_000
+    try:
+        ts = datetime.fromisoformat(iso.replace("Z", "+00:00"))
+        if ts.tzinfo is None:
+            ts = ts.replace(tzinfo=UTC)
+        return (datetime.now(UTC) - ts).total_seconds()
+    except ValueError:
+        return 10_000
 
 
 def _next_name(current: str, pipeline: list[str]) -> str | None:

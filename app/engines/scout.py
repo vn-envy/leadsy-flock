@@ -84,24 +84,34 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
             config=types.GenerateContentConfig(temperature=0.3),
         )
 
-    text = g.response_text(response)
+    notes = g.response_text(response)
+    uris = g.grounding_uris(response)
     try:
-        body = g.extract_json(text)
+        shaped = client.models.generate_content(
+            model=g.TEXT_MODEL,
+            contents=(
+                "Turn these research notes into JSON with keys evidence, brandSpec, "
+                "localInsight, crowdInsight. evidence items: source, uri, title, snippet, signal. "
+                "Use the URIs listed. Return JSON only.\n\n"
+                f"NOTES:\n{notes[:6000]}\n\nURIS:\n{uris}"
+            ),
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                temperature=0.2,
+            ),
+        )
+        body = g.extract_json(g.response_text(shaped))
     except Exception as exc:  # noqa: BLE001
-        body = {
-            "evidence": [
-                {
-                    "source": "search",
-                    "uri": "",
-                    "title": "unparsed scout output",
-                    "snippet": text[:800],
-                    "signal": 0.2,
-                }
-            ],
-            "brandSpec": _default_brand(business, geo),
-            "localInsight": text[:600],
-            "parseError": str(exc),
-        }
+        errors.append(f"json:{type(exc).__name__}:{exc}")
+        try:
+            body = g.extract_json(notes)
+        except Exception:
+            body = {
+                "evidence": [],
+                "brandSpec": _default_brand(business, geo),
+                "localInsight": notes[:600],
+                "parseError": str(exc),
+            }
 
     evidence = list(body.get("evidence") or [])
     for uri in g.grounding_uris(response):
