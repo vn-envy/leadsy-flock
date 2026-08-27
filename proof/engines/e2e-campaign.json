@@ -1,0 +1,466 @@
+{
+  "status": "completed",
+  "brief": {
+    "geo": "Gurgaon",
+    "businessName": "Peak Gym",
+    "goal": "40 evening members from working professionals",
+    "budgetInr": 8000,
+    "audience": "office workers near Golf Course Road"
+  },
+  "rawText": "",
+  "createdAt": "2026-08-27T18:20:24.956023+00:00",
+  "updatedAt": "2026-08-27T18:20:24.956023+00:00",
+  "landingPath": "/l/peak-gym-71d02b5c",
+  "approvedAt": "2026-08-27T18:18:45.632035+00:00",
+  "engineConfig": {
+    "rationale": [
+      "Scout first: local evidence before any creative.",
+      "Inka + Stella: one gated master creative and a consent page.",
+      "Callie is listed but not hired for this hackathon run."
+    ],
+    "hired": [
+      "scout",
+      "inka",
+      "stella"
+    ],
+    "accepted_recommendation": true,
+    "pipeline": [
+      "scout",
+      "inka",
+      "creative_gate",
+      "stella",
+      "ad_kit"
+    ],
+    "always_on": [
+      "flo",
+      "bri",
+      "ledge"
+    ],
+    "currency": "INR",
+    "price_inr": 5997
+  },
+  "currentStep": "ad_kit",
+  "id": "peak-gym-71d02b5c",
+  "receipts": [
+    {
+      "attempt": 1,
+      "updatedAt": "2026-08-27T18:18:45.010624+00:00",
+      "status": "ok",
+      "campaignId": "peak-gym-71d02b5c",
+      "createdAt": "2026-08-27T18:18:45.010624+00:00",
+      "project": "leadsy-flock",
+      "service": "flock-api",
+      "legalBasis": "owner_instruction",
+      "engine": "bri",
+      "step": "plan",
+      "payload": {
+        "price_inr": 5997,
+        "hired": [
+          "scout",
+          "inka",
+          "stella"
+        ],
+        "accepted_recommendation": true,
+        "always_on": [
+          "flo",
+          "bri",
+          "ledge"
+        ],
+        "pipeline": [
+          "scout",
+          "inka",
+          "creative_gate",
+          "stella",
+          "ad_kit"
+        ],
+        "currency": "INR",
+        "rationale": [
+          "Scout first: local evidence before any creative.",
+          "Inka + Stella: one gated master creative and a consent page.",
+          "Callie is listed but not hired for this hackathon run."
+        ]
+      },
+      "id": "peak-gym-71d02b5c_plan"
+    },
+    {
+      "attempt": 1,
+      "updatedAt": "2026-08-27T18:18:45.695276+00:00",
+      "status": "ok",
+      "campaignId": "peak-gym-71d02b5c",
+      "createdAt": "2026-08-27T18:18:45.695276+00:00",
+      "project": "leadsy-flock",
+      "service": "flock-api",
+      "legalBasis": "owner_instruction",
+      "engine": "flo",
+      "step": "approve",
+      "payload": {
+        "pipeline": [
+          "scout",
+          "inka",
+          "creative_gate",
+          "stella",
+          "ad_kit"
+        ]
+      },
+      "id": "peak-gym-71d02b5c_approve"
+    },
+    {
+      "attempt": 1,
+      "campaignId": "peak-gym-71d02b5c",
+      "status": "ok",
+      "updatedAt": "2026-08-27T18:19:49.173676+00:00",
+      "createdAt": "2026-08-27T18:18:46.351765+00:00",
+      "project": "leadsy-flock",
+      "service": "flock-worker",
+      "legalBasis": "owner_instruction",
+      "step": "scout",
+      "engine": "scout",
+      "payload": {
+        "idempotencyKey": "peak-gym-71d02b5c:scout:1",
+        "localInsight": "Golf Course Road is a premium commercial corridor where working professionals commute via the Rapid Metro or private cars, making hassle-free parking (like valet) a major selling point. Local competitors like Fitclub and Fitness First charge high premiums (up to \u20b975k/year) to filter out crowds, while mid-tier options like Cult Gym are heavily criticized for extreme evening overcrowding. Reviewers frequently complain about dirty washrooms and oversold memberships that lead to long wait times for machines between 6 PM and 9 PM.",
+        "model": "gemini-3.5-flash",
+        "errors": [],
+        "brandSpec": {
+          "tagline": "Science-Backed Strength. Built for the Corporate Athlete.",
+          "typePairing": "Oswald + Inter",
+          "toneWords": [
+            "Scientific",
+            "Premium",
+            "Restorative"
+          ],
+          "palette": [
+            "#111111",
+            "#00E5FF",
+            "#F5F5F7"
+          ],
+          "logoHint": "A minimalist, geometric mountain peak integrated with a biomechanical vector line or joint angle symbol, rendered in electric cyan on a matte black background."
+        },
+        "crowdInsight": "Public forum discussions on r/gurgaon reveal that corporate employees are highly frustrated by 'gym bros' hogging equipment for social media, loud groups treating the workout floor like a living room, and gyms overselling memberships beyond capacity. To escape this, busy professionals are willing to pay a steep premium for a 'filtered, comfortable crowd' where they can complete their workouts efficiently post-office without waiting for a bench or treadmill.",
+        "evidence": [
+          {
+            "snippet": "Peak Biomechanics Gym is a premium fitness center in Gurgaon focusing on biomechanical assessments, rehabilitation, and personalized training [1.1].",
+            "signal": 1.0,
+            "source": "maps",
+            "title": "Peak Biomechanics Gym on Google Maps",
+            "uri": "https://maps.google.com/maps?cid=12693628296595266838"
+          },
+          {
+            "snippet": "Fitclub is a luxury gym on Golf Course Road offering premium amenities, valet parking, and a highly filtered corporate crowd.",
+            "signal": 0.9,
+            "source": "maps",
+            "title": "Fitclub - Golf Course Road on Google Maps",
+            "uri": "https://maps.google.com/maps?cid=14162380379798743121"
+          },
+          {
+            "snippet": "Cult Gym is a popular commercial gym on Golf Course Road that is highly rated but frequently criticized for being overcrowded during peak evening hours.",
+            "signal": 0.9,
+            "source": "maps",
+            "title": "Cult Gym Golf Course Road on Google Maps",
+            "uri": "https://maps.google.com/maps?cid=2537677001782962825"
+          },
+          {
+            "snippet": "Cited by Gemini grounding.",
+            "signal": 0.7,
+            "source": "maps",
+            "title": "grounding chunk",
+            "uri": "https://maps.google.com/maps?cid=2514968430064804031"
+          },
+          {
+            "snippet": "Cited by Gemini grounding.",
+            "signal": 0.7,
+            "source": "search",
+            "title": "grounding chunk",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEWVgJdJeF5FPbQk7oKr3311JTWObPBXNrGywf9SNJTJG6Pz9mKV3-wyIwW5TR-_W4Fd4uE8Ml-UWPws9jxg3qQbBKrXxdTskPMCghp3wWh9KMyp3fbNVox_8RVdNjZauq3ysnvifqiplw1d5N_ph-2hsISRznOZ0WCh48A7b45LEVS-Y_LvyAsPYPtpoMwUj0C-canzQHvo3MDCRMb"
+          },
+          {
+            "snippet": "Cited by Gemini grounding.",
+            "signal": 0.7,
+            "source": "search",
+            "title": "grounding chunk",
+            "uri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSUN4bDVQTUd3EAE!2m1!1s0x390d199707edef0d:0x2337a3c9b5f3aa89"
+          },
+          {
+            "snippet": "Cited by Gemini grounding.",
+            "signal": 0.7,
+            "source": "search",
+            "title": "grounding chunk",
+            "uri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSUNMaWFhbkZREAE!2m1!1s0x390d217b59ccd02b:0xa2d73f9884e56d1d"
+          },
+          {
+            "snippet": "Cited by Gemini grounding.",
+            "signal": 0.7,
+            "source": "search",
+            "title": "grounding chunk",
+            "uri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSURCajlIZHZnRRAB!2m1!1s0x390d194c00d6dc71:0xc8fadca789acd41c"
+          },
+          {
+            "snippet": "Cited by Gemini grounding.",
+            "signal": 0.7,
+            "source": "search",
+            "title": "grounding chunk",
+            "uri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT2pkWWNYSm9NVzFxVm5oTlpYQjRTelEwT1hoUVdVRRAB!2m1!1s0x390d217b59ccd02b:0xa2d73f9884e56d1d"
+          },
+          {
+            "snippet": "Cited by Gemini grounding.",
+            "signal": 0.7,
+            "source": "search",
+            "title": "grounding chunk",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFo0VOscL32yE2Jiu-aVNxI3qgnXXrWlJKwcoF8l_l6NTVrFlInmbaI7Nben0A5mxVKA_2bnZWTMQgZupvcQU7d4F_ogxbF7eWoyBKF6QWOGYxdhybr8gdeC8VhXCJ0_BQOkn-eJji9X_b1zJ9M_bpxpg=="
+          }
+        ],
+        "groundingUris": [
+          "https://maps.google.com/maps?cid=14162380379798743121",
+          "https://maps.google.com/maps?cid=2537677001782962825",
+          "https://maps.google.com/maps?cid=2514968430064804031",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEWVgJdJeF5FPbQk7oKr3311JTWObPBXNrGywf9SNJTJG6Pz9mKV3-wyIwW5TR-_W4Fd4uE8Ml-UWPws9jxg3qQbBKrXxdTskPMCghp3wWh9KMyp3fbNVox_8RVdNjZauq3ysnvifqiplw1d5N_ph-2hsISRznOZ0WCh48A7b45LEVS-Y_LvyAsPYPtpoMwUj0C-canzQHvo3MDCRMb",
+          "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSUN4bDVQTUd3EAE!2m1!1s0x390d199707edef0d:0x2337a3c9b5f3aa89",
+          "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSUNMaWFhbkZREAE!2m1!1s0x390d217b59ccd02b:0xa2d73f9884e56d1d",
+          "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSURCajlIZHZnRRAB!2m1!1s0x390d194c00d6dc71:0xc8fadca789acd41c",
+          "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT2pkWWNYSm9NVzFxVm5oTlpYQjRTelEwT1hoUVdVRRAB!2m1!1s0x390d217b59ccd02b:0xa2d73f9884e56d1d",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFo0VOscL32yE2Jiu-aVNxI3qgnXXrWlJKwcoF8l_l6NTVrFlInmbaI7Nben0A5mxVKA_2bnZWTMQgZupvcQU7d4F_ogxbF7eWoyBKF6QWOGYxdhybr8gdeC8VhXCJ0_BQOkn-eJji9X_b1zJ9M_bpxpg=="
+        ]
+      },
+      "id": "peak-gym-71d02b5c_scout"
+    },
+    {
+      "attempt": 1,
+      "campaignId": "peak-gym-71d02b5c",
+      "status": "ok",
+      "updatedAt": "2026-08-27T18:20:18.952064+00:00",
+      "createdAt": "2026-08-27T18:19:49.956898+00:00",
+      "project": "leadsy-flock",
+      "service": "flock-worker",
+      "legalBasis": "owner_instruction",
+      "step": "inka",
+      "engine": "inka",
+      "payload": {
+        "brandSpec": {
+          "tagline": "Science-Backed Strength. Built for the Corporate Athlete.",
+          "typePairing": "Oswald + Inter",
+          "toneWords": [
+            "Scientific",
+            "Premium",
+            "Restorative"
+          ],
+          "palette": [
+            "#111111",
+            "#00E5FF",
+            "#F5F5F7"
+          ],
+          "logoHint": "A minimalist, geometric mountain peak integrated with a biomechanical vector line or joint angle symbol, rendered in electric cyan on a matte black background."
+        },
+        "idempotencyKey": "peak-gym-71d02b5c:inka:1",
+        "prompts": {
+          "image": "A high-end, minimalist gym interior in Gurgaon at twilight. Matte black training equipment is arranged neatly on off-white flooring, highlighted by sharp, glowing electric cyan vector lines on the floor. Clean, clinical, and premium aesthetic. No people, no text.",
+          "lyria": "A clean, futuristic electronic synth swell with a deep, resonant sub-bass drop, conveying high-tech precision. Instrumental, no vocals.",
+          "veo": "A locked-off, cinematic macro shot of a premium biomechanical cable machine pulley in motion. The matte black steel apparatus is accented by subtle electric cyan LED light strips. Smooth, controlled mechanical movement of the weights. No people, no faces, no text. Ultra-high definition, shallow depth of field."
+        },
+        "model": "gemini-3.5-flash",
+        "assets": {
+          "jingle": {
+            "note": "INKA_SKIP_LYRIA=1; Lyria often 429",
+            "skipped": true,
+            "model": "lyria-002",
+            "ok": false
+          },
+          "clip": {
+            "note": "INKA_SKIP_VEO=1; use smoke_models.py for Veo proof",
+            "skipped": true,
+            "model": "veo-3.1-generate-001",
+            "ok": false
+          },
+          "still": {
+            "bytes": 1323522,
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/peak-gym-71d02b5c/still.png",
+            "mime": "image/png",
+            "model": "gemini-2.5-flash-image",
+            "ok": true
+          }
+        },
+        "errors": [],
+        "copy": {
+          "cta": "Book Assessment",
+          "draftHeadline": "Guaranteed posture correction and instant back pain relief in just one session!",
+          "subhead": "Escape the overcrowded commercial gyms and train with scientific precision on Golf Course Road.",
+          "headline": "Upgrade Your Evening Routine at Gurgaon's Premier Biomechanics Lab",
+          "primaryText": "Ditch the chaotic evening rush at ordinary fitness centers. Peak Biomechanics Gym offers an exclusive, science-backed sanctuary designed specifically for Gurgaon's corporate athletes. Rebuild your movement patterns, optimize your strength, and train with personalized biomechanical assessments in a premium, distraction-free environment."
+        }
+      },
+      "id": "peak-gym-71d02b5c_inka"
+    },
+    {
+      "attempt": 1,
+      "campaignId": "peak-gym-71d02b5c",
+      "status": "ok",
+      "updatedAt": "2026-08-27T18:20:23.523487+00:00",
+      "createdAt": "2026-08-27T18:20:19.278474+00:00",
+      "project": "leadsy-flock",
+      "service": "flock-worker",
+      "legalBasis": "owner_instruction",
+      "step": "creative_gate",
+      "engine": "ledge",
+      "payload": {
+        "final": {
+          "text": "Upgrade Your Evening Routine at Gurgaon's Premier Biomechanics Lab",
+          "hits": []
+        },
+        "rule": "fail_closed_claims",
+        "idempotencyKey": "peak-gym-71d02b5c:creative_gate:1",
+        "draft": {
+          "rejected": true,
+          "text": "Guaranteed posture correction and instant back pain relief in just one session!",
+          "hits": [
+            "guaranteed_outcome"
+          ]
+        },
+        "judge": {
+          "ok": true,
+          "model": "gemini-3.5-flash",
+          "reason": "The ad copy contains no guaranteed outcomes, medical claims, or testimonials. It focuses on the gym's premium environment, biomechanical assessments, and general fitness optimization for corporate professionals.",
+          "verdict": "pass"
+        },
+        "classifier": {
+          "error": "404 NOT_FOUND. {'error': {'code': 404, 'message': 'Publisher model `projects/leadsy-flock/locations/us-central1/publishers/google/models/gemma-3-12b-it` was not found or your project does not have access to it. Ensure you are using a valid model name and that the model is available in the specified ",
+          "model": "gemma-3-12b-it",
+          "risk": "unknown",
+          "ok": false
+        },
+        "verdict": "pass"
+      },
+      "id": "peak-gym-71d02b5c_creative_gate"
+    },
+    {
+      "attempt": 1,
+      "campaignId": "peak-gym-71d02b5c",
+      "status": "ok",
+      "updatedAt": "2026-08-27T18:20:24.414240+00:00",
+      "createdAt": "2026-08-27T18:20:24.204042+00:00",
+      "project": "leadsy-flock",
+      "service": "flock-worker",
+      "legalBasis": "owner_instruction",
+      "step": "stella",
+      "engine": "stella",
+      "payload": {
+        "consentCapture": true,
+        "idempotencyKey": "peak-gym-71d02b5c:stella:1",
+        "landing": "/l/peak-gym-71d02b5c",
+        "headline": "Upgrade Your Evening Routine at Gurgaon's Premier Biomechanics Lab",
+        "url": "https://flock-api-533880600838.asia-south1.run.app/l/peak-gym-71d02b5c"
+      },
+      "id": "peak-gym-71d02b5c_stella"
+    },
+    {
+      "attempt": 1,
+      "campaignId": "peak-gym-71d02b5c",
+      "status": "ok",
+      "updatedAt": "2026-08-27T18:20:24.830428+00:00",
+      "createdAt": "2026-08-27T18:20:24.641519+00:00",
+      "project": "leadsy-flock",
+      "service": "flock-worker",
+      "legalBasis": "owner_instruction",
+      "step": "ad_kit",
+      "engine": "inka",
+      "payload": {
+        "note": "Ready to upload. Owner makes the final click on their own channels.",
+        "idempotencyKey": "peak-gym-71d02b5c:ad_kit:1",
+        "autopost": false,
+        "landing": "https://flock-api-533880600838.asia-south1.run.app/l/peak-gym-71d02b5c",
+        "variants": [
+          {
+            "lint": {
+              "issues": [],
+              "ok": true
+            },
+            "platform": "meta",
+            "headline": "Upgrade Your Evening Routine at Gurgaon\u2026",
+            "primaryText": "Ditch the chaotic evening rush at ordinary fitness centers. Peak Biomechanics Gym offers an exclusive, science-backed sanctu\u2026",
+            "cta": "Book Assessment",
+            "id": "meta_feed",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/peak-gym-71d02b5c?utm_source=meta&utm_medium=paid&utm_campaign=peak-gym-71d02b5c&utm_content=meta_feed",
+            "placement": "feed",
+            "charCounts": {
+              "headline": 40,
+              "primaryText": 125
+            },
+            "aspect": "1:1"
+          },
+          {
+            "lint": {
+              "issues": [],
+              "ok": true
+            },
+            "platform": "meta",
+            "headline": "Upgrade Your Evening Routine at\u2026",
+            "primaryText": "Ditch the chaotic evening rush at ordinary fitness centers. Peak Biomechanics Gym offers\u2026",
+            "cta": "Book Assessment",
+            "id": "meta_reel",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/peak-gym-71d02b5c?utm_source=meta&utm_medium=paid&utm_campaign=peak-gym-71d02b5c&utm_content=meta_reel",
+            "placement": "reel",
+            "charCounts": {
+              "headline": 32,
+              "primaryText": 89
+            },
+            "aspect": "9:16"
+          },
+          {
+            "headlines": [
+              "Upgrade Your Evening Routine\u2026",
+              "Book Assessment",
+              "Evenings near you"
+            ],
+            "lint": {
+              "issues": [],
+              "ok": true
+            },
+            "platform": "google",
+            "headline": "Upgrade Your Evening Routine\u2026",
+            "id": "google_rsa",
+            "cta": "Book Assessment",
+            "primaryText": "Ditch the chaotic evening rush at ordinary fitness centers. Peak Biomechanics Gym offers an exclusive, science-backed sanctu\u2026",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/peak-gym-71d02b5c?utm_source=google&utm_medium=paid&utm_campaign=peak-gym-71d02b5c&utm_content=google_rsa",
+            "placement": "search",
+            "charCounts": {
+              "description": 90,
+              "headline": 29,
+              "primaryText": 125
+            },
+            "aspect": "text",
+            "description": "Escape the overcrowded commercial gyms and train with scientific precision on Golf Course\u2026"
+          }
+        ],
+        "assets": {
+          "jingle": {
+            "note": "INKA_SKIP_LYRIA=1; Lyria often 429",
+            "skipped": true,
+            "model": "lyria-002",
+            "ok": false
+          },
+          "clip": {
+            "note": "INKA_SKIP_VEO=1; use smoke_models.py for Veo proof",
+            "skipped": true,
+            "model": "veo-3.1-generate-001",
+            "ok": false
+          },
+          "still": {
+            "bytes": 1323522,
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/peak-gym-71d02b5c/still.png",
+            "mime": "image/png",
+            "model": "gemini-2.5-flash-image",
+            "ok": true
+          }
+        }
+      },
+      "id": "peak-gym-71d02b5c_ad_kit"
+    }
+  ],
+  "consents": [
+    {
+      "campaignId": "peak-gym-71d02b5c",
+      "source": "e2e",
+      "contact": "judge@example.test",
+      "name": "Judge Demo",
+      "createdAt": "2026-08-27T18:20:30.829873+00:00",
+      "id": "F8XgBGFwffjUVsAYNPJz"
+    }
+  ]
+}

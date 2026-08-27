@@ -1,0 +1,72 @@
+{
+  "campaignId": "peak-gym-71d02b5c",
+  "status": "completed",
+  "landing": "https://flock-api-533880600838.asia-south1.run.app/l/peak-gym-71d02b5c",
+  "consent": {
+    "id": "F8XgBGFwffjUVsAYNPJz",
+    "campaignId": "peak-gym-71d02b5c",
+    "ok": true
+  },
+  "gate": {
+    "final": {
+      "text": "Upgrade Your Evening Routine at Gurgaon's Premier Biomechanics Lab",
+      "hits": []
+    },
+    "rule": "fail_closed_claims",
+    "idempotencyKey": "peak-gym-71d02b5c:creative_gate:1",
+    "draft": {
+      "rejected": true,
+      "text": "Guaranteed posture correction and instant back pain relief in just one session!",
+      "hits": [
+        "guaranteed_outcome"
+      ]
+    },
+    "judge": {
+      "ok": true,
+      "model": "gemini-3.5-flash",
+      "reason": "The ad copy contains no guaranteed outcomes, medical claims, or testimonials. It focuses on the gym's premium environment, biomechanical assessments, and general fitness optimization for corporate professionals.",
+      "verdict": "pass"
+    },
+    "classifier": {
+      "error": "404 NOT_FOUND. {'error': {'code': 404, 'message': 'Publisher model `projects/leadsy-flock/locations/us-central1/publishers/google/models/gemma-3-12b-it` was not found or your project does not have access to it. Ensure you are using a valid model name and that the model is available in the specified ",
+      "model": "gemma-3-12b-it",
+      "risk": "unknown",
+      "ok": false
+    },
+    "verdict": "pass"
+  },
+  "scoutGrounding": [
+    "https://maps.google.com/maps?cid=14162380379798743121",
+    "https://maps.google.com/maps?cid=2537677001782962825",
+    "https://maps.google.com/maps?cid=2514968430064804031",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEWVgJdJeF5FPbQk7oKr3311JTWObPBXNrGywf9SNJTJG6Pz9mKV3-wyIwW5TR-_W4Fd4uE8Ml-UWPws9jxg3qQbBKrXxdTskPMCghp3wWh9KMyp3fbNVox_8RVdNjZauq3ysnvifqiplw1d5N_ph-2hsISRznOZ0WCh48A7b45LEVS-Y_LvyAsPYPtpoMwUj0C-canzQHvo3MDCRMb",
+    "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSUN4bDVQTUd3EAE!2m1!1s0x390d199707edef0d:0x2337a3c9b5f3aa89",
+    "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSUNMaWFhbkZREAE!2m1!1s0x390d217b59ccd02b:0xa2d73f9884e56d1d",
+    "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSURCajlIZHZnRRAB!2m1!1s0x390d194c00d6dc71:0xc8fadca789acd41c",
+    "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT2pkWWNYSm9NVzFxVm5oTlpYQjRTelEwT1hoUVdVRRAB!2m1!1s0x390d217b59ccd02b:0xa2d73f9884e56d1d",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFo0VOscL32yE2Jiu-aVNxI3qgnXXrWlJKwcoF8l_l6NTVrFlInmbaI7Nben0A5mxVKA_2bnZWTMQgZupvcQU7d4F_ogxbF7eWoyBKF6QWOGYxdhybr8gdeC8VhXCJ0_BQOkn-eJji9X_b1zJ9M_bpxpg=="
+  ],
+  "inkaAssets": {
+    "jingle": {
+      "note": "INKA_SKIP_LYRIA=1; Lyria often 429",
+      "skipped": true,
+      "model": "lyria-002",
+      "ok": false
+    },
+    "clip": {
+      "note": "INKA_SKIP_VEO=1; use smoke_models.py for Veo proof",
+      "skipped": true,
+      "model": "veo-3.1-generate-001",
+      "ok": false
+    },
+    "still": {
+      "bytes": 1323522,
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/peak-gym-71d02b5c/still.png",
+      "mime": "image/png",
+      "model": "gemini-2.5-flash-image",
+      "ok": true
+    }
+  },
+  "draftRejected": true,
+  "gateVerdict": "pass"
+}
