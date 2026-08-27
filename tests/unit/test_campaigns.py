@@ -1,4 +1,11 @@
 from app.campaigns import decode_pubsub_push
+from app.http_api import _safe_campaign_id
+
+
+def test_safe_campaign_id() -> None:
+    assert _safe_campaign_id("peak-gym-71d02b5c")
+    assert not _safe_campaign_id("../etc/passwd")
+    assert not _safe_campaign_id("still.png")
 
 
 def test_decode_pubsub_push_payload() -> None:

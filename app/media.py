@@ -21,5 +21,25 @@ def put_bytes(path: str, data: bytes, content_type: str) -> str:
     return f"gs://{bucket}/{path}"
 
 
+def get_bytes(path: str) -> tuple[bytes, str] | None:
+    settings = load_settings()
+    bucket = settings.media_bucket
+    if not bucket:
+        return None
+    client = storage.Client(project=settings.project_id or None)
+    blob = client.bucket(bucket).blob(path)
+    if not blob.exists():
+        return None
+    return blob.download_as_bytes(), blob.content_type or "application/octet-stream"
+
+
+def get_campaign_still(campaign_id: str) -> tuple[bytes, str] | None:
+    for name in ("still.png", "still.jpg", "still.jpeg", "still.webp"):
+        found = get_bytes(campaign_path(campaign_id, name))
+        if found:
+            return found
+    return None
+
+
 def campaign_path(campaign_id: str, name: str) -> str:
     return f"campaigns/{campaign_id}/{name}"

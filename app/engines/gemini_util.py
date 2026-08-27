@@ -17,7 +17,10 @@ from google.genai import types
 from app.settings import load_settings
 
 TEXT_MODEL = os.environ.get("GEMINI_TEXT_MODEL", "gemini-3.5-flash")
-IMAGE_MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-2.5-flash-image")
+# Imagen 3 (`imagen-3.0-generate-002`) was discontinued 30 Jun 2026 on Vertex.
+# Official successor: Gemini image models. 3.1 Flash Image lives on `global`.
+IMAGE_MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-3.1-flash-image")
+IMAGE_FALLBACK_MODEL = os.environ.get("GEMINI_IMAGE_FALLBACK_MODEL", "gemini-2.5-flash-image")
 VEO_MODEL = os.environ.get("VEO_MODEL", "veo-3.1-generate-001")
 LYRIA_MODEL = os.environ.get("LYRIA_MODEL", "lyria-002")
 GEMMA_MODEL = os.environ.get("GEMMA_MODEL", "gemma-3-12b-it")
@@ -38,6 +41,14 @@ def text_client() -> genai.Client:
 def media_client() -> genai.Client:
     s = load_settings()
     loc = os.environ.get("GOOGLE_CLOUD_MEDIA_LOCATION") or "us-central1"
+    return genai.Client(vertexai=True, project=s.project_id, location=loc)
+
+
+@lru_cache(maxsize=2)
+def image_client() -> genai.Client:
+    """Gemini 3.1 Flash Image is on the global endpoint, not us-central1."""
+    s = load_settings()
+    loc = os.environ.get("GOOGLE_CLOUD_IMAGE_LOCATION") or "global"
     return genai.Client(vertexai=True, project=s.project_id, location=loc)
 
 

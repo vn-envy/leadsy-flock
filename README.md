@@ -16,7 +16,8 @@ Hello Flo is live. The flock engines run on Pub/Sub + Cloud Run:
 - `GET /health` — liveness (`/healthz` is intercepted by Cloud Run's frontend)
 - `GET /v1/infra` — runtime inventory (Firestore, topics, Model Armor, Memory Bank)
 - `GET /console` — receipts Mission Control
-- `GET /l/{campaignId}` — Stella consent-first landing (after Stella)
+- `GET /l/{campaignId}` — Stella consent-first landing with Inka still
+- `GET /media/{campaignId}/still` — Gemini 3.1 Flash Image (Imagen 3 successor)
 - `POST /v1/consents` — Model Armor on the way in
 - Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md) · [DAY3.md](DAY3.md)
 

@@ -59,6 +59,13 @@ landing = api + "/l/" + cid
 with urllib.request.urlopen(landing, timeout=20) as resp:
     html = resp.read().decode()
 assert "consent first" in html
+assert f"/media/{cid}/still" in html, "Stella page is missing the still <img>"
+still_url = api + "/media/" + cid + "/still"
+with urllib.request.urlopen(still_url, timeout=30) as resp:
+    still_type = resp.headers.get("Content-Type") or ""
+    still_bytes = len(resp.read())
+assert still_type.startswith("image/") and still_bytes > 1000, f"still missing: {still_type} {still_bytes}"
+still_ok = True
 consent_req = urllib.request.Request(
     api + "/v1/consents",
     data=json.dumps({
@@ -84,6 +91,7 @@ summary = {
     "campaignId": cid,
     "status": last.get("status"),
     "landing": landing,
+    "still": {"url": still_url, "ok": still_ok, "bytes": still_bytes, "contentType": still_type},
     "consent": consent,
     "gate": (gate.get("payload") or {}),
     "scoutGrounding": (scout.get("payload") or {}).get("groundingUris") or [],
@@ -95,5 +103,5 @@ out = Path("proof/engines")
 out.mkdir(parents=True, exist_ok=True)
 (out / "e2e-campaign.json").write_text(json.dumps(last, indent=2) + "\n")
 (out / "e2e-summary.json").write_text(json.dumps(summary, indent=2) + "\n")
-print("PASS", json.dumps({"campaignId": cid, "verdict": summary["gateVerdict"], "draftRejected": summary["draftRejected"]}))
+print("PASS", json.dumps({"campaignId": cid, "verdict": summary["gateVerdict"], "draftRejected": summary["draftRejected"], "stillBytes": still_bytes}))
 PY

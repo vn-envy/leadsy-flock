@@ -45,6 +45,17 @@ def test_stella_html_requires_consent_checkbox() -> None:
     assert "<script" in html
 
 
+def test_stella_html_embeds_still_when_present() -> None:
+    html = render_html(
+        {"id": "peak-1", "brief": {"businessName": "Peak Gym", "geo": "Gurgaon"}},
+        {"headline": "Evenings that fit the commute", "cta": "I'm in"},
+        {"palette": ["#c4a574", "#0f1419", "#f4efe6"]},
+        still_src="/media/peak-1/still",
+    )
+    assert 'src="/media/peak-1/still"' in html
+    assert 'class="hero"' in html
+
+
 def test_inka_run_never_raises() -> None:
     with patch.object(inka, "_run_inner", side_effect=RuntimeError("no vertex")):
         out = inka.run({"brief": {"businessName": "Peak Gym"}})
@@ -65,8 +76,10 @@ def test_gemini_clients_are_cached() -> None:
 
     g.text_client.cache_clear()
     g.media_client.cache_clear()
+    g.image_client.cache_clear()
     assert g.text_client() is g.text_client()
     assert g.media_client() is g.media_client()
+    assert g.image_client() is g.image_client()
 
 
 def test_call_timeout_none_fallback() -> None:

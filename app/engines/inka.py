@@ -157,26 +157,41 @@ def _policy_lines(campaign_id: str) -> str:
 
 def _still(campaign_id: str, prompt: str, brand: dict, errors: list[str]) -> dict[str, Any]:
     palette = ", ".join(brand.get("palette") or [])
-    full = f"{prompt}\nColor palette: {palette}. No letters, logos, or watermarks."
-    try:
-        client = g.media_client()
-        resp = client.models.generate_content(
-            model=g.IMAGE_MODEL,
-            contents=full,
-            config=types.GenerateContentConfig(response_modalities=["IMAGE", "TEXT"]),
-        )
-        blobs = g.inline_bytes(resp)
-        if not blobs:
-            errors.append("still:no_image_bytes")
-            return {"ok": False, "model": g.IMAGE_MODEL}
-        data, mime = blobs[0]
-        ext = "png" if "png" in mime else "jpg"
-        path = media.campaign_path(campaign_id, f"still.{ext}")
-        uri = media.put_bytes(path, data, mime)
-        return {"ok": True, "model": g.IMAGE_MODEL, "gcs": uri, "bytes": len(data), "mime": mime}
-    except Exception as exc:  # noqa: BLE001
-        errors.append(f"still:{type(exc).__name__}:{exc}")
-        return {"ok": False, "model": g.IMAGE_MODEL, "error": str(exc)[:300]}
+    full = f"{prompt}\nColor palette: {palette}. No letters, logos, watermarks, or people."
+    attempts = (
+        (g.image_client, g.IMAGE_MODEL),
+        (g.media_client, g.IMAGE_FALLBACK_MODEL),
+    )
+    last_error = ""
+    for client_fn, model in attempts:
+        try:
+            client = client_fn()
+            resp = client.models.generate_content(
+                model=model,
+                contents=full,
+                config=types.GenerateContentConfig(response_modalities=["IMAGE", "TEXT"]),
+            )
+            blobs = g.inline_bytes(resp)
+            if not blobs:
+                last_error = f"{model}:no_image_bytes"
+                continue
+            data, mime = blobs[0]
+            ext = "png" if "png" in (mime or "") else "jpg"
+            path = media.campaign_path(campaign_id, f"still.{ext}")
+            uri = media.put_bytes(path, data, mime)
+            return {
+                "ok": True,
+                "model": model,
+                "gcs": uri,
+                "bytes": len(data),
+                "mime": mime,
+                "publicPath": f"/media/{campaign_id}/still",
+            }
+        except Exception as exc:  # noqa: BLE001
+            last_error = f"{model}:{type(exc).__name__}:{exc}"
+            continue
+    errors.append(f"still:{last_error}")
+    return {"ok": False, "model": g.IMAGE_MODEL, "error": last_error[:300]}
 
 
 def _call_timeout(fn, seconds: int, fallback: Any) -> Any:

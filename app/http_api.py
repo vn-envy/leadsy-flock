@@ -5,10 +5,12 @@
 
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse
+import re
 
-from app import ledger
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse, Response
+
+from app import ledger, media
 from app.armor import ArmorBlocked
 from app.campaigns import (
     approve_campaign,
@@ -86,6 +88,20 @@ def attach_flock_routes(app: FastAPI) -> None:
             raise HTTPException(404, "landing not published")
         return HTMLResponse(campaign["landingHtml"])
 
+    @app.get("/media/{campaign_id}/still")
+    def campaign_still(campaign_id: str) -> Response:
+        if not _safe_campaign_id(campaign_id):
+            raise HTTPException(400, "bad campaign id")
+        found = media.get_campaign_still(campaign_id)
+        if not found:
+            raise HTTPException(404, "still not published")
+        data, mime = found
+        return Response(
+            content=data,
+            media_type=mime or "image/png",
+            headers={"Cache-Control": "public, max-age=3600"},
+        )
+
     @app.post("/v1/consents")
     def consents(body: dict) -> dict:
         campaign_id = (body or {}).get("campaignId") or ""
@@ -131,6 +147,10 @@ def attach_flock_routes(app: FastAPI) -> None:
             return handle_step(message)
         except Exception as exc:  # noqa: BLE001 — nack by returning 500 so Pub/Sub retries
             raise HTTPException(500, f"step failed: {exc}") from exc
+
+
+def _safe_campaign_id(campaign_id: str) -> bool:
+    return bool(re.fullmatch(r"[a-z0-9-]{3,80}", campaign_id or ""))
 
 
 _CONSOLE_HTML = """<!doctype html>
@@ -192,6 +212,7 @@ async function show(id) {
       verdict: p.verdict,
       draftRejected: p.draft && p.draft.rejected,
       grounding: (p.groundingUris || []).slice(0, 4),
+      still: p.still,
       landing: p.url || p.landing,
       autopost: p.autopost,
     };

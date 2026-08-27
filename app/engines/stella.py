@@ -17,20 +17,31 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
     inka = (ledger.get_receipt(campaign_id, "inka") or {}).get("payload") or {}
     copy = inka.get("copy") or {}
     brand = inka.get("brandSpec") or (ledger.get_receipt(campaign_id, "scout") or {}).get("payload", {}).get("brandSpec") or {}
-    page = render_html(campaign, copy, brand)
+    still = (inka.get("assets") or {}).get("still") or {}
+    still_src = f"/media/{campaign_id}/still" if still.get("ok") else ""
+    page = render_html(campaign, copy, brand, still_src=still_src)
     s = load_settings()
     base = __import__("os").environ.get("APP_URL") or f"https://flock-api.{s.region}.run.app"
     path = f"/l/{campaign_id}"
-    ledger.upsert_campaign(campaign_id, {"landingHtml": page, "landingPath": path})
+    ledger.upsert_campaign(
+        campaign_id,
+        {"landingHtml": page, "landingPath": path, "stillPath": still_src or None},
+    )
     return {
         "landing": path,
         "url": f"{base.rstrip('/')}{path}",
+        "still": still_src or None,
         "consentCapture": True,
         "headline": copy.get("headline"),
     }
 
 
-def render_html(campaign: dict[str, Any], copy: dict[str, Any], brand: dict[str, Any]) -> str:
+def render_html(
+    campaign: dict[str, Any],
+    copy: dict[str, Any],
+    brand: dict[str, Any],
+    still_src: str = "",
+) -> str:
     brief = campaign.get("brief") or {}
     business = html.escape(str(brief.get("businessName") or "Our studio"))
     geo = html.escape(str(brief.get("geo") or ""))
@@ -42,6 +53,10 @@ def render_html(campaign: dict[str, Any], copy: dict[str, Any], brand: dict[str,
     ink = html.escape(str(palette[1] if len(palette) > 1 else "#0f1419"))
     paper = html.escape(str(palette[2] if len(palette) > 2 else "#f4efe6"))
     cid = html.escape(str(campaign.get("id") or ""))
+    hero = ""
+    if still_src:
+        src = html.escape(still_src)
+        hero = f'<img class="hero" src="{src}" alt="{business} campaign still" />'
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -65,6 +80,10 @@ def render_html(campaign: dict[str, Any], copy: dict[str, Any], brand: dict[str,
       color: var(--gold); font-family: system-ui, sans-serif; margin: 0 0 1rem;
     }}
     h1 {{ font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.15; font-weight: 500; margin: 0 0 1rem; }}
+    .hero {{
+      width: 100%; aspect-ratio: 16 / 9; object-fit: cover;
+      border-radius: 1rem; margin: 0 0 1.25rem; background: #1a2220;
+    }}
     .sub {{ font-family: system-ui, sans-serif; line-height: 1.55; color: #d8d0c4; max-width: 34rem; }}
     form {{
       margin-top: 2rem; display: grid; gap: 0.75rem;
@@ -87,6 +106,7 @@ def render_html(campaign: dict[str, Any], copy: dict[str, Any], brand: dict[str,
 <body>
   <main>
     <p class="kicker">{business} · {geo} · consent first</p>
+    {hero}
     <h1>{headline}</h1>
     <p class="sub">{sub}</p>
     <form id="optin">
