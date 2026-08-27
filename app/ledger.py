@@ -1,0 +1,127 @@
+# Copyright 2026 Neekhil Vatsa
+# Licensed under the Apache License, Version 2.0
+
+"""Firestore receipts ledger. Pre-write the audit row, then act."""
+
+from __future__ import annotations
+
+import os
+from datetime import UTC, datetime
+from typing import Any
+
+from google.cloud import firestore
+
+from app.settings import load_settings
+
+COL_CAMPAIGNS = "campaigns"
+COL_RECEIPTS = "receipts"
+COL_EVENTS = "agentEvents"
+COL_MEMORIES = "memories"
+COL_CONSENTS = "consents"
+COL_ASSETS = "assets"
+
+
+def client() -> firestore.Client:
+    settings = load_settings()
+    database = settings.firestore_database or "(default)"
+    return firestore.Client(
+        project=settings.project_id or None,
+        database=database,
+    )
+
+
+def now_iso() -> str:
+    return datetime.now(UTC).isoformat()
+
+
+def write_receipt(
+    *,
+    campaign_id: str,
+    step: str,
+    engine: str,
+    status: str,
+    payload: dict[str, Any] | None = None,
+    legal_basis: str = "owner_instruction",
+    attempt: int = 1,
+    db: firestore.Client | None = None,
+) -> str:
+    db = db or client()
+    receipt_id = f"{campaign_id}_{step}"
+    body = {
+        "campaignId": campaign_id,
+        "step": step,
+        "engine": engine,
+        "status": status,
+        "attempt": attempt,
+        "legalBasis": legal_basis,
+        "payload": payload or {},
+        "updatedAt": now_iso(),
+        "project": os.environ.get("GOOGLE_CLOUD_PROJECT", ""),
+        "service": os.environ.get("K_SERVICE", "local"),
+    }
+    ref = db.collection(COL_RECEIPTS).document(receipt_id)
+    snap = ref.get()
+    if not snap.exists:
+        body["createdAt"] = body["updatedAt"]
+        ref.set(body)
+    else:
+        ref.set(body, merge=True)
+    return receipt_id
+
+
+def get_receipt(campaign_id: str, step: str, db: firestore.Client | None = None) -> dict | None:
+    db = db or client()
+    snap = db.collection(COL_RECEIPTS).document(f"{campaign_id}_{step}").get()
+    return snap.to_dict() if snap.exists else None
+
+
+def upsert_campaign(campaign_id: str, data: dict[str, Any], db: firestore.Client | None = None) -> None:
+    db = db or client()
+    payload = {**data, "updatedAt": now_iso()}
+    if "createdAt" not in payload:
+        payload.setdefault("createdAt", payload["updatedAt"])
+    db.collection(COL_CAMPAIGNS).document(campaign_id).set(payload, merge=True)
+
+
+def get_campaign(campaign_id: str, db: firestore.Client | None = None) -> dict | None:
+    db = db or client()
+    snap = db.collection(COL_CAMPAIGNS).document(campaign_id).get()
+    if not snap.exists:
+        return None
+    body = snap.to_dict() or {}
+    body["id"] = campaign_id
+    return body
+
+
+def list_receipts(campaign_id: str, db: firestore.Client | None = None) -> list[dict]:
+    db = db or client()
+    docs = (
+        db.collection(COL_RECEIPTS)
+        .where("campaignId", "==", campaign_id)
+        .stream()
+    )
+    rows = []
+    for doc in docs:
+        row = doc.to_dict() or {}
+        row["id"] = doc.id
+        rows.append(row)
+    rows.sort(key=lambda r: r.get("createdAt") or r.get("updatedAt") or "")
+    return rows
+
+
+def write_event(
+    *,
+    campaign_id: str,
+    kind: str,
+    detail: dict[str, Any],
+    db: firestore.Client | None = None,
+) -> None:
+    db = db or client()
+    db.collection(COL_EVENTS).add(
+        {
+            "campaignId": campaign_id,
+            "kind": kind,
+            "detail": detail,
+            "createdAt": now_iso(),
+        }
+    )

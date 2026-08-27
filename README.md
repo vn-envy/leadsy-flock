@@ -7,18 +7,17 @@ One chat message in. A researched, gated, consented campaign out. Every action o
 > **Hackathon entry** — Google All Things Agentic, 27–31 August 2026.
 > Concept lineage: an earlier prototype on a different stack. **This repo is a ground-up rebuild.** See [DISCLOSURE.md](DISCLOSURE.md).
 
-## Day-1 status (27 Aug 2026)
+## Status (27 Aug 2026)
 
-Hello Flo is live as an ADK agent on Cloud Run:
+Hello Flo is live, and the Google Cloud runtime is wired:
 
-- **Hosted URL:** https://flock-api-533880600838.asia-south1.run.app
+- **API:** https://flock-api-ehbzbxie5a-el.a.run.app — Flo (`gemini-3.5-flash`) + `/v1/campaigns`
+- **Worker:** `flock-worker` — Pub/Sub `campaign-steps` push, OIDC-only
 - `GET /health` — liveness (`/healthz` is intercepted by Cloud Run's frontend)
-- `POST /run_sse` — native ADK chat (Flo, `gemini-3.5-flash`)
-- `GET /a2a/app/.well-known/agent-card.json` — A2A AgentCard
-- OpenTelemetry traces export to Cloud Trace (`otel_to_cloud=True`)
-- Day-1 notes: [DAY1.md](DAY1.md)
-
-Later days add Bri, the Pub/Sub worker (Scout → Inka → Creative Gate → Stella → Ad Kit → Ray), Mission Control, Telegram, and the `proof/` pack.
+- `GET /v1/infra` — runtime inventory
+- `POST /run_sse` — native ADK chat
+- Firestore receipts, Model Armor inbound screen, Cloud Trace (`otel_to_cloud=True`)
+- Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md)
 
 ## Mandatory stack
 
@@ -26,7 +25,7 @@ Later days add Bri, the Pub/Sub worker (Scout → Inka → Creative Gate → Ste
 |---|---|
 | Gemini 3.5+ | `gemini-3.5-flash` (Flo) via Vertex AI, global endpoint |
 | Google agent framework | ADK 2.x, scaffolded with `agents-cli` (`adk` template, A2A built in) |
-| Google Cloud service | Cloud Run (`flock-api`, `asia-south1`) + Firestore + Pub/Sub (wired next) + Cloud Trace |
+| Google Cloud service | Cloud Run (`flock-api` + `flock-worker`, `asia-south1`) + Firestore + Pub/Sub + Model Armor + Cloud Trace |
 
 Bonus models (Veo 3.1, Lyria, Gemma) are exercised by `scripts/smoke_models.py` and land in Studio / the Creative Gate on later days.
 
@@ -47,14 +46,11 @@ agents-cli install
 agents-cli run "Hi Flo — I run a gym in Gurgaon and need 50 new members."
 ```
 
-Deploy (Cloud Build; no local Docker required):
+Deploy runtime (Cloud Build; no local Docker required):
 
 ```bash
-agents-cli deploy \
-  --project YOUR_GCP_PROJECT \
-  --region asia-south1 \
-  --service-name flock-api \
-  --no-confirm-project
+bash scripts/provision_infra.sh
+bash scripts/deploy_services.sh
 ```
 
 Talk to the deployed service:
@@ -73,10 +69,11 @@ curl -sS -X POST https://flock-api-<hash>.asia-south1.run.app/apps/app/users/$US
 ## Layout
 
 ```
-app/                 Flo (ADK) + FastAPI + A2A + OTel
+app/                 Flo (ADK) + FastAPI + ledger + worker + A2A + OTel
 web/                 Mission Control starter (Next.js)
-scripts/             Veo / Lyria smoke tests
-deployment/          agents-cli Terraform (Cloud Run, telemetry)
+scripts/             provision, deploy, registry, Veo/Lyria smoke
+infra/               Terraform mirror + runtime.json
+deployment/          agents-cli Terraform (scaffold)
 tests/               unit + integration + eval datasets
 DISCLOSURE.md        pre-existing work statement
 ```

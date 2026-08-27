@@ -24,6 +24,7 @@ from google.adk.runners import Runner
 
 from app.app_utils import services
 from app.app_utils.a2a import attach_a2a_routes
+from app.http_api import attach_flock_routes
 
 load_dotenv()
 allow_origins = (
@@ -42,6 +43,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         app=adk_app,
         session_service=services.get_session_service(),
         artifact_service=services.get_artifact_service(),
+        memory_service=services.get_memory_service(),
         auto_create_session=True,
     )
     app.state.runner = runner
@@ -59,20 +61,27 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 app: FastAPI = get_fast_api_app(
     agents_dir=AGENT_DIR,
     web=True,
-    artifact_service_uri=services.ARTIFACT_SERVICE_URI,
     allow_origins=allow_origins,
     session_service_uri=services.SESSION_SERVICE_URI,
+    artifact_service_uri=services.ARTIFACT_SERVICE_URI,
+    memory_service_uri=services.MEMORY_SERVICE_URI,
     otel_to_cloud=True,
     lifespan=lifespan,
 )
 app.title = "Leadsy Flock API"
 app.description = "Flo and the Flock — ADK agents for the All Things Agentic rebuild."
 
+attach_flock_routes(app)
+
 
 @app.get("/healthz")
 def healthz() -> dict[str, str]:
-    """Cloud Run + judge smoke check. Does not invoke a model."""
-    return {"status": "ok", "agent": "flo", "service": "flock-api"}
+    """Alias; Cloud Run's frontend intercepts /healthz on some URLs — prefer /health."""
+    return {
+        "status": "ok",
+        "agent": "flo",
+        "service": os.getenv("K_SERVICE", "flock-api"),
+    }
 
 
 # Main execution

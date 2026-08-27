@@ -68,6 +68,9 @@ ENV/
 # Terraform
 .terraform*
 .Terraform*
+infra/terraform/terraform.tfstate
+infra/terraform/terraform.tfstate.backup
+infra/runtime-extras.json
 tmp*
 .agents-cli-scripts/
 

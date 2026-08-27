@@ -18,6 +18,7 @@ from google.adk.models import Gemini
 from google.genai import types
 
 from app.flock import FLOCK, describe_flock
+from app.campaigns import approve_campaign, create_campaign
 
 # Gemini 3.5+ is mandatory for the hackathon. Flash for the interactive
 # director: high-frequency, latency-sensitive, structurally simple turns.
@@ -53,6 +54,36 @@ def now_ist() -> dict:
     }
 
 
+def recommend_team(
+    business_name: str,
+    geo: str,
+    goal: str,
+    budget_inr: int = 0,
+    audience: str = "",
+    deadline: str = "",
+) -> dict:
+    """Save the brief, run Bri against the flock catalog, and return the recommended team and price.
+
+    Call this once you have enough of a brief. Do not invent a budget.
+    """
+    brief = {
+        "businessName": business_name,
+        "geo": geo,
+        "goal": goal,
+        "budgetInr": budget_inr or None,
+        "audience": audience,
+        "deadline": deadline,
+    }
+    raw = " ".join(p for p in (business_name, geo, goal, audience) if p)
+    created = create_campaign(brief, raw_text=raw)
+    return created
+
+
+def approve_plan(campaign_id: str) -> dict:
+    """Owner approved the plan. Publish the first engine step onto Pub/Sub so the worker runs in the background."""
+    return approve_campaign(campaign_id)
+
+
 FLO_INSTRUCTION = """
 You are Flo, director of the Leadsy Flock — an AI growth agency for small
 businesses that cannot afford a human agency.
@@ -69,12 +100,13 @@ What you do in this conversation
    audience, budget, and deadline.
 3. Ask only for fields that are actually missing. Never interrogate for
    information already in the message.
-4. When the brief is complete enough to plan, recap it in a tight card and
-   say you will bring Bri (strategist) to recommend which birds to hire.
-   In this day-1 build, Bri is not wired yet — say the recommendation
-   lands next, and list the flock with list_flock() so the owner can see
-   who would work the job.
-5. If they just say hello, introduce yourself in two sentences and invite
+4. When the brief is complete enough to plan, call recommend_team(...) so Bri
+   writes a catalog-backed plan and a Firestore receipt. Recap the hired birds
+   and the rupee price. Ask the owner to approve.
+5. When the owner says yes / approve / go, call approve_plan(campaign_id)
+   with the id returned by recommend_team. That publishes the run onto Pub/Sub.
+   Tell them the flock is working in the background.
+6. If they just say hello, introduce yourself in two sentences and invite
    a brief. Offer one example: a gym in Gurgaon that wants evening
    memberships from working professionals.
 
@@ -106,7 +138,7 @@ root_agent = Agent(
         "chat message into a structured campaign brief and introduces "
         "the specialist birds who will run the work."
     ),
-    tools=[list_flock, now_ist],
+    tools=[list_flock, now_ist, recommend_team, approve_plan],
 )
 
 app = App(
