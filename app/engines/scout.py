@@ -51,6 +51,24 @@ Website: {website}
 
 
 def run(campaign: dict[str, Any]) -> dict[str, Any]:
+    try:
+        return _run_inner(campaign)
+    except Exception as exc:  # noqa: BLE001
+        brief = campaign.get("brief") or {}
+        business = brief.get("businessName") or "the business"
+        geo = brief.get("geo") or "India"
+        return {
+            "model": g.TEXT_MODEL,
+            "evidence": [],
+            "brandSpec": _default_brand(business, geo),
+            "localInsight": "",
+            "crowdInsight": "",
+            "groundingUris": [],
+            "errors": [f"{type(exc).__name__}:{exc}"],
+        }
+
+
+def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
     brief = campaign.get("brief") or {}
     business = brief.get("businessName") or "the business"
     geo = brief.get("geo") or "India"

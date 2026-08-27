@@ -1,9 +1,13 @@
 # Copyright 2026 Neekhil Vatsa
 # Licensed under the Apache License, Version 2.0
 
-from app.engines.gate import banned_hits
+import time
+from unittest.mock import patch
+
+from app.engines.gate import banned_hits, run as gate_run
 from app.engines.adkit import variant, CHANNELS
 from app.engines.stella import render_html
+from app.engines import inka, outreach, scout, scout
 
 
 def test_banned_hits_catches_guaranteed() -> None:
@@ -39,3 +43,58 @@ def test_stella_html_requires_consent_checkbox() -> None:
     assert "/v1/consents" in html
     assert "Peak Gym" in html
     assert "<script" in html
+
+
+def test_inka_run_never_raises() -> None:
+    with patch.object(inka, "_run_inner", side_effect=RuntimeError("no vertex")):
+        out = inka.run({"brief": {"businessName": "Peak Gym"}})
+    assert "Guaranteed" in (out["copy"]["draftHeadline"] or "")
+    assert "Peak Gym" in out["copy"]["headline"]
+    assert out["errors"]
+
+
+def test_scout_run_never_raises() -> None:
+    with patch.object(scout, "_run_inner", side_effect=RuntimeError("no vertex")):
+        out = scout.run({"brief": {"businessName": "Peak Gym", "geo": "Gurgaon"}})
+    assert out["brandSpec"]["tagline"]
+    assert out["errors"]
+
+
+def test_scout_run_never_raises() -> None:
+    with patch.object(scout, "_run_inner", side_effect=RuntimeError("no vertex")):
+        out = scout.run({"brief": {"businessName": "Peak Gym", "geo": "Gurgaon"}})
+    assert out["brandSpec"]["tagline"]
+    assert out["errors"]
+
+
+def test_call_timeout_none_fallback() -> None:
+    def slow() -> str:
+        time.sleep(1)
+        return "nope"
+
+    assert inka._call_timeout(slow, 0.05, None) is None
+
+
+def test_outreach_refuses_without_consent() -> None:
+    with patch("app.engines.outreach.ledger.list_consents", return_value=[]):
+        out = outreach.run_gate({"id": "c1"})
+    assert out["verdict"] == "refuse"
+
+
+def test_gate_rejects_draft_passes_clean_headline() -> None:
+    payload = {
+        "copy": {
+            "draftHeadline": "Guaranteed six-pack in 30 days",
+            "headline": "Evening sessions near Golf Course Road",
+            "primaryText": "Book a slot that fits the commute.",
+        }
+    }
+    with (
+        patch("app.engines.gate.ledger.get_receipt", return_value={"payload": payload}),
+        patch("app.engines.gate.ledger.write_memory"),
+        patch("app.engines.gate._gemma_classify", return_value={"ok": True, "risk": "low", "labels": []}),
+        patch("app.engines.gate._gemini_judge", return_value={"ok": True, "verdict": "pass"}),
+    ):
+        out = gate_run({"id": "c1"})
+    assert out["draft"]["rejected"] is True
+    assert out["verdict"] == "pass"

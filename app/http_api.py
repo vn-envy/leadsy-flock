@@ -184,9 +184,21 @@ async function load() {
 async function show(id) {
   const res = await fetch("/v1/campaigns/" + id);
   const c = await res.json();
-  const rec = (c.receipts || []).map(r => `${r.step}:${r.status}`).join(" → ");
+  const recs = (c.receipts || []).map(r => {
+    const p = r.payload || {};
+    return {
+      step: r.step,
+      status: r.status,
+      verdict: p.verdict,
+      draftRejected: p.draft && p.draft.rejected,
+      grounding: (p.groundingUris || []).slice(0, 4),
+      landing: p.url || p.landing,
+      autopost: p.autopost,
+    };
+  });
+  const rec = recs.map(r => r.step + ":" + r.status).join(" → ");
   document.getElementById("detail").textContent = rec + "\\n\\n" + JSON.stringify({
-    status: c.status, engineConfig: c.engineConfig, landingPath: c.landingPath
+    status: c.status, landingPath: c.landingPath, receipts: recs, hired: (c.engineConfig || {}).hired
   }, null, 2);
 }
 load();

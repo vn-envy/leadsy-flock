@@ -67,3 +67,27 @@ def test_creative_gate_reject_republishes_inka(
     publish_step.assert_called_once()
     assert publish_step.call_args.kwargs["step"] == "inka"
     assert publish_step.call_args.kwargs["force_retry"] is True
+
+
+@patch("app.worker.publish_next")
+@patch("app.worker.run_engine")
+@patch("app.worker.ledger")
+def test_handle_step_engine_exception_still_acks(
+    ledger: MagicMock, run_engine: MagicMock, publish_next: MagicMock
+) -> None:
+    ledger.get_receipt.return_value = None
+    ledger.get_campaign.return_value = {}
+    publish_next.return_value = "msg-2"
+    run_engine.side_effect = RuntimeError("vertex down")
+    out = handle_step(
+        {
+            "campaignId": "c1",
+            "step": "inka",
+            "pipeline": ["inka", "creative_gate"],
+            "attempt": 1,
+        }
+    )
+    assert out["status"] == "ok"
+    assert out["result"]["ok"] is False
+    statuses = [c.kwargs["status"] for c in ledger.write_receipt.call_args_list]
+    assert "ok" in statuses

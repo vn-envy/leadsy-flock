@@ -9,17 +9,15 @@ One chat message in. A researched, gated, consented campaign out. Every action o
 
 ## Status (27 Aug 2026)
 
-Hello Flo is live, and the Google Cloud runtime is wired:
+Hello Flo is live. The flock engines run on Pub/Sub + Cloud Run:
 
 - **API:** https://flock-api-533880600838.asia-south1.run.app — Flo (`gemini-3.5-flash`) + `/v1/campaigns`
-- **Worker:** https://flock-worker-533880600838.asia-south1.run.app — Pub/Sub `campaign-steps` push, OIDC
+- **Worker:** https://flock-worker-533880600838.asia-south1.run.app — Scout → Inka → Creative Gate → Stella → Ad Kit
 - `GET /health` — liveness (`/healthz` is intercepted by Cloud Run's frontend)
 - `GET /v1/infra` — runtime inventory (Firestore, topics, Model Armor, Memory Bank)
-- `POST /run_sse` — native ADK chat
-- Firestore receipts, Model Armor inbound screen, Cloud Trace (`otel_to_cloud=True`)
-- Agent Registry: `Leadsy Flock (Flo)` in `us-central1`
-- `GET /console` — receipts Mission Control on the API itself
-- `GET /l/{campaignId}` — Stella landing (after a run)
+- `GET /console` — receipts Mission Control
+- `GET /l/{campaignId}` — Stella consent-first landing (after Stella)
+- `POST /v1/consents` — Model Armor on the way in
 - Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md) · [DAY3.md](DAY3.md)
 
 ## Mandatory stack
@@ -60,7 +58,7 @@ Talk to the deployed service:
 
 ```bash
 # health
-curl https://flock-api-<hash>.asia-south1.run.app/healthz
+curl https://flock-api-<hash>.asia-south1.run.app/health
 
 # Flo
 USER=judge

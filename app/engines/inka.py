@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import os
 import time
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
 from typing import Any
@@ -38,32 +39,60 @@ Attempt: {attempt}
 
 
 def run(campaign: dict[str, Any]) -> dict[str, Any]:
+    try:
+        return _run_inner(campaign)
+    except Exception as exc:  # noqa: BLE001 — never fail the flock on a media glitch
+        brief = campaign.get("brief") or {}
+        name = brief.get("businessName") or "the business"
+        return {
+            "model": g.TEXT_MODEL,
+            "copy": {
+                "draftHeadline": "Guaranteed transformation this month",
+                "headline": f"{name} — evenings that fit your commute",
+                "subhead": "Local, honest, no miracle claims.",
+                "primaryText": str(brief.get("goal") or "")[:240],
+                "cta": "See evening slots",
+            },
+            "assets": {},
+            "errors": [f"{type(exc).__name__}:{exc}"],
+        }
+
+
+def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
     brief = campaign.get("brief") or {}
     scout = _scout_payload(campaign["id"]) if campaign.get("id") else {}
     brand = scout.get("brandSpec") or {}
     evidence = scout.get("evidence") or []
     policy = _policy_lines(campaign.get("id") or "")
     snippets = "; ".join(
-        f"{e.get('title')}: {e.get('snippet')}" for e in evidence[:6]
+        f"{e.get('title')}: {str(e.get('snippet') or '')[:180]}" for e in evidence[:6]
     )
     prompt = COPY_PROMPT.format(
-        brand=brand,
-        evidence=snippets or "none yet",
-        policy=policy or "none",
+        brand=str(brand),
+        evidence=snippets.replace("{", "(").replace("}", ")") or "none yet",
+        policy=(policy or "none").replace("{", "(").replace("}", ")"),
         business=brief.get("businessName") or "the business",
         geo=brief.get("geo") or "",
         goal=brief.get("goal") or "",
         audience=brief.get("audience") or "",
         attempt=campaign.get("inkaRevisions") or 1,
     )
-    text_resp = g.text_client().models.generate_content(
-        model=g.TEXT_MODEL,
-        contents=prompt,
-        config=types.GenerateContentConfig(temperature=0.8),
+    text_resp = _call_timeout(
+        lambda: g.text_client().models.generate_content(
+            model=g.TEXT_MODEL,
+            contents=prompt,
+            config=types.GenerateContentConfig(temperature=0.8),
+        ),
+        25,
+        None,
     )
-    try:
-        copy = g.extract_json(g.response_text(text_resp))
-    except Exception:
+    copy = None
+    if text_resp is not None:
+        try:
+            copy = g.extract_json(g.response_text(text_resp))
+        except Exception:
+            copy = None
+    if not isinstance(copy, dict):
         copy = {
             "draftHeadline": "Guaranteed transformation this month",
             "headline": f"{brief.get('businessName') or 'Us'} — evenings that fit your commute",
@@ -78,10 +107,34 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
     campaign_id = campaign.get("id") or "campaign"
     assets: dict[str, Any] = {}
     errors: list[str] = []
+    skip_veo = os.environ.get("INKA_SKIP_VEO", "1") == "1"
+    skip_lyria = os.environ.get("INKA_SKIP_LYRIA", "1") == "1"
+    skip_still = os.environ.get("INKA_SKIP_STILL", "0") == "1"
 
-    assets["still"] = _call_timeout(lambda: _still(campaign_id, copy.get("imagePrompt") or "", brand, errors), 40, {"ok": False, "error": "timeout", "model": g.IMAGE_MODEL})
-    assets["clip"] = _call_timeout(lambda: _veo_start(campaign_id, copy.get("veoPrompt") or "", errors), 45, {"ok": False, "error": "timeout", "model": g.VEO_MODEL})
-    assets["jingle"] = _call_timeout(lambda: _lyria(campaign_id, copy.get("lyriaPrompt") or "", errors), 20, {"ok": False, "error": "timeout", "model": g.LYRIA_MODEL})
+    if skip_still:
+        assets["still"] = {"ok": False, "skipped": True, "model": g.IMAGE_MODEL}
+    else:
+        assets["still"] = _call_timeout(
+            lambda: _still(campaign_id, copy.get("imagePrompt") or "", brand, errors),
+            40,
+            {"ok": False, "error": "timeout", "model": g.IMAGE_MODEL},
+        )
+    if skip_veo:
+        assets["clip"] = {"ok": False, "skipped": True, "model": g.VEO_MODEL, "note": "INKA_SKIP_VEO=1; use smoke_models.py for Veo proof"}
+    else:
+        assets["clip"] = _call_timeout(
+            lambda: _veo_start(campaign_id, copy.get("veoPrompt") or "", errors),
+            45,
+            {"ok": False, "error": "timeout", "model": g.VEO_MODEL},
+        )
+    if skip_lyria:
+        assets["jingle"] = {"ok": False, "skipped": True, "model": g.LYRIA_MODEL, "note": "INKA_SKIP_LYRIA=1; Lyria often 429"}
+    else:
+        assets["jingle"] = _call_timeout(
+            lambda: _lyria(campaign_id, copy.get("lyriaPrompt") or "", errors),
+            20,
+            {"ok": False, "error": "timeout", "model": g.LYRIA_MODEL},
+        )
 
     return {
         "model": g.TEXT_MODEL,
@@ -111,7 +164,10 @@ def _scout_payload(campaign_id: str) -> dict[str, Any]:
 def _policy_lines(campaign_id: str) -> str:
     if not campaign_id:
         return ""
-    rows = ledger.list_memories(campaign_id, kind="policy")
+    try:
+        rows = ledger.list_memories(campaign_id, kind="policy")
+    except Exception:  # noqa: BLE001
+        return ""
     return " | ".join(str(r.get("text") or "") for r in rows[:8])
 
 
@@ -138,15 +194,20 @@ def _still(campaign_id: str, prompt: str, brand: dict, errors: list[str]) -> dic
         return {"ok": False, "model": g.IMAGE_MODEL, "error": str(exc)[:300]}
 
 
-def _call_timeout(fn, seconds: int, fallback: dict[str, Any]) -> dict[str, Any]:
-    with ThreadPoolExecutor(max_workers=1) as pool:
-        fut = pool.submit(fn)
-        try:
-            return fut.result(timeout=seconds)
-        except FuturesTimeout:
-            fallback = dict(fallback)
-            fallback["error"] = f"timeout_{seconds}s"
-            return fallback
+def _call_timeout(fn, seconds: int, fallback: Any) -> Any:
+    """Time-box a Vertex call without blocking shutdown on the leftover thread."""
+    pool = ThreadPoolExecutor(max_workers=1)
+    fut = pool.submit(fn)
+    try:
+        return fut.result(timeout=seconds)
+    except FuturesTimeout:
+        if isinstance(fallback, dict):
+            out = dict(fallback)
+            out["error"] = f"timeout_{seconds}s"
+            return out
+        return fallback
+    finally:
+        pool.shutdown(wait=False, cancel_futures=True)
 
 
 def _veo_start(campaign_id: str, prompt: str, errors: list[str]) -> dict[str, Any]:
