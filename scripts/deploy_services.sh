@@ -38,13 +38,16 @@ MODEL_ARMOR_LOCATION=${MODEL_ARMOR_LOCATION:-us-central1}
 MODEL_ARMOR_TEMPLATE=leadsy-inbound
 ADK_CAPTURE_MESSAGE_CONTENT_IN_SPANS=true
 OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT=NO_CONTENT
+GOOGLE_CLOUD_MEDIA_LOCATION=us-central1
 APP_URL=${API_PUBLIC_URL}
 EOF
 )
 if [[ -n "${MEMORY_BANK_ID}" ]]; then
   COMMON_ENV="${COMMON_ENV}
 MEMORY_BANK_ID=${MEMORY_BANK_ID}
-MEMORY_BANK_LOCATION=${MEMORY_BANK_LOCATION:-us-central1}"
+MEMORY_BANK_LOCATION=${MEMORY_BANK_LOCATION:-us-central1}
+GOOGLE_CLOUD_AGENT_ENGINE_ID=${MEMORY_BANK_ID}
+GOOGLE_CLOUD_AGENT_ENGINE_LOCATION=${MEMORY_BANK_LOCATION:-us-central1}"
 fi
 COMMON_ENV=$(echo "${COMMON_ENV}" | paste -sd, -)
 
@@ -70,9 +73,9 @@ gcloud run deploy flock-worker \
   --image="${IMAGE}" \
   --service-account="${SA}" \
   --no-allow-unauthenticated \
-  --timeout=300 \
+  --timeout=540 \
   --cpu=1 \
-  --memory=1Gi \
+  --memory=2Gi \
   --set-env-vars="${COMMON_ENV},OTEL_SERVICE_NAME=flock-worker"
 
 WORKER_URL="$(gcloud run services describe flock-worker --project="${PROJECT}" --region="${REGION}" --format='value(status.url)')"

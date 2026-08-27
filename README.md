@@ -18,7 +18,9 @@ Hello Flo is live, and the Google Cloud runtime is wired:
 - `POST /run_sse` — native ADK chat
 - Firestore receipts, Model Armor inbound screen, Cloud Trace (`otel_to_cloud=True`)
 - Agent Registry: `Leadsy Flock (Flo)` in `us-central1`
-- Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md)
+- `GET /console` — receipts Mission Control on the API itself
+- `GET /l/{campaignId}` — Stella landing (after a run)
+- Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md) · [DAY3.md](DAY3.md)
 
 ## Mandatory stack
 

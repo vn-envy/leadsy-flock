@@ -32,28 +32,27 @@ echo
 
 export API_URL="${API_URL}"
 export CAMPAIGN_ID="${CAMPAIGN_ID}"
-echo "==> wait for receipts"
+echo "==> wait for receipts (Scout + Inka/Veo + Gate + Stella)"
 python3 - <<'PY'
 import json, time, urllib.request, os, sys
+from pathlib import Path
 url = os.environ["API_URL"] + "/v1/campaigns/" + os.environ["CAMPAIGN_ID"]
-want = {"plan", "approve", "scout"}
-    # Launch bundle continues through ad_kit; don't fail the smoke if later hops lag.
+want = {"plan", "approve", "scout", "inka", "creative_gate", "stella"}
 last = None
-for i in range(24):
+for i in range(60):
     with urllib.request.urlopen(url, timeout=20) as resp:
         body = json.loads(resp.read().decode())
     last = body
     steps = {r.get("step") for r in body.get("receipts") or []}
     ok = {r.get("step") for r in body.get("receipts") or [] if r.get("status") == "ok"}
-    print(f"try {i} status={body.get('status')} steps={sorted(steps)} ok={sorted(ok)}", flush=True)
+    print(f"try {i} status={body.get('status')} ok={sorted(ok)}", flush=True)
     if want <= ok:
-        Path = __import__("pathlib").Path
-        out = Path("proof/infra")
+        out = Path("proof/engines")
         out.mkdir(parents=True, exist_ok=True)
         (out / "e2e-campaign.json").write_text(json.dumps(body, indent=2) + "\n")
         print("PASS")
         sys.exit(0)
-    time.sleep(5)
+    time.sleep(8)
 print(json.dumps(last, indent=2))
 sys.exit(1)
 PY

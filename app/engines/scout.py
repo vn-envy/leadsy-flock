@@ -1,0 +1,137 @@
+# Copyright 2026 Neekhil Vatsa
+# Licensed under the Apache License, Version 2.0
+
+"""Scout — local lens (Maps/Search/urlContext) + crowd lens + BrandSpec."""
+
+from __future__ import annotations
+
+from typing import Any
+
+from google.genai import types
+
+from app.engines import gemini_util as g
+
+
+SCOUT_PROMPT = """You are Scout, research tracker for a local-SMB growth agency in India.
+
+Return ONLY JSON with this shape:
+{{
+  "evidence": [
+    {{
+      "source": "maps" | "search" | "url" | "crowd",
+      "uri": "https://...",
+      "title": "short title",
+      "snippet": "one or two sentences of what you learned",
+      "signal": 0.0
+    }}
+  ],
+  "brandSpec": {{
+    "palette": ["#hex", "#hex", "#hex"],
+    "typePairing": "headline font + body font (web-safe names)",
+    "toneWords": ["three", "tone", "words"],
+    "logoHint": "what the mark looks like if you saw a site, else a guess from the category",
+    "tagline": "one line the business could own"
+  }},
+  "localInsight": "2-3 sentences: competitors, commute, what nearby reviewers praise or complain about",
+  "crowdInsight": "category-level pain points from public discussion (Reddit/HN/forums), not private contacts"
+}}
+
+Rules:
+- Prefer real URIs from grounding. signal is 0-1 (1 = strongly evidenced).
+- Do not invent personal emails or phone numbers.
+- Discovery is not consent. You research places and public pages, not people to cold-email.
+- If a website URL is in the brief, read it with url context.
+
+Business: {business}
+Geo: {geo}
+Goal: {goal}
+Audience: {audience}
+Website: {website}
+"""
+
+
+def run(campaign: dict[str, Any]) -> dict[str, Any]:
+    brief = campaign.get("brief") or {}
+    business = brief.get("businessName") or "the business"
+    geo = brief.get("geo") or "India"
+    goal = brief.get("goal") or ""
+    audience = brief.get("audience") or ""
+    website = brief.get("website") or brief.get("site") or ""
+    prompt = SCOUT_PROMPT.format(
+        business=business,
+        geo=geo,
+        goal=goal,
+        audience=audience,
+        website=website or "(none given)",
+    )
+    client = g.text_client()
+    errors: list[str] = []
+    response = None
+    try:
+        response = client.models.generate_content(
+            model=g.TEXT_MODEL,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                tools=g.GROUNDING_TOOLS,
+                temperature=0.3,
+            ),
+        )
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"grounded:{type(exc).__name__}:{exc}")
+        response = client.models.generate_content(
+            model=g.TEXT_MODEL,
+            contents=prompt,
+            config=types.GenerateContentConfig(temperature=0.3),
+        )
+
+    text = g.response_text(response)
+    try:
+        body = g.extract_json(text)
+    except Exception as exc:  # noqa: BLE001
+        body = {
+            "evidence": [
+                {
+                    "source": "search",
+                    "uri": "",
+                    "title": "unparsed scout output",
+                    "snippet": text[:800],
+                    "signal": 0.2,
+                }
+            ],
+            "brandSpec": _default_brand(business, geo),
+            "localInsight": text[:600],
+            "parseError": str(exc),
+        }
+
+    evidence = list(body.get("evidence") or [])
+    for uri in g.grounding_uris(response):
+        if not any(e.get("uri") == uri for e in evidence):
+            evidence.append(
+                {
+                    "source": "search" if "maps.google" not in uri else "maps",
+                    "uri": uri,
+                    "title": "grounding chunk",
+                    "snippet": "Cited by Gemini grounding.",
+                    "signal": 0.7,
+                }
+            )
+    brand = body.get("brandSpec") or _default_brand(business, geo)
+    return {
+        "model": g.TEXT_MODEL,
+        "evidence": evidence[:12],
+        "brandSpec": brand,
+        "localInsight": body.get("localInsight") or "",
+        "crowdInsight": body.get("crowdInsight") or "",
+        "groundingUris": g.grounding_uris(response),
+        "errors": errors,
+    }
+
+
+def _default_brand(business: str, geo: str) -> dict[str, Any]:
+    return {
+        "palette": ["#c4a574", "#0f1419", "#f4efe6"],
+        "typePairing": "Georgia + system-ui",
+        "toneWords": ["warm", "direct", "local"],
+        "logoHint": f"wordmark for {business}",
+        "tagline": f"{business} in {geo}",
+    }

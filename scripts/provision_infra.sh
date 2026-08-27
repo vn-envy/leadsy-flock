@@ -140,7 +140,7 @@ if [[ -n "${WORKER_URL}" ]]; then
       gcloud pubsub subscriptions update "${SUB}" \
         --project="${PROJECT}" \
         --push-endpoint="${ENDPOINT}" \
-        --ack-deadline=60 \
+        --ack-deadline=600 \
         --dead-letter-topic="${DLQ}" \
         --max-delivery-attempts=5 \
         "${auth_args[@]}"
@@ -149,7 +149,7 @@ if [[ -n "${WORKER_URL}" ]]; then
         --project="${PROJECT}" \
         --topic="${TOPIC}" \
         --push-endpoint="${ENDPOINT}" \
-        --ack-deadline=60 \
+        --ack-deadline=600 \
         --dead-letter-topic="${DLQ}" \
         --max-delivery-attempts=5 \
         "${auth_args[@]}"

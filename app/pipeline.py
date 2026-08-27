@@ -27,6 +27,7 @@ def publish_step(
     step: str,
     pipeline: list[str],
     attempt: int = 1,
+    force_retry: bool = False,
 ) -> str:
     settings = load_settings()
     if not settings.project_id:
@@ -37,6 +38,7 @@ def publish_step(
         "step": step,
         "pipeline": pipeline,
         "attempt": attempt,
+        "forceRetry": force_retry,
         "idempotencyKey": f"{campaign_id}:{step}:{attempt}",
     }
     future = publisher().publish(

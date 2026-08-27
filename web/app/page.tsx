@@ -47,9 +47,9 @@ export default function Page() {
         Talk to Flo
       </h1>
       <p style={{ color: "#c9c2b6", lineHeight: 1.5, marginBottom: 28 }}>
-        Day-1 starter. This page proxies to the Cloud Run ADK service
-        (<code>flock-api</code>). CopilotKit / AG-UI generative UI lands next;
-        the chat path is real today.
+        Talk to Flo, then watch receipts on the Campaigns tab (or
+        <code> /console</code> on flock-api). The flock runs in the background
+        after you approve a plan.
       </p>
       <div
         style={{

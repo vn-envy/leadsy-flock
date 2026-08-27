@@ -1,0 +1,29 @@
+# Day 3 — Engines that actually run
+
+Exit criterion: *Scout grounds on Maps/Search, Inka produces multimodal assets, the Creative Gate can reject a claim, Stella publishes a consent-first page, Ad Kit fans out without autoposting.*
+
+## What runs now
+
+| Step | Engine | What it does |
+|---|---|---|
+| `scout` | Gemini 3.5 Flash + Maps + Search + urlContext | `evidence[]`, `brandSpec`, local + crowd insight |
+| `inka` | Gemini copy · `gemini-2.5-flash-image` · Veo 3.1 · Lyria-002 | copy + GCS assets (Lyria may 429) |
+| `creative_gate` | Gemma classifier + Gemini judge + regex | fail-closed; writes policy memory; one Inka revision |
+| `stella` | template | `GET /l/{campaignId}` with required consent checkbox |
+| `ad_kit` | Inka-Adapt | Meta 1:1 / 9:16 + Google RSA, UTM, `autopost: false` |
+| `outreach_gate` / `ray` | Ledge / Ray | refuse without consent; sandbox outbox only |
+
+Judge surfaces:
+
+- https://flock-api-533880600838.asia-south1.run.app/console
+- `GET /l/{id}` after Stella
+- `POST /v1/consents` (Model Armor on the way in)
+- Telegram webhook `POST /v1/telegram/webhook` when `TELEGRAM_BOT_TOKEN` is set
+
+## Honest residuals
+
+- Stagehand / Browserbase is not in this hop (no key). Maps + Search + urlContext still carry Scout.
+- last30days engine not vendored; crowd insight is Gemini Search-grounded, not the MIT scraper.
+- Lyria-002 may still 429. Veo waits 90s then records `started_not_finished` if the op is slow.
+- Gemma is invoked on `us-central1`; if the publisher model 404s, the regex + Gemini judge still fail-closed.
+- Remotion derivatives and zip/paste-guide are day-4 surface area; this kit is copy + dimensions + UTMs + GCS masters.

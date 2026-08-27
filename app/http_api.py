@@ -1,21 +1,27 @@
 # Copyright 2026 Neekhil Vatsa
 # Licensed under the Apache License, Version 2.0
 
-"""HTTP surface for Mission Control, judges, and Pub/Sub push."""
+"""HTTP surface for Mission Control, judges, landings, and Pub/Sub push."""
 
 from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
 
+from app import ledger
 from app.armor import ArmorBlocked
 from app.campaigns import (
     approve_campaign,
     campaign_view,
     create_campaign,
     decode_pubsub_push,
+    list_campaign_summaries,
+    record_consent,
     screen_text,
 )
 from app.settings import load_settings
+from app.telegram_adapter import configured as telegram_configured
+from app.telegram_adapter import handle_update
 from app.worker import handle_step
 
 
@@ -35,6 +41,7 @@ def attach_flock_routes(app: FastAPI) -> None:
             "buckets": {"media": s.media_bucket, "logs": s.logs_bucket},
             "modelArmor": f"projects/{s.project_id}/locations/{s.armor_location}/templates/{s.armor_template}",
             "memoryBankId": s.memory_bank_id or None,
+            "telegram": telegram_configured(),
         }
 
     @app.post("/v1/screen")
@@ -53,11 +60,16 @@ def attach_flock_routes(app: FastAPI) -> None:
         except ArmorBlocked as exc:
             raise HTTPException(status_code=403, detail={"error": "blocked", "verdict": exc.verdict}) from exc
 
+    @app.get("/v1/campaigns")
+    def list_all() -> dict:
+        return {"campaigns": list_campaign_summaries()}
+
     @app.get("/v1/campaigns/{campaign_id}")
     def get_one(campaign_id: str) -> dict:
         view = campaign_view(campaign_id)
         if not view:
             raise HTTPException(404, "campaign not found")
+        view.pop("landingHtml", None)
         return view
 
     @app.post("/v1/campaigns/{campaign_id}/approve")
@@ -67,9 +79,47 @@ def attach_flock_routes(app: FastAPI) -> None:
         except KeyError:
             raise HTTPException(404, "campaign not found") from None
 
+    @app.get("/l/{campaign_id}", response_class=HTMLResponse)
+    def landing(campaign_id: str) -> HTMLResponse:
+        campaign = ledger.get_campaign(campaign_id)
+        if not campaign or not campaign.get("landingHtml"):
+            raise HTTPException(404, "landing not published")
+        return HTMLResponse(campaign["landingHtml"])
+
+    @app.post("/v1/consents")
+    def consents(body: dict) -> dict:
+        campaign_id = (body or {}).get("campaignId") or ""
+        name = ((body or {}).get("name") or "").strip()
+        contact = ((body or {}).get("contact") or "").strip()
+        if not campaign_id or not name or not contact:
+            raise HTTPException(400, "campaignId, name, contact required")
+        if not (body or {}).get("consent"):
+            raise HTTPException(400, "consent checkbox required")
+        try:
+            return record_consent(
+                campaign_id,
+                name=name,
+                contact=contact,
+                source=str((body or {}).get("source") or "landing"),
+            )
+        except ArmorBlocked as exc:
+            raise HTTPException(status_code=403, detail={"error": "blocked", "verdict": exc.verdict}) from exc
+        except KeyError:
+            raise HTTPException(404, "campaign not found") from None
+
+    @app.get("/console", response_class=HTMLResponse)
+    def console() -> HTMLResponse:
+        return HTMLResponse(_CONSOLE_HTML)
+
+    @app.post("/v1/telegram/webhook")
+    async def telegram(request: Request) -> dict:
+        if not telegram_configured():
+            raise HTTPException(501, "TELEGRAM_BOT_TOKEN not set")
+        body = await request.json()
+        return handle_update(body)
+
     @app.post("/internal/pubsub/campaign-steps")
     async def pubsub_push(request: Request) -> dict:
-        # Same image as flock-api; only the worker service consumes the topic.
         if load_settings().service_name not in {"flock-worker", "local"}:
             raise HTTPException(404, "not a worker")
         body = await request.json()
@@ -81,3 +131,66 @@ def attach_flock_routes(app: FastAPI) -> None:
             return handle_step(message)
         except Exception as exc:  # noqa: BLE001 — nack by returning 500 so Pub/Sub retries
             raise HTTPException(500, f"step failed: {exc}") from exc
+
+
+_CONSOLE_HTML = """<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Mission Control · Leadsy Flock</title>
+  <style>
+    body { margin:0; background:#0f1419; color:#f4efe6; font-family: system-ui, sans-serif; }
+    main { width: min(960px, calc(100% - 2rem)); margin: 0 auto; padding: 2.5rem 0 4rem; }
+    h1 { font-weight: 560; }
+    .kicker { letter-spacing: .2em; font-size: 12px; color:#c4a574; }
+    a { color:#c4a574; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { text-align:left; padding: .7rem .4rem; border-bottom: 1px solid #2a333d; font-size: 14px; }
+    .muted { color:#8b8378; }
+    .pill { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#c4a574; }
+  </style>
+</head>
+<body>
+<main>
+  <p class="kicker">LEADSY FLOCK · MISSION CONTROL</p>
+  <h1>Receipts</h1>
+  <p class="muted">Live from Firestore via flock-api. Open a campaign to watch Scout → Inka → Gate → Stella.</p>
+  <table>
+    <thead><tr><th>Campaign</th><th>Status</th><th>Updated</th><th></th></tr></thead>
+    <tbody id="rows"><tr><td class="muted" colspan="4">Loading…</td></tr></tbody>
+  </table>
+  <pre id="detail" class="muted"></pre>
+</main>
+<script>
+async function load() {
+  const res = await fetch("/v1/campaigns");
+  const body = await res.json();
+  const rows = document.getElementById("rows");
+  const list = body.campaigns || [];
+  if (!list.length) { rows.innerHTML = "<tr><td class='muted' colspan='4'>No campaigns yet.</td></tr>"; return; }
+  rows.innerHTML = list.map(c => {
+    const name = (c.brief && c.brief.businessName) || c.id;
+    const land = c.landingPath ? `<a href="${c.landingPath}">landing</a>` : "";
+    return `<tr>
+      <td><a href="#" data-id="${c.id}">${name}</a><div class="muted">${c.id}</div></td>
+      <td class="pill">${c.status || ""}</td>
+      <td class="muted">${(c.updatedAt || "").slice(0,19)}</td>
+      <td>${land}</td>
+    </tr>`;
+  }).join("");
+  rows.querySelectorAll("a[data-id]").forEach(a => a.onclick = (e) => { e.preventDefault(); show(a.dataset.id); });
+}
+async function show(id) {
+  const res = await fetch("/v1/campaigns/" + id);
+  const c = await res.json();
+  const rec = (c.receipts || []).map(r => `${r.step}:${r.status}`).join(" → ");
+  document.getElementById("detail").textContent = rec + "\\n\\n" + JSON.stringify({
+    status: c.status, engineConfig: c.engineConfig, landingPath: c.landingPath
+  }, null, 2);
+}
+load();
+</script>
+</body>
+</html>
+"""

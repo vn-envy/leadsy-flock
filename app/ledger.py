@@ -109,6 +109,80 @@ def list_receipts(campaign_id: str, db: firestore.Client | None = None) -> list[
     return rows
 
 
+def list_campaigns(limit: int = 40, db: firestore.Client | None = None) -> list[dict]:
+    db = db or client()
+    rows = []
+    for doc in db.collection(COL_CAMPAIGNS).limit(limit).stream():
+        row = doc.to_dict() or {}
+        row["id"] = doc.id
+        rows.append(row)
+    rows.sort(key=lambda r: r.get("updatedAt") or r.get("createdAt") or "", reverse=True)
+    return rows
+
+
+def write_memory(
+    campaign_id: str,
+    *,
+    kind: str,
+    text: str,
+    db: firestore.Client | None = None,
+) -> str:
+    db = db or client()
+    _, ref = db.collection(COL_MEMORIES).add(
+        {
+            "campaignId": campaign_id,
+            "kind": kind,
+            "text": text,
+            "createdAt": now_iso(),
+        }
+    )
+    return ref.id
+
+
+def list_memories(campaign_id: str, kind: str | None = None, db: firestore.Client | None = None) -> list[dict]:
+    db = db or client()
+    query = db.collection(COL_MEMORIES).where("campaignId", "==", campaign_id)
+    rows = []
+    for doc in query.stream():
+        row = doc.to_dict() or {}
+        if kind and row.get("kind") != kind:
+            continue
+        row["id"] = doc.id
+        rows.append(row)
+    return rows
+
+
+def write_consent(
+    campaign_id: str,
+    *,
+    name: str,
+    contact: str,
+    source: str = "landing",
+    db: firestore.Client | None = None,
+) -> str:
+    db = db or client()
+    _, ref = db.collection(COL_CONSENTS).add(
+        {
+            "campaignId": campaign_id,
+            "name": name,
+            "contact": contact,
+            "source": source,
+            "createdAt": now_iso(),
+        }
+    )
+    return ref.id
+
+
+def list_consents(campaign_id: str, db: firestore.Client | None = None) -> list[dict]:
+    db = db or client()
+    rows = []
+    for doc in db.collection(COL_CONSENTS).where("campaignId", "==", campaign_id).stream():
+        row = doc.to_dict() or {}
+        row["id"] = doc.id
+        rows.append(row)
+    return rows
+
+
 def write_event(
     *,
     campaign_id: str,

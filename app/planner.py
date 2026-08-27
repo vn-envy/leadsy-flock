@@ -94,6 +94,7 @@ def _pipeline(hired: list[str]) -> list[str]:
         steps.append("ad_kit")
     if "ray" in hired:
         steps.append("outreach_gate")
+        steps.append("ray")
     if not steps:
         steps = ["scout"]
     return steps

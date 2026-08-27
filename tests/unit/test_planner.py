@@ -28,7 +28,8 @@ def test_outreach_goal_adds_ray_and_outreach_gate() -> None:
         include_outreach=True,
     )
     assert rec["hired"] == ["scout", "inka", "stella", "ray"]
-    assert rec["pipeline"][-1] == "outreach_gate"
+    assert rec["pipeline"][-1] == "ray"
+    assert "outreach_gate" in rec["pipeline"]
     assert "ad_kit" in rec["pipeline"]
     assert rec["price_inr"] == sum(ENGINE_PRICE_INR[e] for e in rec["hired"])
 

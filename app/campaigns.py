@@ -103,7 +103,38 @@ def campaign_view(campaign_id: str) -> dict[str, Any] | None:
     if not campaign:
         return None
     campaign["receipts"] = ledger.list_receipts(campaign_id)
+    campaign["consents"] = ledger.list_consents(campaign_id)
     return campaign
+
+
+def list_campaign_summaries() -> list[dict[str, Any]]:
+    rows = []
+    for c in ledger.list_campaigns():
+        rows.append(
+            {
+                "id": c.get("id"),
+                "status": c.get("status"),
+                "brief": c.get("brief"),
+                "updatedAt": c.get("updatedAt"),
+                "landingPath": c.get("landingPath"),
+            }
+        )
+    return rows
+
+
+def record_consent(campaign_id: str, *, name: str, contact: str, source: str = "landing") -> dict[str, Any]:
+    campaign = ledger.get_campaign(campaign_id)
+    if not campaign:
+        raise KeyError(campaign_id)
+    blob = f"{name} {contact}"
+    sanitize_user_prompt(blob)
+    consent_id = ledger.write_consent(campaign_id, name=name, contact=contact, source=source)
+    ledger.write_event(
+        campaign_id=campaign_id,
+        kind="consent",
+        detail={"consentId": consent_id, "source": source},
+    )
+    return {"id": consent_id, "campaignId": campaign_id, "ok": True}
 
 
 def screen_text(text: str) -> dict[str, Any]:
