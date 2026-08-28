@@ -45,11 +45,11 @@ A local-agency launch kit is not one landscape still. 2026 Meta + Google deliver
 | `still-feed` / `clip-feed` | 4:5 | 1080×1350 | Meta/Instagram Feed (default 2026) |
 | `still-story` / `clip-story` | 9:16 | 1080×1920 | Stories, Reels, Shorts, WhatsApp status |
 
-Masters: one 16:9 Gemini still, one 9:16 Gemini still, one detail still, one **8-second 9:16 Veo clip with native audio** (harvested). Derivatives are **centre crops that keep the soundtrack**. Theme tokens from this file colour the kit page (`/k/{id}`), never the pixels.
+Masters: **this shop's own photos / listing / menu / site first**, cleaned by Gemini if needed, then one **8-second 9:16 Veo clip** whose picture is conditioned on those frames. Gemini generates a still from scratch **only when the owner has no usable visual evidence**. Spoken audio is always **English plus one Indic language** from the area of operation (Gurgaon → Hindi), muxed onto the same picture (`clip-en`, `clip-indic`). ffmpeg may also burn captions in the **centre safe zone on 9:16 only**. Derivatives are **centre crops that keep the soundtrack**. Theme tokens from this file colour the kit page (`/k/{id}`), never the pixels.
 
-Scout builds a **shelf** of comparable ads in this category and city (public libraries + trade coverage). Inka remixes a trope into a story hook — original pixels, never a clone, never fake UGC.
+Scout builds a **shelf** of comparable ads in this category and city (public libraries + trade coverage). Inka remixes a trope into a story hook — original film, never a clone, never fake UGC. Scout also lists **ownUris** (this shop's website, Maps, menu PDF, listing photos).
 
-Locale is **English plus one Indic language** from the area of operation (Gurgaon → Hindi/Devanagari). Gemini translates paste + VO. Veo gets an English cinematic prompt with the Indic line in quotes. ffmpeg may burn that line as captions in the **centre safe zone on 9:16 only**.
+Locale is **English plus one Indic language**. Paste is bilingual. Veo gets an English cinematic prompt and **room tone only**; harvest muxes the two VO lines.
 
 We do **not** ship: IAB GIF banners, logo packs, a zip, or autopost. We do **not** scrape swipe-file sites or copy another brand's frames.
 

@@ -42,7 +42,8 @@ CHANNELS = (
         "primaryMax": 90,
         "headlineMax": 32,
         "stillSlot": "still-story",
-        "clipSlot": "clip-captioned",
+        "clipSlot": "clip-indic",
+        "clipSlotEn": "clip-en",
     },
     {
         "id": "whatsapp_status",
@@ -52,7 +53,8 @@ CHANNELS = (
         "primaryMax": 90,
         "headlineMax": 32,
         "stillSlot": "still-story",
-        "clipSlot": "clip-captioned",
+        "clipSlot": "clip-indic",
+        "clipSlotEn": "clip-en",
         "organic": True,
     },
     {
@@ -128,6 +130,7 @@ def variant(channel: dict[str, Any], copy: dict[str, Any], landing: str, campaig
         "primaryTextLocalized": loc_p,
         "ctaLocalized": loc_cta,
         "voIndic": str(copy.get("voIndic") or ""),
+        "voEn": str(copy.get("voEn") or ""),
         "charCounts": {
             "headline": len(headline),
             "primaryText": len(primary),
@@ -139,6 +142,9 @@ def variant(channel: dict[str, Any], copy: dict[str, Any], landing: str, campaig
     if channel.get("clipSlot"):
         block["clip"] = f"/media/{campaign_id}/{channel['clipSlot']}"
         block["clipSlot"] = channel["clipSlot"]
+    if channel.get("clipSlotEn"):
+        block["clipEn"] = f"/media/{campaign_id}/{channel['clipSlotEn']}"
+        block["clipSlotEn"] = channel["clipSlotEn"]
     if channel["id"] == "google_rsa":
         desc = _clip(str(copy.get("subhead") or primary), int(channel.get("descriptionMax") or 90))
         block["description"] = desc
@@ -198,6 +204,19 @@ def render_kit(
                 f'<video class="thumb" data-slot="{slot}" src="{clip}" '
                 f'muted playsinline controls loop hidden></video>'
             )
+        clip_en = html.escape(str(v.get("clipEn") or ""))
+        if clip_en:
+            slot_en = html.escape(str(v.get("clipSlotEn") or "clip-en"))
+            media_bits += (
+                f'<video class="thumb" data-slot="{slot_en}" src="{clip_en}" '
+                f'muted playsinline controls loop hidden></video>'
+            )
+        if str(v.get("aspect") or "") == "9:16":
+            cap = html.escape(f"/media/{cid}/clip-captioned")
+            media_bits += (
+                f'<video class="thumb" data-slot="clip-captioned" src="{cap}" '
+                f'muted playsinline controls loop hidden></video>'
+            )
         rsa = ""
         if v.get("headlines"):
             lines = "".join(f"<li>{html.escape(str(x))}</li>" for x in v["headlines"])
@@ -206,8 +225,14 @@ def render_kit(
                 rsa += f"<p class='label'>Description</p><p class='copy'>{html.escape(str(v['description']))}</p>"
         loc_block = ""
         vo = html.escape(str(v.get("voIndic") or copy.get("voIndic") or ""))
-        if vo and str(v.get("aspect") or "") == "9:16":
-            loc_block = f"<p class='label'>VO / captions · {lang_label}</p><p class='copy'>{vo}</p>"
+        vo_en = html.escape(str(v.get("voEn") or copy.get("voEn") or ""))
+        if str(v.get("aspect") or "") == "9:16":
+            bits = []
+            if vo_en:
+                bits.append(f"<p class='label'>VO English</p><p class='copy'>{vo_en}</p>")
+            if vo:
+                bits.append(f"<p class='label'>VO · {lang_label}</p><p class='copy'>{vo}</p>")
+            loc_block = "".join(bits)
         elif v.get("headlineLocalized") and str(v.get("aspect") or "") != "9:16":
             loc_block = (
                 f"<p class='label'>{lang_label}</p>"
@@ -271,18 +296,20 @@ def render_kit(
 <main>
   <p class="kicker">{business} · {geo} · {lang_label} · asset kit</p>
   <h1>{headline or "Launch kit"}</h1>
-  <p class="lede">{html.escape(str(copy.get("storyHook") or sub))} Remix a live shelf trope — do not fake UGC, do not clone pixels. Copy stays off Veo; 9:16 may carry Indic captions. We do not autopost.
+  <p class="lede">{html.escape(str(copy.get("storyHook") or sub))} Remix a live shelf trope — do not fake UGC, do not clone pixels. Stills start from this shop's own photos, listing, menu, or site when we have them; Gemini only cleans or fills gaps. Copy stays off Veo. We do not autopost.
   <a href="{land_href}">Consent landing</a>.</p>
   <p class="label">Story hook · {lang_label}</p>
   <p class="copy">{hook_l or hook or sub}</p>
-  <p class="label">Spoken line</p>
+  <p class="label">Spoken line · English</p>
+  <p class="copy">{html.escape(str(copy.get("voEn") or ""))}</p>
+  <p class="label">Spoken line · {lang_label}</p>
   <p class="copy">{vo_l or html.escape(str(copy.get("voEn") or ""))}</p>
   <p class="label">Comparables this run</p>
   {shelf_html}
   <div class="grid">
     {cards_html}
   </div>
-  <p class="note">8s 9:16 Veo with native audio. ffmpeg crops keep sound. Captions are Indic, centre safe-zone, 9:16 only. Ratios: 4:5 feed, 1:1 carousel, 9:16 Reels/WhatsApp, 1.91:1 Google display, 16:9 landing.</p>
+  <p class="note">8s 9:16 Veo from this shop's frames when we have them. English and local-language VO are muxed onto the same picture. Captions are centre safe-zone, 9:16 only. Ratios: 4:5 feed, 1:1 carousel, 9:16 Reels/WhatsApp, 1.91:1 Google display, 16:9 landing.</p>
 </main>
 <script>
   async function revealClips() {{

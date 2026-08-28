@@ -84,8 +84,14 @@ def ass_document(text: str, *, font: str = "Noto Sans") -> str:
     )
 
 
-def burn_story_captions(campaign_id: str, text: str, locale: dict[str, str] | None) -> dict[str, Any]:
-    """Overlay Indic captions on clip-story.mp4. No-op if text or ffmpeg missing."""
+def burn_story_captions(
+    campaign_id: str,
+    text: str,
+    locale: dict[str, str] | None,
+    *,
+    dest_name: str = "clip-captioned.mp4",
+) -> dict[str, Any]:
+    """Overlay captions on clip-story.mp4. No-op if text or ffmpeg missing."""
     text = " ".join((text or "").split())
     if not text or not campaign_id:
         return {"ok": False, "skipped": True, "reason": "no_text"}
@@ -136,15 +142,16 @@ def burn_story_captions(campaign_id: str, text: str, locale: dict[str, str] | No
         if not dest.exists() or dest.stat().st_size < 32:
             return {"ok": False, "error": "empty"}
         uri = media.put_bytes(
-            media.campaign_path(campaign_id, "clip-captioned.mp4"),
+            media.campaign_path(campaign_id, dest_name),
             dest.read_bytes(),
             "video/mp4",
         )
+        stem = dest_name.rsplit(".", 1)[0]
         return {
             "ok": True,
             "gcs": uri,
             "bytes": dest.stat().st_size,
-            "publicPath": f"/media/{campaign_id}/clip-captioned",
+            "publicPath": f"/media/{campaign_id}/{stem}",
             "font": font,
         }
 

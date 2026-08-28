@@ -12,6 +12,7 @@ from google.genai import types
 from app.design import resolve_theme
 from app.engines import gemini_util as g
 from app.locale import resolve_locale, sanitize_shelf
+from app import own
 
 
 SCOUT_PROMPT = """You are Scout, research tracker for a local-SMB growth agency in India.
@@ -48,6 +49,13 @@ Return ONLY JSON with this shape:
       "audioLanguage": "hi" | "en" | "silent",
       "category": "beauty" | "salon" | "jewellery" | "qsr" | "fitness" | "other"
     }}
+  ],
+  "ownUris": [
+    {{
+      "uri": "https://...",
+      "kind": "website" | "maps" | "listing" | "menu" | "pdf" | "photo",
+      "title": "this shop's own page or photo"
+    }}
   ]
 }}
 
@@ -56,6 +64,7 @@ Rules:
 - Do not invent personal emails or phone numbers.
 - Discovery is not consent. You research places and public pages, not people to cold-email.
 - If a website URL is in the brief, read it with url context.
+- ownUris[] is THIS business's own website, Google listing, Maps photos, menu PDF, or shop pictures. Never a competitor. Every item MUST have a real http URI from grounding or the brief. Do not invent photos.
 - themeId must be one of inkstone, ember, grove, slate, paper (see design.md). ember = gyms/energy; grove = wellness; paper = clinics/cafés/salons; slate = professional; inkstone = default. palette hex is for image prompts only — never a CSS background.
 - shelf[] is comparable ads and campaigns in this category and this city/region that are running or newly discussed THIS season. Use Meta Ad Library, Google Ads Transparency, TikTok Creative Center, Campaign Brief / Social Samosa coverage. Store STRUCTURE (hookType, visualGrammar), never clone a frame. Every shelf item MUST have a real http URI from grounding. Do not scrape private people. Do not invent ads.
 
@@ -81,6 +90,7 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
             "localInsight": "",
             "crowdInsight": "",
             "shelf": [],
+            "ownUris": [],
             "locale": resolve_locale(geo),
             "groundingUris": [],
             "errors": [f"{type(exc).__name__}:{exc}"],
@@ -128,9 +138,11 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
             model=g.TEXT_MODEL,
             contents=(
                 "Turn these research notes into JSON with keys evidence, brandSpec, "
-                "localInsight, crowdInsight, shelf. evidence items: source, uri, title, snippet, signal. "
+                "localInsight, crowdInsight, shelf, ownUris. evidence items: source, uri, title, snippet, signal. "
                 "shelf items: source, uri, title, snippet, hookType, visualGrammar, audioLanguage, category. "
-                "Only use the URIs listed. Do not invent ads. Return JSON only.\n\n"
+                "ownUris items: uri, kind (website|maps|listing|menu|pdf|photo), title. "
+                "Only use the URIs listed. ownUris must be THIS shop, not a competitor. "
+                "Do not invent ads or photos. Return JSON only.\n\n"
                 f"NOTES:\n{notes[:6000]}\n\nURIS:\n{uris}"
             ),
             config=types.GenerateContentConfig(
@@ -177,6 +189,11 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
         "localInsight": body.get("localInsight") or "",
         "crowdInsight": body.get("crowdInsight") or "",
         "shelf": sanitize_shelf(body.get("shelf"), extra_uris=g.grounding_uris(response)),
+        "ownUris": own.sanitize_own_uris(
+            body.get("ownUris"),
+            extra_uris=g.grounding_uris(response),
+            website=website,
+        ),
         "locale": resolve_locale(geo),
         "groundingUris": g.grounding_uris(response),
         "errors": errors,

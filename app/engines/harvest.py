@@ -15,6 +15,7 @@ from app.captions import burn_story_captions
 from app.derive import derive_videos
 from app.engines import gemini_util as g
 from app.engines.inka import _lyria, _veo_start
+from app.voice import dual_tracks
 
 MAX_ATTEMPTS = int(os.environ.get("HARVEST_MAX_ATTEMPTS", "24"))
 
@@ -77,11 +78,12 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
             errors.append(f"derive:{type(extra).__name__}:{extra}")
 
     if campaign_id and (clip.get("gcs") or clip.get("status") == "harvested"):
+        copy = inka.get("copy") or {}
+        loc = inka.get("locale") or {}
         if not (clip.get("captions") or {}).get("ok"):
-            copy = inka.get("copy") or {}
             vo = str(copy.get("voIndic") or copy.get("voEn") or "")
             try:
-                cap = burn_story_captions(campaign_id, vo, inka.get("locale") or {})
+                cap = burn_story_captions(campaign_id, vo, loc)
                 if not cap.get("ok"):
                     story = media.get_bytes(media.campaign_path(campaign_id, "clip-story.mp4"))
                     if story:
@@ -101,6 +103,27 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
                 assets["clip"] = clip
             except Exception as extra:  # noqa: BLE001
                 errors.append(f"captions:{type(extra).__name__}:{extra}")
+        if not (clip.get("captionsEn") or {}).get("ok") and copy.get("voEn"):
+            try:
+                cap_en = burn_story_captions(
+                    campaign_id,
+                    str(copy.get("voEn") or ""),
+                    {"code": "en", "bcp47": "en-IN", "script": "Latin"},
+                    dest_name="clip-captioned-en.mp4",
+                )
+                clip = dict(clip)
+                clip["captionsEn"] = cap_en
+                assets["clip"] = clip
+            except Exception as extra:  # noqa: BLE001
+                errors.append(f"captions_en:{type(extra).__name__}:{extra}")
+        if not (clip.get("voices") or {}).get("en"):
+            try:
+                voices = dual_tracks(campaign_id, copy, loc)
+                clip = dict(clip)
+                clip["voices"] = voices
+                assets["clip"] = clip
+            except Exception as extra:  # noqa: BLE001
+                errors.append(f"voice:{type(extra).__name__}:{extra}")
 
     skip_lyria = os.environ.get("INKA_SKIP_LYRIA", "0") == "1"
     if not skip_lyria and not jingle.get("gcs") and not jingle.get("skipped"):
@@ -240,7 +263,7 @@ def _restart_veo(
         str(prompts.get("veo") or ""),
         errors,
         refs=[],
-        vo_line=str(copy.get("voIndic") or copy.get("voEn") or ""),
+        vo_line="",
         sequence=sequence,
     )
     if not started.get("operation"):

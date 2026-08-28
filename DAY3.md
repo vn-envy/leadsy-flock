@@ -6,12 +6,12 @@ Exit criterion: *Scout grounds on Maps/Search, Inka produces multimodal assets, 
 
 | Step | Engine | What it does |
 |---|---|---|
-| `scout` | Gemini 3.5 Flash + Maps + Search + urlContext | `evidence[]`, `brandSpec`, **shelf tropes**, locale (EN + one Indic) |
-| `inka` | Gemini copy · 3 stills · Veo **8s 9:16 start** with native audio | story hook from shelf; Indic VO; LRO name only — no wait |
+| `scout` | Gemini 3.5 Flash + Maps + Search + urlContext | `evidence[]`, `brandSpec`, **shelf tropes**, **ownUris**, locale (EN + one Indic) |
+| `inka` | Copy · **own photos first** · Gemini refine/fill · Veo **8s 9:16 start** | story hook; LRO name only — no wait |
+| `inka_harvest` | sidecar | Veo poll; **English + Indic VO mux**; captions; Lyria retry |
 | `creative_gate` | Gemma classifier + Gemini judge + regex | fail-closed; writes policy memory; one Inka revision |
 | `stella` | template | `GET /l/{campaignId}` with required consent checkbox |
 | `ad_kit` | Inka-Adapt | Meta 4:5 / 1:1 / 9:16 + WhatsApp status + Google 1.91:1 / RSA, UTMs, `GET /k/{id}` paste guide, `autopost: false` |
-| `inka_harvest` | sidecar (not in the sequential pipeline) | poll Veo once per invocation; retry Lyria twice; republish until GCS or max attempts |
 | `outreach_gate` / `ray` | Ledge / Ray | refuse without consent; sandbox outbox only |
 
 Judge surfaces:

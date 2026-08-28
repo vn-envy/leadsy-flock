@@ -44,6 +44,7 @@ def test_ad_kit_html_is_paste_guide_not_autopost() -> None:
             "cta": "See slots",
             "storyHook": "Quiet colour after work, not an influencer set.",
             "voIndic": "ऑफिस के बाद, कैमरा नहीं — सिर्फ रंग।",
+            "voEn": "Evenings that fit the commute. Just the work.",
             "headlineLocalized": "ऑफिस के बाद वाला रंग",
             "primaryTextLocalized": "डीएलएफ के पास शांत रंग।",
         },
@@ -84,6 +85,10 @@ def test_ad_kit_html_is_paste_guide_not_autopost() -> None:
     assert "We do not autopost" in html
     assert "/media/noya-1/still-feed" in html
     assert "/media/noya-1/clip-captioned" in html
+    assert "/media/noya-1/clip-en" in html
+    assert "/media/noya-1/clip-indic" in html
+    assert "VO English" in html
+    assert "this shop's own photos" in html
     assert "anti-influencer" in html
     assert "hi-IN" in html
     assert "ऑफिस" in html
@@ -252,6 +257,7 @@ def test_harvest_finishes_when_clip_has_gcs(monkeypatch) -> None:
         patch.object(harvest, "_poll_veo", return_value=harvested),
         patch.object(harvest, "derive_videos", return_value={"ok": True, "slots": {"story": {"ok": True}}}),
         patch.object(harvest, "burn_story_captions", return_value={"ok": True, "publicPath": "/media/c1/clip-captioned"}),
+        patch.object(harvest, "dual_tracks", return_value={"en": {"ok": True}}),
     ):
         out = harvest.run({"id": "c1", "_harvestAttempt": 2})
     assert out["retry"] is False
@@ -275,6 +281,7 @@ def test_harvest_skips_lyria_after_retries(monkeypatch) -> None:
         patch.object(harvest, "_lyria") as lyria,
         patch.object(harvest, "derive_videos", return_value={"ok": True, "slots": {}}),
         patch.object(harvest, "burn_story_captions", return_value={"ok": True}),
+        patch.object(harvest, "dual_tracks", return_value={"en": {"ok": True}}),
     ):
         out = harvest.run({"id": "c1", "_harvestAttempt": 3})
     lyria.assert_not_called()

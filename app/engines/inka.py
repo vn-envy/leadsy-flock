@@ -12,7 +12,7 @@ from typing import Any
 
 from google.genai import types
 
-from app import ledger, media
+from app import ledger, media, own
 from app.derive import derive_images
 from app.design import resolve_theme
 from app.engines import gemini_util as g
@@ -32,7 +32,7 @@ Return ONLY JSON:
   "storyHook": "one sentence: winning shelf trope × local pain × this business",
   "voEn": "one ENGLISH spoken sentence, Latin script only, under 18 words, for an 8-second film, no claims",
   "shotList": "three beats for an 8-second 9:16 film: empty interior, product, light — no people, no hands, no faces, no on-screen text",
-  "veoPrompt": "English cinematic direction for Veo 3.1, 8 seconds, 9:16, locked-off or slow push, product/interior dead-centre, EMPTY of people and body parts, no on-screen text, native audio (room tone + one spoken line off-camera)",
+  "veoPrompt": "English cinematic direction for Veo 3.1, 8 seconds, 9:16, locked-off or slow push, THIS shop's real interior/product dead-centre, EMPTY of people and body parts, no on-screen text, native room tone only (spoken lines are muxed later in English and the local language)",
   "imagePrompt": "16:9 still photograph prompt, BrandSpec palette, empty interior or product centred, no people, no hands, no faces, no text in the image",
   "storyPrompt": "9:16 vertical still, product or empty station in the centre third (Stories/Reels safe zone), BrandSpec palette, no people, no hands, no faces, no text",
   "detailPrompt": "tight 1:1 still of tools, bowls, bottles or fabric — product only, BrandSpec palette, no people, no hands, no faces, no text",
@@ -45,6 +45,7 @@ Shelf tropes (remix structure only): {shelf}
 Local insight: {local}
 Crowd insight: {crowd}
 Evidence (summaries only): {evidence}
+Own visual sources (use these rooms/products, do not invent a different shop): {own}
 Policy memory from the gate (honor these): {policy}
 Locale for spoken line / captions: {locale}
 Business: {business} in {geo}. Goal: {goal}. Audience: {audience}.
@@ -94,6 +95,7 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
         local=str(scout.get("localInsight") or "none")[:400].replace("{", "(").replace("}", ")"),
         crowd=str(scout.get("crowdInsight") or "none")[:300].replace("{", "(").replace("}", ")"),
         evidence=snippets.replace("{", "(").replace("}", ")") or "none yet",
+        own=str([u.get("uri") for u in (scout.get("ownUris") or [])][:6] or brief.get("website") or "none given").replace("{", "(").replace("}", ")"),
         policy=(policy or "none").replace("{", "(").replace("}", ")"),
         locale=f"{locale.get('bcp47')} {locale.get('script')}",
         business=brief.get("businessName") or "the business",
@@ -125,8 +127,8 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
             "voEn": "Evenings that fit the commute. No cameras. Just the work.",
             "shotList": "interior → hands at work → still product",
             "veoPrompt": (
-                "8-second 9:16 cinematic, locked-off, morning light, subject dead-centre, "
-                "no people faces, no on-screen text, quiet room tone then one spoken line."
+                "8-second 9:16 cinematic, locked-off, morning light, this shop's interior dead-centre, "
+                "no people, no on-screen text, quiet room tone only."
             ),
             "imagePrompt": "Wide 16:9 still of a calm interior, BrandSpec palette, no text.",
             "storyPrompt": "Vertical 9:16 still of the same interior, subject centred, no text.",
@@ -152,11 +154,18 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
     skip_lyria = os.environ.get("INKA_SKIP_LYRIA", "0") == "1"
 
     ref_blobs: list[tuple[bytes, str]] = []
+    own_pack: dict[str, Any] = {"origin": "none", "frames": [], "count": 0}
     if skip_still:
         assets["still"] = {"ok": False, "skipped": True, "model": g.IMAGE_MODEL}
         assets["stillStory"] = {"ok": False, "skipped": True}
         assets["stillDetail"] = {"ok": False, "skipped": True}
     else:
+        try:
+            own_pack = own.gather(campaign_id, brief, scout)
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"own:{type(exc).__name__}:{exc}")
+            own_pack = {"origin": "none", "frames": [], "errors": [str(exc)]}
+        written = own.apply_to_stills(campaign_id, own_pack) if own_pack.get("frames") else {}
         jobs = (
             ("still", copy.get("imagePrompt") or "Wide 16:9 interior still, no text, no people."),
             (
@@ -166,22 +175,42 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
             ),
             (
                 "still-detail",
-                copy.get("detailPrompt") or "Tight product or hands-at-work still, no faces, no text.",
+                copy.get("detailPrompt") or "Tight product still, no faces, no text.",
             ),
         )
         err_bags = {stem: [] for stem, _p in jobs}
-        with ThreadPoolExecutor(max_workers=3) as pool:
-            futs = {
-                stem: pool.submit(_still, campaign_id, prompt_s, brand, stem, err_bags[stem])
-                for stem, prompt_s in jobs
-            }
-            assets["still"] = futs["still"].result()
-            assets["stillStory"] = futs["still-story"].result()
-            assets["stillDetail"] = futs["still-detail"].result()
+        need_generate = [stem for stem, _p in jobs if not (written.get(stem) or {}).get("ok")]
+        if need_generate:
+            # Gemini fills only the missing slots. Full generate only if the shop had no photos.
+            with ThreadPoolExecutor(max_workers=3) as pool:
+                futs = {
+                    stem: pool.submit(_still, campaign_id, prompt_s, brand, stem, err_bags[stem])
+                    for stem, prompt_s in jobs
+                    if stem in need_generate
+                }
+                for stem, fut in futs.items():
+                    written[stem] = fut.result()
+                    written[stem]["origin"] = written[stem].get("origin") or "generated"
+        assets["still"] = written.get("still") or {"ok": False}
+        assets["stillStory"] = written.get("still-story") or {"ok": False}
+        assets["stillDetail"] = written.get("still-detail") or {"ok": False}
         for stem, bag in err_bags.items():
             errors.extend(bag)
+        if own_pack.get("errors"):
+            errors.extend(str(e) for e in own_pack["errors"][:6])
+        origin = "generated"
+        if own_pack.get("count") and need_generate:
+            origin = "mixed"
+        elif own_pack.get("count"):
+            origin = "own"
+        assets["origin"] = origin
+        assets["own"] = {
+            "count": own_pack.get("count") or 0,
+            "tried": own_pack.get("tried") or [],
+            "origin": origin,
+        }
         for rec in (assets["still"], assets["stillStory"], assets["stillDetail"]):
-            raw = rec.pop("_bytes", None)
+            raw = rec.pop("_bytes", None) if isinstance(rec, dict) else None
             if raw:
                 ref_blobs.append((raw, rec.get("mime") or "image/png"))
         if assets["still"].get("ok"):
@@ -206,7 +235,7 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
             copy.get("veoPrompt") or "",
             errors,
             refs=ref_blobs[:3],
-            vo_line=str(copy.get("voIndic") or copy.get("voEn") or ""),
+            vo_line="",
         )
     if skip_lyria:
         assets["jingle"] = {

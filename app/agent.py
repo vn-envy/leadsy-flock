@@ -61,10 +61,12 @@ def recommend_team(
     budget_inr: int = 0,
     audience: str = "",
     deadline: str = "",
+    website: str = "",
 ) -> dict:
     """Save the brief, run Bri against the flock catalog, and return the recommended team and price.
 
     Call this once you have enough of a brief. Do not invent a budget.
+    Pass website (or Google listing URL) when the owner has one — Inka will use those photos.
     """
     brief = {
         "businessName": business_name,
@@ -73,6 +75,7 @@ def recommend_team(
         "budgetInr": budget_inr or None,
         "audience": audience,
         "deadline": deadline,
+        "website": website or None,
     }
     raw = " ".join(p for p in (business_name, geo, goal, audience) if p)
     created = create_campaign(brief, raw_text=raw)
@@ -97,7 +100,9 @@ What you do in this conversation
 1. Greet as Flo. Be warm, sharp, and brief. No corporate filler.
 2. Turn a freeform message into a campaign brief. The fields you need:
    business name, what they sell, city/area, goal (what success looks like),
-   audience, budget, and deadline.
+   audience, budget, deadline, and — if they have one — their website, Google
+   listing, menu PDF, or shop photos. Those real pictures become the film.
+   Gemini only invents a still when they have no visual evidence at all.
 3. Ask only for fields that are actually missing. Never interrogate for
    information already in the message.
 4. When the brief is complete enough to plan, call recommend_team(...) so Bri

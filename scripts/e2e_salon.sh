@@ -13,7 +13,7 @@ echo
 echo "==> POST /v1/campaigns (Noya Salon)"
 CREATED=$(curl -sfS -X POST "${API_URL}/v1/campaigns" \
   -H 'content-type: application/json' \
-  -d '{"brief":{"businessName":"Noya Salon","geo":"Gurgaon","goal":"25 new colour clients from Golf Course Road professionals","budgetInr":8000,"audience":"women 25-40 working near DLF Phase IV"}}')
+  -d '{"brief":{"businessName":"Noya Salon","geo":"Gurgaon","goal":"25 new colour clients from Golf Course Road professionals","budgetInr":8000,"audience":"women 25-40 working near DLF Phase IV","assetUris":["https://flock-api-533880600838.asia-south1.run.app/media/noya-salon-fff1d666/still","https://flock-api-533880600838.asia-south1.run.app/media/noya-salon-fff1d666/still-story","https://flock-api-533880600838.asia-south1.run.app/media/noya-salon-fff1d666/still-detail"]}}')
 echo "${CREATED}"
 CAMPAIGN_ID=$(python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])' <<<"${CREATED}")
 
@@ -52,6 +52,8 @@ assert "We do not autopost" in kit_html
 assert "Noya Salon" in kit_html
 assert f"/media/{cid}/still-feed" in kit_html
 assert f"/media/{cid}/clip-captioned" in kit_html
+assert "Spoken line · English" in kit_html
+assert "this shop's own photos" in kit_html
 assert "whatsapp_status" in kit_html
 assert "--bg:" in kit_html
 assert "Remix a live shelf trope" in kit_html
@@ -106,7 +108,7 @@ for i in range(50):
     with urllib.request.urlopen(url, timeout=20) as resp:
         last = json.loads(resp.read().decode())
     harvest_rows = [r for r in last.get("receipts") or [] if r.get("step") == "inka_harvest"]
-    for slot in ("clip", "clip-story", "clip-captioned", "clip-feed", "clip-square", "clip-landscape"):
+    for slot in ("clip", "clip-story", "clip-captioned", "clip-captioned-en", "clip-en", "clip-indic", "clip-feed", "clip-square", "clip-landscape"):
         ctype, nbytes, ok = _get(f"/media/{cid}/{slot}")
         clips[slot] = {"ok": ok, "bytes": nbytes, "contentType": ctype}
     jtype, jbytes, jok = _get(f"/media/{cid}/jingle")
@@ -162,7 +164,11 @@ assert http_shelf, shelf
 vo_indic = str(copy.get("voIndic") or "")
 assert any("\u0900" <= ch <= "\u097f" for ch in (vo_indic + kit_html)), "expected Devanagari in VO or kit"
 assert copy.get("storyHook"), copy
+assert copy.get("voEn"), copy
 assert (adkit.get("payload") or {}).get("autopost") is False
+origin = ((inka_p.get("assets") or {}).get("origin"))
+own_n = ((inka_p.get("assets") or {}).get("own") or {}).get("count")
+assert origin in ("own", "mixed", "generated"), origin
 
 summary = {
     "campaignId": cid,
@@ -172,6 +178,9 @@ summary = {
     "shelf": shelf,
     "storyHook": copy.get("storyHook"),
     "voIndic": vo_indic,
+    "voEn": copy.get("voEn"),
+    "origin": origin,
+    "ownCount": own_n,
     "clipStart": {
         "durationSeconds": clip_meta.get("durationSeconds"),
         "aspectRatio": clip_meta.get("aspectRatio"),
