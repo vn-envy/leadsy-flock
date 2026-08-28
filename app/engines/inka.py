@@ -13,6 +13,7 @@ from typing import Any
 from google.genai import types
 
 from app import ledger, media
+from app.derive import derive_images
 from app.design import resolve_theme
 from app.engines import gemini_util as g
 
@@ -25,8 +26,9 @@ Write campaign creative. Return ONLY JSON:
   "subhead": "one supporting sentence",
   "primaryText": "2-3 sentences for a Meta primary text, under 125 words",
   "cta": "short CTA",
-  "veoPrompt": "a 4-second locked-off cinematic prompt, no people faces, no on-screen text",
-  "imagePrompt": "still photograph prompt, BrandSpec palette, no text in the image",
+  "veoPrompt": "a 4-second locked-off cinematic prompt, subject dead-centre so a 9:16 crop still works, no people faces, no on-screen text",
+  "imagePrompt": "16:9 still photograph prompt, BrandSpec palette, subject centred, no text in the image",
+  "storyPrompt": "9:16 vertical still, subject in the centre third (Stories/Reels safe zone), BrandSpec palette, no text, no faces",
   "lyriaPrompt": "2-second instrumental sting, no vocals"
 }}
 
@@ -97,8 +99,9 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
             "subhead": "Local, honest, no miracle claims.",
             "primaryText": str(brief.get("goal") or "")[:240],
             "cta": "See evening slots",
-            "veoPrompt": "Empty modern gym, morning light, no people, no text.",
-            "imagePrompt": "Wide still of a calm gym interior, gold and charcoal palette, no text.",
+            "veoPrompt": "Empty modern interior, morning light, subject dead-centre, no people, no text.",
+            "imagePrompt": "Wide 16:9 still of a calm interior, BrandSpec palette, no text.",
+            "storyPrompt": "Vertical 9:16 still of the same interior, subject centred, no text.",
             "lyriaPrompt": "Short bright ukulele sting, no vocals.",
         }
 
@@ -110,8 +113,37 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
 
     if skip_still:
         assets["still"] = {"ok": False, "skipped": True, "model": g.IMAGE_MODEL}
+        assets["stillStory"] = {"ok": False, "skipped": True}
     else:
-        assets["still"] = _still(campaign_id, copy.get("imagePrompt") or "", brand, errors)
+        land_prompt = copy.get("imagePrompt") or "Wide 16:9 interior still, no text, no people."
+        story_prompt = copy.get("storyPrompt") or (
+            "Vertical 9:16 interior still, subject in the centre third, no text, no people."
+        )
+        land_err: list[str] = []
+        story_err: list[str] = []
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            land_f = pool.submit(_still, campaign_id, land_prompt, brand, "still", land_err)
+            story_f = pool.submit(_still, campaign_id, story_prompt, brand, "still-story", story_err)
+            assets["still"] = land_f.result()
+            assets["stillStory"] = story_f.result()
+        errors.extend(land_err)
+        errors.extend(story_err)
+        if assets["still"].get("ok"):
+            derived = derive_images(campaign_id, "still", prefer={"square", "landscape"})
+            assets["stillDerivatives"] = derived
+            if not assets["stillStory"].get("ok"):
+                extra = derive_images(campaign_id, "still", prefer={"story", "feed"})
+                assets["stillStory"] = (extra.get("slots") or {}).get("story") or assets["stillStory"]
+                assets["stillFeed"] = (extra.get("slots") or {}).get("feed")
+            else:
+                # Re-crop the vertical master so Gemini's native size cannot leak a 16:9 story slot.
+                extra = derive_images(campaign_id, "still-story", prefer={"story", "feed"})
+                if (extra.get("slots") or {}).get("story", {}).get("ok"):
+                    assets["stillStory"] = {**assets["stillStory"], **(extra["slots"]["story"])}
+                assets["stillFeed"] = (extra.get("slots") or {}).get("feed")
+        if assets["still"].get("ok"):
+            assets["stillSquare"] = ((assets.get("stillDerivatives") or {}).get("slots") or {}).get("square")
+            assets["stillLandscape"] = ((assets.get("stillDerivatives") or {}).get("slots") or {}).get("landscape")
     if skip_veo:
         assets["clip"] = {"ok": False, "skipped": True, "model": g.VEO_MODEL, "note": "INKA_SKIP_VEO=1"}
     else:
@@ -144,6 +176,7 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
         "prompts": {
             "veo": copy.get("veoPrompt"),
             "image": copy.get("imagePrompt"),
+            "story": copy.get("storyPrompt"),
             "lyria": copy.get("lyriaPrompt"),
         },
         "brandSpec": brand,
@@ -167,7 +200,9 @@ def _policy_lines(campaign_id: str) -> str:
     return " | ".join(str(r.get("text") or "") for r in rows[:8])
 
 
-def _still(campaign_id: str, prompt: str, brand: dict, errors: list[str]) -> dict[str, Any]:
+def _still(
+    campaign_id: str, prompt: str, brand: dict, stem: str, errors: list[str]
+) -> dict[str, Any]:
     palette = ", ".join(resolve_theme(brand).image_palette)
     full = f"{prompt}\nColor palette: {palette}. No letters, logos, watermarks, or people."
     attempts = (
@@ -189,7 +224,8 @@ def _still(campaign_id: str, prompt: str, brand: dict, errors: list[str]) -> dic
                 continue
             data, mime = blobs[0]
             ext = "png" if "png" in (mime or "") else "jpg"
-            path = media.campaign_path(campaign_id, f"still.{ext}")
+            filename = f"{stem}.{ext}" if stem == "still" else f"{stem}.png"
+            path = media.campaign_path(campaign_id, filename)
             uri = media.put_bytes(path, data, mime)
             return {
                 "ok": True,
@@ -197,12 +233,12 @@ def _still(campaign_id: str, prompt: str, brand: dict, errors: list[str]) -> dic
                 "gcs": uri,
                 "bytes": len(data),
                 "mime": mime,
-                "publicPath": f"/media/{campaign_id}/still",
+                "publicPath": f"/media/{campaign_id}/{stem}",
             }
-        except Exception as exc:  # noqa: BLE001
-            last_error = f"{model}:{type(exc).__name__}:{exc}"
+        except Exception as extra:  # noqa: BLE001
+            last_error = f"{model}:{type(extra).__name__}:{extra}"
             continue
-    errors.append(f"still:{last_error}")
+    errors.append(f"{stem}:{last_error}")
     return {"ok": False, "model": g.IMAGE_MODEL, "error": last_error[:300]}
 
 

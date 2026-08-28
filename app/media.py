@@ -37,6 +37,31 @@ STILL_NAMES = ("still.png", "still.jpg", "still.jpeg", "still.webp")
 CLIP_NAMES = ("clip.mp4", "clip.bin", "clip.webm")
 JINGLE_NAMES = ("jingle.wav", "jingle.mp3", "jingle.bin")
 
+MEDIA_SLOTS: dict[str, tuple[str, ...]] = {
+    "still": STILL_NAMES,
+    "still-square": ("still-square.png", "still-square.jpg"),
+    "still-feed": ("still-feed.png", "still-feed.jpg"),
+    "still-story": ("still-story.png", "still-story.jpg"),
+    "still-landscape": ("still-landscape.png", "still-landscape.jpg"),
+    "clip": CLIP_NAMES,
+    "clip-square": ("clip-square.mp4",),
+    "clip-feed": ("clip-feed.mp4",),
+    "clip-story": ("clip-story.mp4",),
+    "clip-landscape": ("clip-landscape.mp4",),
+    "jingle": JINGLE_NAMES,
+}
+
+
+def get_campaign_slot(campaign_id: str, slot: str) -> tuple[bytes, str] | None:
+    names = MEDIA_SLOTS.get(slot)
+    if not names:
+        return None
+    for name in names:
+        found = get_bytes(campaign_path(campaign_id, name))
+        if found:
+            return found
+    return None
+
 
 def get_campaign_still(campaign_id: str) -> tuple[bytes, str] | None:
     for name in STILL_NAMES:

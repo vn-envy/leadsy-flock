@@ -117,6 +117,7 @@ def list_campaign_summaries() -> list[dict[str, Any]]:
                 "brief": c.get("brief"),
                 "updatedAt": c.get("updatedAt"),
                 "landingPath": c.get("landingPath"),
+                "kitPath": c.get("kitPath"),
             }
         )
     return rows

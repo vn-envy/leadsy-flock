@@ -4,6 +4,7 @@ from app.http_api import _safe_campaign_id
 
 def test_safe_campaign_id() -> None:
     assert _safe_campaign_id("peak-gym-71d02b5c")
+    assert _safe_campaign_id("noya-salon-a1b2c3d4")
     assert not _safe_campaign_id("../etc/passwd")
     assert not _safe_campaign_id("still.png")
 

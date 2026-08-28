@@ -72,6 +72,7 @@ def attach_flock_routes(app: FastAPI) -> None:
         if not view:
             raise HTTPException(404, "campaign not found")
         view.pop("landingHtml", None)
+        view.pop("kitHtml", None)
         return view
 
     @app.post("/v1/campaigns/{campaign_id}/approve")
@@ -87,6 +88,13 @@ def attach_flock_routes(app: FastAPI) -> None:
         if not campaign or not campaign.get("landingHtml"):
             raise HTTPException(404, "landing not published")
         return HTMLResponse(campaign["landingHtml"])
+
+    @app.get("/k/{campaign_id}", response_class=HTMLResponse)
+    def kit(campaign_id: str) -> HTMLResponse:
+        campaign = ledger.get_campaign(campaign_id)
+        if not campaign or not campaign.get("kitHtml"):
+            raise HTTPException(404, "kit not published")
+        return HTMLResponse(campaign["kitHtml"])
 
     @app.get("/media/{campaign_id}/still")
     def campaign_still(campaign_id: str) -> Response:
@@ -107,44 +115,35 @@ def attach_flock_routes(app: FastAPI) -> None:
         if not _safe_campaign_id(campaign_id):
             raise HTTPException(400, "bad campaign id")
         return {
-            "still": media.campaign_asset_exists(campaign_id, media.STILL_NAMES),
-            "clip": media.campaign_asset_exists(campaign_id, media.CLIP_NAMES),
-            "jingle": media.campaign_asset_exists(campaign_id, media.JINGLE_NAMES),
+            slot: media.campaign_asset_exists(campaign_id, names)
+            for slot, names in media.MEDIA_SLOTS.items()
         }
 
-    @app.api_route("/media/{campaign_id}/clip", methods=["GET", "HEAD"])
-    def campaign_clip(campaign_id: str, request: Request) -> Response:
+    @app.api_route("/media/{campaign_id}/{slot}", methods=["GET", "HEAD"])
+    def campaign_media_slot(campaign_id: str, slot: str, request: Request) -> Response:
         if not _safe_campaign_id(campaign_id):
             raise HTTPException(400, "bad campaign id")
+        if slot not in media.MEDIA_SLOTS:
+            raise HTTPException(404, "unknown slot")
+        names = media.MEDIA_SLOTS[slot]
         if request.method == "HEAD":
-            if not media.campaign_asset_exists(campaign_id, media.CLIP_NAMES):
-                raise HTTPException(404, "clip not harvested")
-            return Response(status_code=200, media_type="video/mp4")
-        found = media.get_campaign_clip(campaign_id)
+            if not media.campaign_asset_exists(campaign_id, names):
+                raise HTTPException(404, "asset not published")
+            mime = "video/mp4" if slot.startswith("clip") else "audio/wav" if slot == "jingle" else "image/png"
+            return Response(status_code=200, media_type=mime)
+        found = media.get_campaign_slot(campaign_id, slot)
         if not found:
-            raise HTTPException(404, "clip not harvested")
+            raise HTTPException(404, "asset not published")
         data, mime = found
+        if slot.startswith("clip"):
+            mime = mime or "video/mp4"
+        elif slot == "jingle":
+            mime = mime or "audio/wav"
+        else:
+            mime = mime or "image/png"
         return Response(
             content=data,
-            media_type=mime or "video/mp4",
-            headers={"Cache-Control": "public, max-age=3600"},
-        )
-
-    @app.api_route("/media/{campaign_id}/jingle", methods=["GET", "HEAD"])
-    def campaign_jingle(campaign_id: str, request: Request) -> Response:
-        if not _safe_campaign_id(campaign_id):
-            raise HTTPException(400, "bad campaign id")
-        if request.method == "HEAD":
-            if not media.campaign_asset_exists(campaign_id, media.JINGLE_NAMES):
-                raise HTTPException(404, "jingle not harvested")
-            return Response(status_code=200, media_type="audio/wav")
-        found = media.get_campaign_jingle(campaign_id)
-        if not found:
-            raise HTTPException(404, "jingle not harvested")
-        data, mime = found
-        return Response(
-            content=data,
-            media_type=mime or "audio/wav",
+            media_type=mime,
             headers={"Cache-Control": "public, max-age=3600"},
         )
 
@@ -238,11 +237,12 @@ async function load() {
   rows.innerHTML = list.map(c => {
     const name = (c.brief && c.brief.businessName) || c.id;
     const land = c.landingPath ? `<a href="${c.landingPath}">landing</a>` : "";
+    const kit = c.kitPath ? ` <a href="${c.kitPath}">kit</a>` : "";
     return `<tr>
       <td><a href="#" data-id="${c.id}">${name}</a><div class="muted">${c.id}</div></td>
       <td class="pill">${c.status || ""}</td>
       <td class="muted">${(c.updatedAt || "").slice(0,19)}</td>
-      <td>${land}</td>
+      <td>${land}${kit}</td>
     </tr>`;
   }).join("");
   rows.querySelectorAll("a[data-id]").forEach(a => a.onclick = (e) => { e.preventDefault(); show(a.dataset.id); });
@@ -265,7 +265,7 @@ async function show(id) {
   });
   const rec = recs.map(r => r.step + ":" + r.status).join(" → ");
   document.getElementById("detail").textContent = rec + "\\n\\n" + JSON.stringify({
-    status: c.status, landingPath: c.landingPath, receipts: recs, hired: (c.engineConfig || {}).hired
+    status: c.status, landingPath: c.landingPath, kitPath: c.kitPath, receipts: recs, hired: (c.engineConfig || {}).hired
   }, null, 2);
 }
 load();

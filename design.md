@@ -33,6 +33,22 @@ Stella does not invent CSS colours. Scout may *name* a theme; `app/design.py` is
    - otherwise `inkstone`
 3. An accent hex from Scout is kept only if it still passes the contrast rules against the chosen `--bg` and as a button fill. Otherwise the theme accent wins.
 
+## Asset kit
+
+A local-agency launch kit is not one landscape still. 2026 Meta + Google delivery is covered by **four ratios**. Copy stays off the raster (no on-screen type) so safe-zone UI cannot cover a headline we burned in.
+
+| Slot | Ratio | Pixels (target) | Where it runs |
+|---|---|---|---|
+| `still` / `clip` | 16:9 | landing + in-stream | Stella, YouTube/in-stream |
+| `still-landscape` / `clip-landscape` | 1.91:1 | 1200×628 class | Google RDA / link ads |
+| `still-square` / `clip-square` | 1:1 | 1080×1080 | Carousel, Marketplace, fallback |
+| `still-feed` / `clip-feed` | 4:5 | 1080×1350 | Meta/Instagram Feed (default 2026) |
+| `still-story` / `clip-story` | 9:16 | 1080×1920 | Stories, Reels, Shorts, WhatsApp status |
+
+Masters: one 16:9 Gemini still, one 9:16 Gemini still, one Veo 16:9 clip (harvested). Derivatives are **centre crops** — Veo prompts keep the subject in the middle third. Theme tokens from this file colour the kit page (`/k/{id}`), never the pixels.
+
+We do **not** ship: IAB GIF banners, logo packs, or a zip. The kit page is the paste guide. **No autopost.**
+
 ## Do not
 
 - Paint `body` with the loudest brand colour.

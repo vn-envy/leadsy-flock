@@ -5,7 +5,7 @@ import time
 from unittest.mock import patch
 
 from app.engines.gate import banned_hits, run as gate_run
-from app.engines.adkit import variant, CHANNELS
+from app.engines.adkit import variant, CHANNELS, render_kit, run as adkit_run
 from app.engines.stella import render_html
 from app.engines import harvest, inka, outreach, scout
 
@@ -30,6 +30,60 @@ def test_ad_kit_variant_clips_and_utms() -> None:
     assert out["lint"]["ok"] is True
     assert "utm_campaign=c1" in out["utmUrl"]
     assert out["charCounts"]["headline"] <= ch["headlineMax"]
+    assert out["aspect"] == "4:5"
+    assert out["still"] == "/media/c1/still-feed"
+    assert out["clip"] == "/media/c1/clip-feed"
+
+
+def test_ad_kit_html_is_paste_guide_not_autopost() -> None:
+    inka_payload = {
+        "copy": {
+            "headline": "Colour that fits the commute",
+            "subhead": "Evenings on Golf Course Road.",
+            "primaryText": "Book a colour slot after work.",
+            "cta": "See slots",
+        },
+        "brandSpec": {"themeId": "paper"},
+        "assets": {},
+    }
+    stella_payload = {"url": "https://example.test/l/noya-1", "landing": "/l/noya-1"}
+
+    def receipts(_cid: str, step: str):
+        if step == "inka":
+            return {"payload": inka_payload}
+        if step == "stella":
+            return {"payload": stella_payload}
+        return {}
+
+    with (
+        patch("app.engines.adkit.ledger.get_receipt", side_effect=receipts),
+        patch("app.engines.adkit.ledger.upsert_campaign") as upsert,
+    ):
+        out = adkit_run(
+            {"id": "noya-1", "brief": {"businessName": "Noya Salon", "geo": "Gurgaon"}}
+        )
+    assert out["autopost"] is False
+    assert out["kit"] == "/k/noya-1"
+    assert out["themeId"] == "paper"
+    html = upsert.call_args.args[1]["kitHtml"]
+    assert upsert.call_args.args[1]["kitPath"] == "/k/noya-1"
+    assert 'data-theme="paper"' in html
+    assert "--bg:#f7f1e8" in html
+    assert "We do not autopost" in html
+    assert "/media/noya-1/still-feed" in html
+    assert "/media/noya-1/clip-story" in html
+    assert "/media/noya-1/still-landscape" in html
+    assert "whatsapp_status" in html
+    assert "google_rsa" in html
+    assert "/media/noya-1/ready" in html
+    assert "video.thumb[hidden]" in html
+    assert render_kit(
+        {"id": "noya-1", "brief": {"businessName": "Noya Salon", "geo": "Gurgaon"}},
+        inka_payload["copy"],
+        inka_payload["brandSpec"],
+        out["variants"],
+        "/l/noya-1",
+    ).count("<article") == 6
 
 
 def test_stella_html_requires_consent_checkbox() -> None:
@@ -86,8 +140,22 @@ def test_scout_run_never_raises() -> None:
     with patch.object(scout, "_run_inner", side_effect=RuntimeError("no vertex")):
         out = scout.run({"brief": {"businessName": "Peak Gym", "geo": "Gurgaon"}})
     assert out["brandSpec"]["tagline"]
-    assert out["brandSpec"]["themeId"] == "inkstone"
+    assert out["brandSpec"]["themeId"] == "ember"
     assert out["errors"]
+
+
+def test_scout_run_never_raises() -> None:
+    with patch.object(scout, "_run_inner", side_effect=RuntimeError("no vertex")):
+        out = scout.run({"brief": {"businessName": "Peak Gym", "geo": "Gurgaon"}})
+    assert out["brandSpec"]["tagline"]
+    assert out["brandSpec"]["themeId"] == "ember"
+    assert out["errors"]
+
+
+def test_scout_salon_fallback_is_paper() -> None:
+    with patch.object(scout, "_run_inner", side_effect=RuntimeError("no vertex")):
+        out = scout.run({"brief": {"businessName": "Noya Salon", "geo": "Gurgaon"}})
+    assert out["brandSpec"]["themeId"] == "paper"
 
 
 def test_gemini_clients_are_cached() -> None:
@@ -146,6 +214,7 @@ def test_harvest_retries_while_veo_is_running(monkeypatch) -> None:
         patch("app.engines.harvest.ledger.upsert_campaign"),
         patch("app.engines.harvest.media.campaign_asset_exists", return_value=False),
         patch.object(harvest, "_poll_veo", return_value={"operation": "ops/abc", "status": "started", "ok": True}),
+        patch.object(harvest, "derive_videos", return_value={"ok": True, "slots": {}}),
     ):
         out = harvest.run({"id": "c1", "_harvestAttempt": 1})
     assert out["retry"] is True
@@ -171,6 +240,7 @@ def test_harvest_finishes_when_clip_has_gcs(monkeypatch) -> None:
         patch("app.engines.harvest.ledger.upsert_campaign") as upsert,
         patch("app.engines.harvest.media.campaign_asset_exists", return_value=False),
         patch.object(harvest, "_poll_veo", return_value=harvested),
+        patch.object(harvest, "derive_videos", return_value={"ok": True, "slots": {"story": {"ok": True}}}),
     ):
         out = harvest.run({"id": "c1", "_harvestAttempt": 2})
     assert out["retry"] is False
@@ -192,6 +262,7 @@ def test_harvest_skips_lyria_after_retries(monkeypatch) -> None:
         }),
         patch("app.engines.harvest.ledger.upsert_campaign"),
         patch.object(harvest, "_lyria") as lyria,
+        patch.object(harvest, "derive_videos", return_value={"ok": True, "slots": {}}),
     ):
         out = harvest.run({"id": "c1", "_harvestAttempt": 3})
     lyria.assert_not_called()

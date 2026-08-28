@@ -46,3 +46,8 @@ def test_design_md_lists_locked_tokens() -> None:
         assert theme.bg in text
         assert theme.fg in text
         assert theme.accent in text
+    assert "4:5" in text
+    assert "9:16" in text
+    assert "1.91:1" in text
+    assert "/k/{id}" in text
+    assert "No autopost" in text

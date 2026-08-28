@@ -43,7 +43,7 @@ Rules:
 - Do not invent personal emails or phone numbers.
 - Discovery is not consent. You research places and public pages, not people to cold-email.
 - If a website URL is in the brief, read it with url context.
-- themeId must be one of inkstone, ember, grove, slate, paper (see design.md). ember = gyms/energy; grove = wellness; paper = clinics/cafés; slate = professional; inkstone = default. palette hex is for image prompts only — never a CSS background.
+- themeId must be one of inkstone, ember, grove, slate, paper (see design.md). ember = gyms/energy; grove = wellness; paper = clinics/cafés/salons; slate = professional; inkstone = default. palette hex is for image prompts only — never a CSS background.
 
 Business: {business}
 Geo: {geo}
@@ -63,7 +63,7 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
         return {
             "model": g.TEXT_MODEL,
             "evidence": [],
-            "brandSpec": _default_brand(business, geo),
+            "brandSpec": _default_brand(business, geo, brief),
             "localInsight": "",
             "crowdInsight": "",
             "groundingUris": [],
@@ -129,7 +129,7 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
         except Exception:
             body = {
                 "evidence": [],
-                "brandSpec": _default_brand(business, geo),
+                "brandSpec": _default_brand(business, geo, brief),
                 "localInsight": notes[:600],
                 "parseError": str(exc),
             }
@@ -146,7 +146,7 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
                     "signal": 0.7,
                 }
             )
-    brand = body.get("brandSpec") or _default_brand(business, geo)
+    brand = body.get("brandSpec") or _default_brand(business, geo, brief)
     theme = resolve_theme(brand)
     if isinstance(brand, dict):
         brand = dict(brand)
@@ -164,8 +164,19 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _default_brand(business: str, geo: str) -> dict[str, Any]:
-    theme = resolve_theme({"themeId": "inkstone"})
+def _default_brand(business: str, geo: str, brief: dict[str, Any] | None = None) -> dict[str, Any]:
+    brief = brief or {}
+    blob = f"{business} {brief.get('goal') or ''} {brief.get('audience') or ''}".lower()
+    theme_id = "inkstone"
+    if any(w in blob for w in ("gym", "fitness", "crossfit", "workout")):
+        theme_id = "ember"
+    elif any(w in blob for w in ("salon", "spa", "clinic", "café", "cafe", "bakery")):
+        theme_id = "paper"
+    elif any(w in blob for w in ("yoga", "wellness", "garden")):
+        theme_id = "grove"
+    elif any(w in blob for w in ("lawyer", "consultant", "accountant")):
+        theme_id = "slate"
+    theme = resolve_theme({"themeId": theme_id})
     return {
         "themeId": theme.id,
         "palette": theme.image_palette,

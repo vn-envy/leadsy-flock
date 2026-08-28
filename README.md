@@ -17,8 +17,9 @@ Hello Flo is live. The flock engines run on Pub/Sub + Cloud Run:
 - `GET /v1/infra` — runtime inventory (Firestore, topics, Model Armor, Memory Bank)
 - `GET /console` — receipts Mission Control
 - `GET /l/{campaignId}` — Stella consent-first landing with still; clip/jingle unhide when harvest finishes
+- `GET /k/{campaignId}` — agency paste kit (4:5 / 1:1 / 9:16 / 1.91:1 stills + Veo crops, UTMs, no autopost)
 - `GET /media/{campaignId}/still` — Gemini 3.1 Flash Image (Imagen 3 successor)
-- `GET /media/{campaignId}/clip` · `/jingle` — Veo/Lyria once `inka_harvest` writes GCS
+- `GET /media/{campaignId}/{slot}` — `still-*` crops, Veo `clip` / `clip-story` / …, Lyria `jingle` once harvest writes GCS
 - `POST /v1/consents` — Model Armor on the way in
 - Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md) · [DAY3.md](DAY3.md) · [design.md](design.md)
 

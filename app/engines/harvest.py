@@ -11,6 +11,7 @@ from typing import Any
 from google.genai import types
 
 from app import ledger, media
+from app.derive import derive_videos
 from app.engines import gemini_util as g
 from app.engines.inka import _lyria
 
@@ -49,9 +50,27 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
                     "note": "already in GCS",
                 }
             )
+            try:
+                clip["derivatives"] = derive_videos(campaign_id, "clip.mp4")
+            except Exception as extra:  # noqa: BLE001
+                errors.append(f"derive:{type(extra).__name__}:{extra}")
+            assets["clip"] = clip
+            # fall through to lyria / persist
         else:
             clip = _poll_veo(clip, campaign_id, errors)
-        assets["clip"] = clip
+            assets["clip"] = clip
+
+    if (
+        campaign_id
+        and (clip.get("gcs") or clip.get("status") == "harvested")
+        and not (clip.get("derivatives") or {}).get("ok")
+    ):
+        try:
+            clip = dict(clip)
+            clip["derivatives"] = derive_videos(campaign_id, "clip.mp4")
+            assets["clip"] = clip
+        except Exception as extra:  # noqa: BLE001
+            errors.append(f"derive:{type(extra).__name__}:{extra}")
 
     skip_lyria = os.environ.get("INKA_SKIP_LYRIA", "0") == "1"
     if not skip_lyria and not jingle.get("gcs") and not jingle.get("skipped"):
@@ -140,6 +159,11 @@ def _poll_veo(clip: dict[str, Any], campaign_id: str, errors: list[str]) -> dict
             errors.append("veo:done_no_bytes")
             return out
         uri = media.put_bytes(media.campaign_path(campaign_id, "clip.mp4"), data, mime or "video/mp4")
+        derived = {}
+        try:
+            derived = derive_videos(campaign_id, "clip.mp4")
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"derive:{type(exc).__name__}:{exc}")
         out.update(
             {
                 "ok": True,
@@ -149,6 +173,7 @@ def _poll_veo(clip: dict[str, Any], campaign_id: str, errors: list[str]) -> dict
                 "mime": mime or "video/mp4",
                 "publicPath": f"/media/{campaign_id}/clip",
                 "model": g.VEO_MODEL,
+                "derivatives": derived,
             }
         )
         return out
