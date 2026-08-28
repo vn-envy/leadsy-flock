@@ -89,3 +89,28 @@ Owner frames were the previous campaign's stills, passed as `assetUris` (stand-i
 | Jingle | Lyria-002 **429 skipped**; flock still completed |
 
 Does not overwrite `noya-salon-fff1d666` or `noya-salon-7384033d`. No real salon was contacted. Gemini still-from-scratch is only used when the shop has no usable visual evidence.
+
+## Glen's Bakehouse (live Google listing sanity check)
+
+Public listing `https://share.google/rLF34cfolz9TJA92F` on **28 Aug 2026**. Campaign **`google-listing-eaf57cae`**. **Do not contact this business.**
+
+Scout opened the share link (urlContext), resolved **Glen's Bakehouse**, Indiranagar, vertical **food**. `glensbakehouse.com/menu.pdf` 404s; own frames came from the live homepage CSS `background-image` photos (6 frames). Gemini did **not** invent a shop.
+
+- Kit: https://flock-api-533880600838.asia-south1.run.app/k/google-listing-eaf57cae
+- Landing: https://flock-api-533880600838.asia-south1.run.app/l/google-listing-eaf57cae
+- Place 4:5: https://flock-api-533880600838.asia-south1.run.app/media/google-listing-eaf57cae/clip-feed
+- Proof 4:5: https://flock-api-533880600838.asia-south1.run.app/media/google-listing-eaf57cae/clip-proof-feed
+- English 9:16: https://flock-api-533880600838.asia-south1.run.app/media/google-listing-eaf57cae/clip-en
+- Hindi 9:16: https://flock-api-533880600838.asia-south1.run.app/media/google-listing-eaf57cae/clip-indic
+
+| Check | Result |
+|---|---|
+| Origin | **`own`**, `ownCount` 6. Stills are bakery photos from glensbakehouse.com |
+| Inka Veo | Two 8s 9:16 LROs, `usedRefs: true` (place + proof). Room tone only |
+| Channel pixels | `clip-feed` **1080×1350**, square **1080×1080**, story **1080×1920**, landscape **1200×628**. Proof slots match |
+| Dual VO | Kore EN + Puck Hindi on both films (`clip-en` / `clip-indic` and `clip-proof-en` / `clip-proof-indic`) |
+| Kit | Aspect frames (`data-aspect`), `1080×1350` badges, Save links, place + proof. `autopost: false` |
+| Gate | Draft rejected if it overclaimed; final **pass**. Headline names Indiranagar / red velvet |
+| Jingle | Lyria skipped on harvest so 429 cannot stall the flock |
+
+Does not overwrite Noya or Peak Gym writeups. No email, call, review, or autopost.
