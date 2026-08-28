@@ -14,12 +14,12 @@ from app import ledger, media
 from app.captions import burn_story_captions
 from app.derive import derive_videos
 from app.engines import gemini_util as g
-from app.engines.inka import _lyria
+from app.engines.inka import _lyria, _veo_start
 
 MAX_ATTEMPTS = int(os.environ.get("HARVEST_MAX_ATTEMPTS", "24"))
 
 
-_KEEP = {"harvested", "failed", "timed_out", "done_no_bytes"}
+_KEEP = {"harvested", "failed", "timed_out"}
 
 
 def run(campaign: dict[str, Any]) -> dict[str, Any]:
@@ -59,6 +59,9 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
             # fall through to lyria / persist
         else:
             clip = _poll_veo(clip, campaign_id, errors)
+            if clip.get("status") == "done_no_bytes":
+                restarted = _restart_veo(clip, campaign_id, inka, errors)
+                clip = restarted or {**clip, "status": "failed", "ok": False}
             assets["clip"] = clip
 
     if (
@@ -150,14 +153,11 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
 
 
 def _merge_asset(base: Any, saved: Any) -> dict[str, Any]:
+    """Harvest state wins — including a fallback LRO that replaced Inka's original."""
     out = dict(base or {})
     extra = dict(saved or {})
-    if extra.get("gcs") or extra.get("skipped") or extra.get("status") in _KEEP:
+    if extra:
         out.update(extra)
-        return out
-    for key in ("error", "quotaLikely", "ok", "bytes", "publicPath"):
-        if extra.get(key) not in (None, ""):
-            out[key] = extra[key]
     return out
 
 
@@ -179,11 +179,13 @@ def _poll_veo(clip: dict[str, Any], campaign_id: str, errors: list[str]) -> dict
             out["status"] = "started"
             out["ok"] = True
             return out
-        data, mime = _video_bytes(operation)
+        data, mime = _video_bytes(operation, client)
         if not data:
+            reasons = _rai_reasons(operation)
             out["ok"] = False
             out["status"] = "done_no_bytes"
-            errors.append("veo:done_no_bytes")
+            out["raiReasons"] = reasons
+            errors.append("veo:done_no_bytes" + (f":{reasons[0][:180]}" if reasons else ""))
             return out
         uri = media.put_bytes(media.campaign_path(campaign_id, "clip.mp4"), data, mime or "video/mp4")
         derived = {}
@@ -212,7 +214,45 @@ def _poll_veo(clip: dict[str, Any], campaign_id: str, errors: list[str]) -> dict
         return out
 
 
-def _video_bytes(operation: Any) -> tuple[bytes | None, str | None]:
+def _rai_reasons(operation: Any) -> list[str]:
+    response = getattr(operation, "response", None) or getattr(operation, "result", None)
+    raw = getattr(response, "rai_media_filtered_reasons", None) if response else None
+    return [str(x) for x in (raw or []) if x]
+
+
+def _restart_veo(
+    clip: dict[str, Any],
+    campaign_id: str,
+    inka: dict[str, Any],
+    errors: list[str],
+) -> dict[str, Any] | None:
+    """RAI often blocks ASSET refs that imply people. Start the next fallback LRO."""
+    copy = inka.get("copy") or {}
+    prompts = inka.get("prompts") or {}
+    if clip.get("usedRefs"):
+        sequence: tuple[tuple[bool, str], ...] = ((False, "9:16"), (False, "16:9"))
+    elif str(clip.get("aspectRatio") or "") == "9:16":
+        sequence = ((False, "16:9"),)
+    else:
+        return None
+    started = _veo_start(
+        campaign_id,
+        str(prompts.get("veo") or ""),
+        errors,
+        refs=[],
+        vo_line=str(copy.get("voIndic") or copy.get("voEn") or ""),
+        sequence=sequence,
+    )
+    if not started.get("operation"):
+        return None
+    started["fallbackFrom"] = clip.get("status")
+    started["priorRai"] = clip.get("raiReasons") or []
+    started["fallbackStage"] = int(clip.get("fallbackStage") or 0) + 1
+    started["priorOperation"] = clip.get("operation")
+    return started
+
+
+def _video_bytes(operation: Any, client: Any | None = None) -> tuple[bytes | None, str | None]:
     response = getattr(operation, "response", None) or getattr(operation, "result", None)
     generated = getattr(response, "generated_videos", None) if response else None
     if not generated:
@@ -225,6 +265,14 @@ def _video_bytes(operation: Any) -> tuple[bytes | None, str | None]:
     uri = getattr(video, "uri", None) or ""
     if uri.startswith("gs://"):
         return _download_gs(uri)
+    if client and uri:
+        try:
+            client.files.download(file=video)
+            data = getattr(video, "video_bytes", None)
+            if data:
+                return data, mime
+        except Exception:  # noqa: BLE001
+            pass
     return None, None
 
 

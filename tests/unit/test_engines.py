@@ -281,3 +281,46 @@ def test_harvest_skips_lyria_after_retries(monkeypatch) -> None:
     assert out["jingle"]["skipped"] is True
     assert out["jingle"]["pending"] is False
     assert out["retry"] is False
+
+
+def test_harvest_restarts_veo_after_rai_filter(monkeypatch) -> None:
+    monkeypatch.setenv("INKA_SKIP_LYRIA", "1")
+    rai = {
+        "operation": "ops/refs",
+        "status": "done_no_bytes",
+        "ok": False,
+        "usedRefs": True,
+        "aspectRatio": "9:16",
+        "raiReasons": ["people/face generation filtered out 1 videos"],
+    }
+    started = {
+        "ok": True,
+        "status": "started",
+        "operation": "ops/plain",
+        "usedRefs": False,
+        "aspectRatio": "9:16",
+        "generateAudio": True,
+        "durationSeconds": 8,
+    }
+    with (
+        patch("app.engines.harvest.ledger.get_receipt", return_value={
+            "payload": {
+                "assets": {"clip": {"operation": "ops/refs", "status": "started", "usedRefs": True}},
+                "prompts": {"veo": "empty salon"},
+                "copy": {"voEn": "Quiet colour after work."},
+            }
+        }),
+        patch("app.engines.harvest.ledger.upsert_campaign"),
+        patch("app.engines.harvest.media.campaign_asset_exists", return_value=False),
+        patch.object(harvest, "_poll_veo", return_value=rai),
+        patch.object(harvest, "_veo_start", return_value=started) as start,
+        patch.object(harvest, "derive_videos", return_value={"ok": True, "slots": {}}),
+        patch.object(harvest, "burn_story_captions", return_value={"ok": True}),
+    ):
+        out = harvest.run({"id": "c1", "_harvestAttempt": 3})
+    start.assert_called_once()
+    assert start.call_args.kwargs["sequence"] == ((False, "9:16"), (False, "16:9"))
+    assert out["retry"] is True
+    assert out["clip"]["operation"] == "ops/plain"
+    assert out["clip"]["usedRefs"] is False
+    assert out["clip"]["fallbackStage"] == 1

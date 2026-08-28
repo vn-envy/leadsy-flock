@@ -30,12 +30,12 @@ Return ONLY JSON:
   "primaryText": "2-3 sentences for a Meta primary text, under 125 words",
   "cta": "short CTA",
   "storyHook": "one sentence: winning shelf trope × local pain × this business",
-  "voEn": "one spoken sentence under 18 words for an 8-second film, no claims",
-  "shotList": "three beats for an 8-second 9:16 film, no faces, no on-screen text",
-  "veoPrompt": "English cinematic direction for Veo 3.1, 8 seconds, 9:16, locked-off or slow push, subject dead-centre, no people faces, no on-screen text, native audio (room tone + one spoken line)",
-  "imagePrompt": "16:9 still photograph prompt, BrandSpec palette, subject centred, no text in the image",
-  "storyPrompt": "9:16 vertical still, subject in the centre third (Stories/Reels safe zone), BrandSpec palette, no text, no faces",
-  "detailPrompt": "tight 1:1 still of hands-at-work or product detail, BrandSpec palette, no faces, no text",
+  "voEn": "one ENGLISH spoken sentence, Latin script only, under 18 words, for an 8-second film, no claims",
+  "shotList": "three beats for an 8-second 9:16 film: empty interior, product, light — no people, no hands, no faces, no on-screen text",
+  "veoPrompt": "English cinematic direction for Veo 3.1, 8 seconds, 9:16, locked-off or slow push, product/interior dead-centre, EMPTY of people and body parts, no on-screen text, native audio (room tone + one spoken line off-camera)",
+  "imagePrompt": "16:9 still photograph prompt, BrandSpec palette, empty interior or product centred, no people, no hands, no faces, no text in the image",
+  "storyPrompt": "9:16 vertical still, product or empty station in the centre third (Stories/Reels safe zone), BrandSpec palette, no people, no hands, no faces, no text",
+  "detailPrompt": "tight 1:1 still of tools, bowls, bottles or fabric — product only, BrandSpec palette, no people, no hands, no faces, no text",
   "lyriaPrompt": "2-second instrumental sting, no vocals"
 }}
 
@@ -338,18 +338,23 @@ def _veo_start(
     *,
     refs: list[tuple[bytes, str]] | None = None,
     vo_line: str = "",
+    sequence: tuple[tuple[bool, str], ...] | None = None,
 ) -> dict[str, Any]:
     """Kick off 8s 9:16 Veo with native audio. Never wait on the LRO."""
     t0 = time.time()
     spoken = " ".join((vo_line or "").split())[:180]
     body = prompt or (
-        "8-second 9:16 cinematic interior, morning light, subject dead-centre, "
-        "no people faces, no on-screen text."
+        "8-second 9:16 cinematic interior, morning light, product dead-centre, "
+        "empty of people, no on-screen text."
+    )
+    body = (
+        f"{body}\nEmpty of people: no humans, no faces, no hands, no body parts, "
+        "no mannequins. Product, tools, and room only."
     )
     if spoken:
         body = (
-            f"{body}\nSpoken dialogue, one line only, in the local language: \"{spoken}\"\n"
-            "No burned-in captions or subtitles. Quiet room tone under the line."
+            f"{body}\nOff-camera spoken dialogue, one line only, in the local language: \"{spoken}\"\n"
+            "No burned-in captions or subtitles. Quiet room tone under the line. No on-screen speaker."
         )
     ref_images = []
     for data, mime in (refs or [])[:3]:
@@ -371,8 +376,9 @@ def _veo_start(
             "generate_audio": True,
             "person_generation": "dont_allow",
             "negative_prompt": (
-                "on-screen text, captions, subtitles, logos, watermarks, "
-                "celebrity lookalikes, children, minors, faces"
+                "people, person, human, crowd, face, faces, hands, body, skin, "
+                "mannequin, celebrity lookalikes, children, minors, "
+                "on-screen text, captions, subtitles, logos, watermarks"
             ),
         }
         if use_refs and ref_images:
@@ -385,11 +391,22 @@ def _veo_start(
         )
 
     last_error = ""
-    for use_refs, aspect in ((True, "9:16"), (False, "9:16"), (False, "16:9")):
+    steps = sequence or ((True, "9:16"), (False, "9:16"), (False, "16:9"))
+    for use_refs, aspect in steps:
         if use_refs and not ref_images:
             continue
         try:
             operation = _start(use_refs, aspect)
+            if getattr(operation, "done", False):
+                resp = getattr(operation, "response", None) or getattr(operation, "result", None)
+                videos = getattr(resp, "generated_videos", None) if resp else None
+                reasons = list(getattr(resp, "rai_media_filtered_reasons", None) or []) if resp else []
+                if not videos:
+                    last_error = (
+                        f"{aspect}:{'refs' if use_refs else 'plain'}:"
+                        f"rai:{'; '.join(reasons) or 'done_empty'}"
+                    )
+                    continue
             return {
                 "ok": True,
                 "model": g.VEO_MODEL,

@@ -51,7 +51,6 @@ with urllib.request.urlopen(kit_url, timeout=20) as resp:
 assert "We do not autopost" in kit_html
 assert "Noya Salon" in kit_html
 assert f"/media/{cid}/still-feed" in kit_html
-assert f"/media/{cid}/clip-story" in kit_html
 assert f"/media/{cid}/clip-captioned" in kit_html
 assert "whatsapp_status" in kit_html
 assert "--bg:" in kit_html
@@ -103,7 +102,7 @@ need_harvest = bool(
 clips = {}
 jingle = {"ok": False, "bytes": 0, "contentType": ""}
 harvest_rows = []
-for i in range(40):
+for i in range(50):
     with urllib.request.urlopen(url, timeout=20) as resp:
         last = json.loads(resp.read().decode())
     harvest_rows = [r for r in last.get("receipts") or [] if r.get("step") == "inka_harvest"]
