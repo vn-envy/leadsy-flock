@@ -22,6 +22,7 @@ from app.campaigns import (
     screen_text,
 )
 from app.derive import download_name
+from app.settings import load_settings
 from app.telegram_adapter import configured as telegram_configured
 from app.telegram_adapter import handle_update
 from app.worker import handle_step
