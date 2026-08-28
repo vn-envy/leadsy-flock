@@ -173,13 +173,12 @@ def render_html(
         btn.disabled = false;
       }}
     }});
-    async function revealWhenReady(el, onReady, tries) {{
-      if (!el) return;
-      const src = el.getAttribute("src");
+    async function revealWhenReady(kind, onReady, tries) {{
       for (let i = 0; i < tries; i++) {{
         try {{
-          const r = await fetch(src, {{ method: "HEAD" }});
-          if (r.ok) {{
+          const r = await fetch("/media/{cid}/ready");
+          const body = await r.json();
+          if (body[kind]) {{
             onReady();
             return;
           }}
@@ -189,13 +188,17 @@ def render_html(
     }}
     const clip = document.getElementById("clip");
     const still = document.getElementById("still");
-    revealWhenReady(clip, () => {{
-      clip.hidden = false;
-      if (still) still.hidden = true;
-      clip.play().catch(() => {{}});
+    revealWhenReady("clip", () => {{
+      if (clip) {{
+        clip.hidden = false;
+        if (still) still.hidden = true;
+        clip.play().catch(() => {{}});
+      }}
     }}, 24);
     const jingle = document.getElementById("jingle");
-    revealWhenReady(jingle, () => {{ jingle.hidden = false; }}, 8);
+    revealWhenReady("jingle", () => {{
+      if (jingle) jingle.hidden = false;
+    }}, 8);
   </script>
 </body>
 </html>

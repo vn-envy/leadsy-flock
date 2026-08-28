@@ -58,8 +58,9 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
         if attempt >= 3:
             jingle = dict(jingle)
             jingle["skipped"] = True
+            jingle["pending"] = False
             jingle["ok"] = False
-            jingle["note"] = jingle.get("note") or "Lyria gave up after retries (often 429 quota)"
+            jingle["note"] = "Lyria gave up after retries (often 429 quota)"
             assets["jingle"] = jingle
         else:
             jingle = _lyria(campaign_id, prompts.get("lyria") or "", errors)
@@ -107,6 +108,10 @@ def _merge_asset(base: Any, saved: Any) -> dict[str, Any]:
     extra = dict(saved or {})
     if extra.get("gcs") or extra.get("skipped") or extra.get("status") in _KEEP:
         out.update(extra)
+        return out
+    for key in ("error", "quotaLikely", "ok", "bytes", "publicPath"):
+        if extra.get(key) not in (None, ""):
+            out[key] = extra[key]
     return out
 
 

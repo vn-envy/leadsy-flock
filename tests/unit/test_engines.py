@@ -69,7 +69,7 @@ def test_stella_html_embeds_clip_and_jingle_hooks() -> None:
     assert 'src="/media/peak-1/clip"' in html
     assert 'src="/media/peak-1/jingle"' in html
     assert "revealWhenReady" in html
-    assert "HEAD" in html
+    assert "/media/peak-1/ready" in html
 
 
 def test_inka_run_never_raises() -> None:
@@ -193,4 +193,5 @@ def test_harvest_skips_lyria_after_retries(monkeypatch) -> None:
         out = harvest.run({"id": "c1", "_harvestAttempt": 3})
     lyria.assert_not_called()
     assert out["jingle"]["skipped"] is True
+    assert out["jingle"]["pending"] is False
     assert out["retry"] is False

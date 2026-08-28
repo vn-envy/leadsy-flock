@@ -33,16 +33,17 @@ def get_bytes(path: str) -> tuple[bytes, str] | None:
     return blob.download_as_bytes(), blob.content_type or "application/octet-stream"
 
 
+STILL_NAMES = ("still.png", "still.jpg", "still.jpeg", "still.webp")
+CLIP_NAMES = ("clip.mp4", "clip.bin", "clip.webm")
+JINGLE_NAMES = ("jingle.wav", "jingle.mp3", "jingle.bin")
+
+
 def get_campaign_still(campaign_id: str) -> tuple[bytes, str] | None:
-    for name in ("still.png", "still.jpg", "still.jpeg", "still.webp"):
+    for name in STILL_NAMES:
         found = get_bytes(campaign_path(campaign_id, name))
         if found:
             return found
     return None
-
-
-CLIP_NAMES = ("clip.mp4", "clip.bin", "clip.webm")
-JINGLE_NAMES = ("jingle.wav", "jingle.mp3", "jingle.bin")
 
 
 def get_campaign_clip(campaign_id: str) -> tuple[bytes, str] | None:

@@ -102,7 +102,17 @@ def attach_flock_routes(app: FastAPI) -> None:
             headers={"Cache-Control": "public, max-age=3600"},
         )
 
-    @app.get("/media/{campaign_id}/clip")
+    @app.get("/media/{campaign_id}/ready")
+    def media_ready(campaign_id: str) -> dict:
+        if not _safe_campaign_id(campaign_id):
+            raise HTTPException(400, "bad campaign id")
+        return {
+            "still": media.campaign_asset_exists(campaign_id, media.STILL_NAMES),
+            "clip": media.campaign_asset_exists(campaign_id, media.CLIP_NAMES),
+            "jingle": media.campaign_asset_exists(campaign_id, media.JINGLE_NAMES),
+        }
+
+    @app.api_route("/media/{campaign_id}/clip", methods=["GET", "HEAD"])
     def campaign_clip(campaign_id: str, request: Request) -> Response:
         if not _safe_campaign_id(campaign_id):
             raise HTTPException(400, "bad campaign id")
@@ -120,7 +130,7 @@ def attach_flock_routes(app: FastAPI) -> None:
             headers={"Cache-Control": "public, max-age=3600"},
         )
 
-    @app.get("/media/{campaign_id}/jingle")
+    @app.api_route("/media/{campaign_id}/jingle", methods=["GET", "HEAD"])
     def campaign_jingle(campaign_id: str, request: Request) -> Response:
         if not _safe_campaign_id(campaign_id):
             raise HTTPException(400, "bad campaign id")

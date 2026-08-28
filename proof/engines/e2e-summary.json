@@ -1,78 +1,158 @@
 {
-  "campaignId": "peak-gym-a49dae31",
+  "campaignId": "peak-gym-05636371",
   "status": "completed",
-  "landing": "https://flock-api-533880600838.asia-south1.run.app/l/peak-gym-a49dae31",
+  "landing": "https://flock-api-533880600838.asia-south1.run.app/l/peak-gym-05636371",
   "still": {
-    "url": "https://flock-api-533880600838.asia-south1.run.app/media/peak-gym-a49dae31/still",
+    "url": "https://flock-api-533880600838.asia-south1.run.app/media/peak-gym-05636371/still",
     "ok": true,
-    "bytes": 1419756,
+    "bytes": 1576560,
     "contentType": "image/png"
   },
+  "clip": {
+    "url": "https://flock-api-533880600838.asia-south1.run.app/media/peak-gym-05636371/clip",
+    "ok": true,
+    "bytes": 1390495,
+    "contentType": "video/mp4"
+  },
+  "jingle": {
+    "url": "https://flock-api-533880600838.asia-south1.run.app/media/peak-gym-05636371/jingle",
+    "ok": false,
+    "bytes": 0,
+    "contentType": ""
+  },
+  "harvest": [
+    {
+      "status": "ok",
+      "attempt": 6,
+      "payload": {
+        "idempotencyKey": "peak-gym-05636371:inka_harvest:6",
+        "clip": {
+          "campaignId": "peak-gym-05636371",
+          "ok": true,
+          "done": true,
+          "bytes": 1390495,
+          "seconds": 1.7,
+          "operation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/1c9c3572-e4fa-4176-8a21-2133db9c6763",
+          "model": "veo-3.1-generate-001",
+          "mime": "video/mp4",
+          "status": "harvested",
+          "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/peak-gym-05636371/clip.mp4",
+          "publicPath": "/media/peak-gym-05636371/clip"
+        },
+        "errors": [],
+        "jingle": {
+          "model": "lyria-002",
+          "ok": false,
+          "error": "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Quota exceeded for aiplatform.googleapis.com/generate_content_requests_per_minute_per_project_per_base_model with base model: lyria-002. Please submit a quota increase request. https://cloud.google.com/vertex-ai/docs/generative-ai/quotas-ge",
+          "skipped": true,
+          "note": "Lyria runs on inka_harvest so quota 429 cannot timeout Inka",
+          "quotaLikely": true,
+          "pending": true
+        },
+        "retry": false,
+        "attempt": 6,
+        "maxAttempts": 16,
+        "assets": {
+          "still": {
+            "model": "gemini-3.1-flash-image",
+            "ok": true,
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/peak-gym-05636371/still.png",
+            "bytes": 1576560,
+            "mime": "image/png",
+            "publicPath": "/media/peak-gym-05636371/still"
+          },
+          "clip": {
+            "campaignId": "peak-gym-05636371",
+            "ok": true,
+            "done": true,
+            "bytes": 1390495,
+            "seconds": 1.7,
+            "operation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/1c9c3572-e4fa-4176-8a21-2133db9c6763",
+            "model": "veo-3.1-generate-001",
+            "mime": "video/mp4",
+            "status": "harvested",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/peak-gym-05636371/clip.mp4",
+            "publicPath": "/media/peak-gym-05636371/clip"
+          },
+          "jingle": {
+            "model": "lyria-002",
+            "ok": false,
+            "error": "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Quota exceeded for aiplatform.googleapis.com/generate_content_requests_per_minute_per_project_per_base_model with base model: lyria-002. Please submit a quota increase request. https://cloud.google.com/vertex-ai/docs/generative-ai/quotas-ge",
+            "skipped": true,
+            "note": "Lyria runs on inka_harvest so quota 429 cannot timeout Inka",
+            "quotaLikely": true,
+            "pending": true
+          }
+        }
+      }
+    }
+  ],
   "consent": {
-    "id": "VApc89zyAe3qg0oWAOtx",
-    "campaignId": "peak-gym-a49dae31",
+    "id": "kAnA3WFnw0NuLTl0SEsQ",
+    "campaignId": "peak-gym-05636371",
     "ok": true
   },
   "gate": {
-    "idempotencyKey": "peak-gym-a49dae31:creative_gate:1",
-    "verdict": "pass",
-    "classifier": {
-      "error": "404 NOT_FOUND. {'error': {'code': 404, 'message': 'Publisher model `projects/leadsy-flock/locations/us-central1/publishers/google/models/gemma-3-12b-it` was not found or your project does not have access to it. Ensure you are using a valid model name and that the model is available in the specified ",
-      "model": "gemma-3-12b-it",
-      "ok": false,
-      "risk": "unknown"
-    },
-    "rule": "fail_closed_claims",
-    "final": {
-      "hits": [],
-      "text": "An Efficient Evening Workout on Golf Course Road."
-    },
-    "judge": {
-      "reason": "The ad copy contains no guaranteed outcomes, medical claims, or testimonials. It accurately describes the gym's facilities, environment, and membership structure for Gurgaon professionals without making non-compliant promises.",
-      "verdict": "pass",
-      "model": "gemini-3.5-flash",
-      "ok": true
-    },
     "draft": {
       "rejected": true,
+      "text": "The Guaranteed Cure for Gurgaon's Overcrowded Gyms.",
       "hits": [
-        "guaranteed_outcome"
-      ],
-      "text": "Guaranteed to cut your workout time in half with Gurgaon's only zero-wait premium gym."
+        "guaranteed_outcome",
+        "medical_claim"
+      ]
+    },
+    "final": {
+      "text": "No Waiting for Machines. Just Your Peak Workout.",
+      "hits": []
+    },
+    "verdict": "pass",
+    "rule": "fail_closed_claims",
+    "judge": {
+      "model": "gemini-3.5-flash",
+      "ok": true,
+      "verdict": "pass",
+      "reason": "The ad copy focuses on gym logistics, equipment availability, and hygiene. It does not contain any medical claims, guaranteed outcomes, or testimonials."
+    },
+    "idempotencyKey": "peak-gym-05636371:creative_gate:1",
+    "classifier": {
+      "model": "gemma-3-12b-it",
+      "ok": false,
+      "error": "404 NOT_FOUND. {'error': {'code': 404, 'message': 'Publisher model `projects/leadsy-flock/locations/us-central1/publishers/google/models/gemma-3-12b-it` was not found or your project does not have access to it. Ensure you are using a valid model name and that the model is available in the specified ",
+      "risk": "unknown"
     }
   },
   "scoutGrounding": [
-    "https://maps.google.com/maps?cid=14482130163890705436",
-    "https://maps.google.com/maps?cid=2537677001782962825",
-    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHxfwRWVsKm2jSc9JeePpZqkG7zQyjlPFz6OgiFoXOeVZyZVCP-7LCxRxhE5gUmuyExF7ctthzfmJY9JQB2imAonj8mE8h7NxWQ0NBuCGsoA7txIIn-_7nHLd-kZaKbr4lpiPs_FXVjdjLVnO4TJcRRIzxpPEdOS4JJC8cWxV6DZGp8ADkIptQyoI8vVOhTLsJWQdmF0F_Sug8-wpFz3MDP",
-    "https://maps.google.com/maps?cid=15789234248012230063",
-    "https://maps.google.com/maps?cid=15044973954679086021",
-    "https://maps.google.com/maps?cid=12499434134958125608",
-    "https://maps.google.com/maps?cid=11733917278434323741",
-    "https://maps.google.com/maps?cid=14162380379798743121",
-    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEhLDQd6G2KhF10LsuCFVOCZWivO4HaUh9z6Iwr69zFZSF-XQXJgT-GikABDvwzg81KSYuOxqSnKCEhhiwGxoTa3CXLbI8R90anMLExZo1k89N4ANgVF7mmbqVZXdHGdBby3lblXQogKlmTggBoMlMWJkeblBfjIfh4-3LsKpkpA-6BgN_hjDEMbB9oKqJdQS5ci1171pg7",
-    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHiTfbgX6X01ITOuEXOxHvBsAFueJMdh0kmeMeUZMWEScQtExTTL2Y9wziQzZ--clLBDxipP_e_dQIzXRMbK-m-56ei43K2AVzqrSVI_9oBGdorlH1KhmQSSy_32KO-7zhixB-2jMEq8JhfqphBejVt4ilHJDCKObzfZlwvTWtvikOOUB7tDxjYC-L-jrtteGm5zDcxfWQ="
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFwqsqItCzZDPHgZpFpBXi59DVcDv9C_0ttz9M7gk0fu9FOTe23WHD_IfD1PFZZD0HZpoCnBfTztx-slp2TG9ne0FY7mWkPUd5InKO6MWYiGwQkJj9qBoKU_wyhixXzvwlUEZlURLJuttZo1KuZdXnlSq9ubdFGxOGB",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE5X3V6IvsiOqODSBEbDnR9WEB7JkjJahyWe3bwfcxNNkjOstWQnRjUu5NKO6uewZzLqTHIHx8FNtBe2x811tVMQvS0DdGL7EIq2fPbSQ14e8bAxkSyqO1CKEd6gjyXkQgpOmi5fp5ts5yf",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFfdUmAMjZbBLZdUirCJjC0PUkNcGX__2ptWNOesJ-Jh8zXB0jjWs-81r3jbbDzLdp4WodwyI0l3hLoB-XdSHgH5e0XoNqLLC2er-fvLz6wSeSBsBSdR7vyVq6x_s8eRBqiFCGW7E5B5rWe7bx20aa2X9igfhiT4T3LuLquYcX9_oWtIeJ6TJobRwnZkFlL",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQENj0Q6ARkOX3BUkpmT6hsOwrsowp2gxjvO-wlWBJqR0itCh9VRvSNkOMMN4W5w8Q0vLwDCoWmUW6jaIdPA363JLMcRV2mF1LxXWGhFS17vnCY5dfnUAZTgHKcIXtarPym96wiIsfdypa-bmiYl_GZlzbR0jx9DeAnVaeehCba6h_6yWpFhNUQSLMGGgFaciQzJmcDtqQgq57td-w-6kRy3Pgp3bQrNDr6mXbhBmIW8FdRKIMP2",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH901fIKUkCa-NPX-uy655QBsR68LQt_bfoXyh7Ob5BfpIWzbkHL3XTQygoF0ROIm7kFpe7ULlhsjOWvy7W537d5MYBpGShz9n5xTT2kegh-S-PIJvho9bz2BSDEGS9BtqIYG0Pjqol55ipM-MiKuKwclNh3CIdqE8n_6FhrkpTbUQHk2VemVeuHHlb287sCqAo--yen-4uT3mj1sbcyI_bO4Xm0HnpI5PeYrhXbcjQOS6WrotUXOGXgAKUfsldZzNR-kJ8t22e3CZO5k_a",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEEXJIcK1YnLE8b_gkVD-aqHNf-qi_W_Ic_igYCEK84awcj1LFLSr2gpqOh8jc7b0V1BhVl_sf4jovIoBSKlR5thRGUgXxL3cwvPEM1BY2RfhBIXxx0DtY2uqfTYQ8i8-kZ1NhYqkiXtI_XcM8A88Gchbsm2fOBFwHgLnIGzE7uCQY=",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGKnaWD_bSU-LyN1bu6JkfSY309DoUQYQ3MNsjPJURNEGZyq45qFgp_FamPi7Oaz42bQiCWqMuOLKttws-5tqZ17Wdc8SaESxbIkkIH6LsR1k3t-e13kBLx33BISPVtsi0AXYPDuW3VZWIi43h3JKoTK8yKNeT1bKyI1nRbHYxvNd9PTucYtsfSfW3OX4VK6ItMwIeUZqrdnpI2Cpf1",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEY0o7x8GHKYp2Pszu59nAdFa-SGc7TXllbIqypqB18l4Z4NJ86iz2ugzDGWSahaugOOJrvE-CFQOwZu_38JlOVpvM55X1TPUbtL5Jd_eIQTWUxKrPOjMcq4rSSKo-F8oT8hqfix49c4ftwH0GJ_TDDMSFS_Sm6AazS8EdM5MyidlmeAuxo9TgsmZykoLdG-XdOWtu4Bp8="
   ],
   "inkaAssets": {
-    "clip": {
-      "skipped": true,
-      "model": "veo-3.1-generate-001",
-      "ok": false,
-      "note": "INKA_SKIP_VEO=1; use smoke_models.py for Veo proof"
-    },
-    "jingle": {
-      "skipped": true,
-      "model": "lyria-002",
-      "ok": false,
-      "note": "INKA_SKIP_LYRIA=1; Lyria often 429"
-    },
     "still": {
-      "mime": "image/png",
-      "publicPath": "/media/peak-gym-a49dae31/still",
       "model": "gemini-3.1-flash-image",
       "ok": true,
-      "bytes": 1419756,
-      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/peak-gym-a49dae31/still.png"
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/peak-gym-05636371/still.png",
+      "bytes": 1576560,
+      "mime": "image/png",
+      "publicPath": "/media/peak-gym-05636371/still"
+    },
+    "clip": {
+      "campaignId": "peak-gym-05636371",
+      "model": "veo-3.1-generate-001",
+      "status": "started",
+      "ok": true,
+      "seconds": 1.7,
+      "operation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/1c9c3572-e4fa-4176-8a21-2133db9c6763"
+    },
+    "jingle": {
+      "model": "lyria-002",
+      "ok": false,
+      "note": "Lyria runs on inka_harvest so quota 429 cannot timeout Inka",
+      "pending": true
     }
   },
   "draftRejected": true,
