@@ -52,8 +52,10 @@ assert "We do not autopost" in kit_html
 assert "Noya Salon" in kit_html
 assert f"/media/{cid}/still-feed" in kit_html
 assert f"/media/{cid}/clip-story" in kit_html
+assert f"/media/{cid}/clip-captioned" in kit_html
 assert "whatsapp_status" in kit_html
 assert "--bg:" in kit_html
+assert "Remix a live shelf trope" in kit_html
 theme = ((next(r for r in last["receipts"] if r.get("step") == "ad_kit").get("payload") or {}).get("themeId"))
 print(f"kit themeId={theme}", flush=True)
 
@@ -72,7 +74,7 @@ def _get(path):
         return str(exc), 0, False
 
 stills = {}
-for slot in ("still", "still-story", "still-feed", "still-square", "still-landscape"):
+for slot in ("still", "still-story", "still-detail", "still-feed", "still-square", "still-landscape"):
     ctype, nbytes, ok = _get(f"/media/{cid}/{slot}")
     stills[slot] = {"ok": ok, "bytes": nbytes, "contentType": ctype}
     print(f"still {slot} ok={ok} bytes={nbytes} type={ctype}", flush=True)
@@ -101,21 +103,26 @@ need_harvest = bool(
 clips = {}
 jingle = {"ok": False, "bytes": 0, "contentType": ""}
 harvest_rows = []
-for i in range(28):
+for i in range(40):
     with urllib.request.urlopen(url, timeout=20) as resp:
         last = json.loads(resp.read().decode())
     harvest_rows = [r for r in last.get("receipts") or [] if r.get("step") == "inka_harvest"]
-    for slot in ("clip", "clip-story", "clip-feed", "clip-square", "clip-landscape"):
+    for slot in ("clip", "clip-story", "clip-captioned", "clip-feed", "clip-square", "clip-landscape"):
         ctype, nbytes, ok = _get(f"/media/{cid}/{slot}")
         clips[slot] = {"ok": ok, "bytes": nbytes, "contentType": ctype}
     jtype, jbytes, jok = _get(f"/media/{cid}/jingle")
     jingle = {"ok": jok, "bytes": jbytes, "contentType": jtype}
     print(
         f"harvest try {i} clip={clips.get('clip')} story={clips.get('clip-story')} "
-        f"jingle={jingle} harvest={[(r.get('status'), r.get('attempt')) for r in harvest_rows]}",
+        f"captioned={clips.get('clip-captioned')} jingle={jingle} "
+        f"harvest={[(r.get('status'), r.get('attempt')) for r in harvest_rows]}",
         flush=True,
     )
-    if clips.get("clip", {}).get("ok") and clips.get("clip-story", {}).get("ok"):
+    if (
+        clips.get("clip", {}).get("ok")
+        and clips.get("clip-story", {}).get("ok")
+        and clips.get("clip-captioned", {}).get("ok")
+    ):
         break
     harvest_done = any(r.get("status") == "ok" for r in harvest_rows)
     if harvest_done and clips.get("clip", {}).get("ok"):
@@ -127,11 +134,14 @@ if need_harvest and not harvest_rows:
     sys.exit(1)
 
 # Kit must exist even if Veo is still polling; clip-story is the live proof of ffmpeg.
-kit_ok = True
 clip_ok = bool(clips.get("clip", {}).get("ok") and (clips["clip"]["bytes"] or 0) > 1000)
 story_ok = bool(clips.get("clip-story", {}).get("ok") and (clips["clip-story"]["bytes"] or 0) > 500)
+captioned_ok = bool(clips.get("clip-captioned", {}).get("ok") and (clips["clip-captioned"]["bytes"] or 0) > 500)
 if clip_ok and not story_ok:
     print("clip harvested but 9:16 crop missing (ffmpeg?)", flush=True)
+    sys.exit(1)
+if clip_ok and story_ok and not captioned_ok:
+    print("clip harvested but clip-captioned missing (caption burn?)", flush=True)
     sys.exit(1)
 
 with urllib.request.urlopen(api + "/media/" + cid + "/ready", timeout=20) as resp:
@@ -140,10 +150,35 @@ with urllib.request.urlopen(api + "/media/" + cid + "/ready", timeout=20) as res
 gate = next(r for r in last["receipts"] if r.get("step") == "creative_gate")
 scout = next(r for r in last["receipts"] if r.get("step") == "scout")
 adkit = next(r for r in last["receipts"] if r.get("step") == "ad_kit")
+inka = next(r for r in last["receipts"] if r.get("step") == "inka")
+scout_p = scout.get("payload") or {}
+inka_p = inka.get("payload") or {}
+locale = inka_p.get("locale") or scout_p.get("locale") or {}
+shelf = scout_p.get("shelf") or []
+copy = inka_p.get("copy") or {}
+clip_meta = (inka_p.get("assets") or {}).get("clip") or {}
+assert locale.get("bcp47") == "hi-IN", locale
+http_shelf = [s for s in shelf if str((s or {}).get("uri") or "").startswith("http")]
+assert http_shelf, shelf
+vo_indic = str(copy.get("voIndic") or "")
+assert any("\u0900" <= ch <= "\u097f" for ch in (vo_indic + kit_html)), "expected Devanagari in VO or kit"
+assert copy.get("storyHook"), copy
+assert (adkit.get("payload") or {}).get("autopost") is False
+
 summary = {
     "campaignId": cid,
     "status": last.get("status"),
     "themeId": (adkit.get("payload") or {}).get("themeId"),
+    "locale": locale,
+    "shelf": shelf,
+    "storyHook": copy.get("storyHook"),
+    "voIndic": vo_indic,
+    "clipStart": {
+        "durationSeconds": clip_meta.get("durationSeconds"),
+        "aspectRatio": clip_meta.get("aspectRatio"),
+        "generateAudio": clip_meta.get("generateAudio"),
+        "usedRefs": clip_meta.get("usedRefs"),
+    },
     "kit": kit_url,
     "landing": landing,
     "stills": stills,
@@ -157,24 +192,29 @@ summary = {
     "consent": consent,
     "draftRejected": ((gate.get("payload") or {}).get("draft") or {}).get("rejected"),
     "gateVerdict": (gate.get("payload") or {}).get("verdict"),
-    "scoutGrounding": (scout.get("payload") or {}).get("groundingUris") or [],
+    "scoutGrounding": scout_p.get("groundingUris") or [],
     "autopost": (adkit.get("payload") or {}).get("autopost"),
     "kitHtmlHasAutopostRefusal": "We do not autopost" in kit_html,
+    "kitHtmlHasDevanagari": any("\u0900" <= ch <= "\u097f" for ch in kit_html),
 }
 out = Path("proof/engines")
 out.mkdir(parents=True, exist_ok=True)
-(out / "salon-campaign.json").write_text(json.dumps(last, indent=2) + "\n")
-(out / "salon-summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+(out / "salon-shelf-campaign.json").write_text(json.dumps(last, indent=2) + "\n")
+(out / "salon-shelf-summary.json").write_text(json.dumps(summary, indent=2) + "\n")
 print("PASS", json.dumps({
     "campaignId": cid,
     "themeId": summary["themeId"],
+    "locale": locale.get("bcp47"),
+    "shelfN": len(http_shelf),
     "kit": kit_url,
     "stillBytes": stills["still"]["bytes"],
     "stillStoryBytes": stills.get("still-story", {}).get("bytes"),
     "clipBytes": clips.get("clip", {}).get("bytes"),
     "clipStoryBytes": clips.get("clip-story", {}).get("bytes"),
+    "clipCaptionedBytes": clips.get("clip-captioned", {}).get("bytes"),
+    "clipStart": summary["clipStart"],
     "jingleBytes": jingle.get("bytes"),
     "autopost": summary["autopost"],
     "gateVerdict": summary["gateVerdict"],
-}))
+}, ensure_ascii=False))
 PY
