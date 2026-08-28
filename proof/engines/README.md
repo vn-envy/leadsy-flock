@@ -64,3 +64,28 @@ Fictional salon, same brief, **28 Aug 2026**. Campaign **`noya-salon-fff1d666`**
 | Jingle | Lyria-002 **429 skipped**; flock still completed |
 
 Does not overwrite `noya-salon-7384033d`. No real salon was contacted.
+
+## Noya Salon (own photos → Veo + dual VO)
+
+Fictional salon, same brief, **28 Aug 2026**. Campaign **`noya-salon-e548bd87`**. Theme **`paper`**. Locale **`hi-IN`**.
+
+Owner frames were the previous campaign's stills, passed as `assetUris` (stand-in for website / listing / menu / shop photos). Gemini did **not** invent a shop. Image refine hit **429**, so Inka kept the raw owner frames. Those three frames went to Veo as ASSET refs.
+
+- Kit: https://flock-api-533880600838.asia-south1.run.app/k/noya-salon-e548bd87
+- Landing: https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-e548bd87
+- English film: https://flock-api-533880600838.asia-south1.run.app/media/noya-salon-e548bd87/clip-en
+- Hindi film: https://flock-api-533880600838.asia-south1.run.app/media/noya-salon-e548bd87/clip-indic
+- Captioned 9:16 (Hindi): https://flock-api-533880600838.asia-south1.run.app/media/noya-salon-e548bd87/clip-captioned
+- Captioned 9:16 (English): https://flock-api-533880600838.asia-south1.run.app/media/noya-salon-e548bd87/clip-captioned-en
+
+| Check | Result |
+|---|---|
+| Origin | **`own`**, `ownCount` 3. Stills `still` / `still-story` / `still-detail` are owner photos |
+| Refine | Gemini image-to-image **429**; raw owner bytes kept |
+| Inka Veo start | 8s, `9:16`, `generateAudio: true` (room tone only), **`usedRefs: true`** |
+| Harvest | Attempt 3. `clip.mp4` 4.63MB. Captions EN + Indic |
+| Dual VO | Gemini TTS Kore (EN) + Puck (Hindi), PCM wrapped as WAV, muxed to **`clip-en` 1.70MB** and **`clip-indic` 1.79MB** |
+| Kit | Reels/WhatsApp use `clip-indic` + `clip-en`. Copy lists both spoken lines. Lede: own photos. `autopost: false` |
+| Jingle | Lyria-002 **429 skipped**; flock still completed |
+
+Does not overwrite `noya-salon-fff1d666` or `noya-salon-7384033d`. No real salon was contacted. Gemini still-from-scratch is only used when the shop has no usable visual evidence.

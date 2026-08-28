@@ -115,19 +115,22 @@ for i in range(50):
     jingle = {"ok": jok, "bytes": jbytes, "contentType": jtype}
     print(
         f"harvest try {i} clip={clips.get('clip')} story={clips.get('clip-story')} "
-        f"captioned={clips.get('clip-captioned')} jingle={jingle} "
+        f"captioned={clips.get('clip-captioned')} en={clips.get('clip-en')} "
+        f"indic={clips.get('clip-indic')} jingle={jingle} "
         f"harvest={[(r.get('status'), r.get('attempt')) for r in harvest_rows]}",
         flush=True,
     )
+    vo_ok = bool(clips.get("clip-en", {}).get("ok") and clips.get("clip-indic", {}).get("ok"))
+    harvest_done = any(r.get("status") == "ok" for r in harvest_rows)
     if (
         clips.get("clip", {}).get("ok")
         and clips.get("clip-story", {}).get("ok")
         and clips.get("clip-captioned", {}).get("ok")
-        and (clips.get("clip-en", {}).get("ok") or clips.get("clip-indic", {}).get("ok") or i >= 12)
+        and vo_ok
     ):
         break
-    harvest_done = any(r.get("status") == "ok" for r in harvest_rows)
-    if harvest_done and clips.get("clip", {}).get("ok"):
+    # Harvest can mark ok before GCS lists clip-en / clip-indic. Keep polling.
+    if harvest_done and clips.get("clip", {}).get("ok") and vo_ok:
         break
     time.sleep(8)
 
@@ -145,6 +148,10 @@ if clip_ok and not story_ok:
 if clip_ok and story_ok and not captioned_ok:
     print("clip harvested but clip-captioned missing (caption burn?)", flush=True)
     sys.exit(1)
+en_ok = bool(clips.get("clip-en", {}).get("ok") and (clips["clip-en"]["bytes"] or 0) > 500)
+indic_ok = bool(clips.get("clip-indic", {}).get("ok") and (clips["clip-indic"]["bytes"] or 0) > 500)
+if clip_ok and not (en_ok and indic_ok):
+    print(f"WARN dual VO incomplete en={en_ok} indic={indic_ok}", flush=True)
 
 with urllib.request.urlopen(api + "/media/" + cid + "/ready", timeout=20) as resp:
     ready = json.loads(resp.read().decode())
@@ -206,6 +213,21 @@ summary = {
     "autopost": (adkit.get("payload") or {}).get("autopost"),
     "kitHtmlHasAutopostRefusal": "We do not autopost" in kit_html,
     "kitHtmlHasDevanagari": any("\u0900" <= ch <= "\u097f" for ch in kit_html),
+}
+harvest_p = (harvest_rows[-1].get("payload") if harvest_rows else {}) or {}
+clip_h = harvest_p.get("clip") or {}
+voices = clip_h.get("voices") or {}
+summary["harvestClip"] = {
+    "origin": (inka_p.get("assets") or {}).get("origin"),
+    "ownCount": ((inka_p.get("assets") or {}).get("own") or {}).get("count"),
+    "usedRefs": clip_h.get("usedRefs"),
+    "clipEnBytes": (voices.get("en") or {}).get("bytes") or (clips.get("clip-en") or {}).get("bytes"),
+    "clipIndicBytes": (voices.get("indic") or {}).get("bytes") or (clips.get("clip-indic") or {}).get("bytes"),
+    "captionsEnBytes": (clip_h.get("captionsEn") or {}).get("bytes") or (clips.get("clip-captioned-en") or {}).get("bytes"),
+    "voices": {
+        "en": bool((voices.get("en") or {}).get("ok") or (clips.get("clip-en") or {}).get("ok")),
+        "indic": bool((voices.get("indic") or {}).get("ok") or (clips.get("clip-indic") or {}).get("ok")),
+    },
 }
 out = Path("proof/engines")
 out.mkdir(parents=True, exist_ok=True)
