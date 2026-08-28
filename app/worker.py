@@ -69,6 +69,19 @@ def handle_step(message: dict[str, Any]) -> dict[str, Any]:
         span.set_attribute("engine.status", result.get("verdict") or result.get("ok") or "ok")
 
     receipt_status = "polling" if step in SIDECAR_STEPS and result.get("retry") else "ok"
+    if (
+        step == "scout"
+        and existing
+        and existing.get("status") == "ok"
+        and (existing.get("payload") or {}).get("resolvedName")
+        and not result.get("resolvedName")
+    ):
+        # A JSON-failed Scout retry must not erase a listing we already resolved.
+        result = dict(existing.get("payload") or {})
+        result.setdefault("errors", [])
+        if isinstance(result["errors"], list):
+            result["errors"] = [*result["errors"], "kept_previous_resolvedName"]
+        receipt_status = "ok"
     ledger.write_receipt(
         campaign_id=campaign_id,
         step=step,

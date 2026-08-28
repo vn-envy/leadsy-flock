@@ -79,7 +79,7 @@ gcloud run deploy flock-worker \
   --image="${IMAGE}" \
   --service-account="${SA}" \
   --no-allow-unauthenticated \
-  --timeout=540 \
+  --timeout=3600 \
   --cpu=1 \
   --memory=2Gi \
   --set-env-vars="${COMMON_ENV},OTEL_SERVICE_NAME=flock-worker"

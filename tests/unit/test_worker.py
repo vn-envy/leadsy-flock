@@ -45,6 +45,32 @@ def test_handle_step_skips_when_receipt_already_ok(ledger: MagicMock, publish_ne
     publish_next.assert_called_once()
 
 
+@patch("app.worker.publish_next")
+@patch("app.worker.run_engine")
+@patch("app.worker.ledger")
+def test_scout_keeps_resolved_name_when_retry_returns_empty(
+    ledger: MagicMock, run_engine: MagicMock, publish_next: MagicMock
+) -> None:
+    ledger.get_receipt.return_value = {
+        "status": "ok",
+        "payload": {"resolvedName": "Glen's Bakehouse", "vertical": "food"},
+    }
+    run_engine.return_value = {"resolvedName": "", "errors": ["json:JSONDecodeError"], "ownUris": []}
+    publish_next.return_value = "msg-2"
+    out = handle_step(
+        {
+            "campaignId": "c1",
+            "step": "scout",
+            "pipeline": ["scout", "inka"],
+            "attempt": 3,
+            "forceRetry": True,
+        }
+    )
+    assert out["status"] == "ok"
+    ok_writes = [c for c in ledger.write_receipt.call_args_list if c.kwargs.get("status") == "ok"]
+    assert ok_writes[-1].kwargs["payload"]["resolvedName"] == "Glen's Bakehouse"
+
+
 @patch("app.worker.publish_step")
 @patch("app.worker.run_engine")
 @patch("app.worker.ledger")
