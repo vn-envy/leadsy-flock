@@ -242,6 +242,25 @@ def test_harvest_retries_while_veo_is_running(monkeypatch) -> None:
     assert out["retry"] is True
 
 
+def test_harvest_polls_new_lro_even_if_old_mp4_exists(monkeypatch) -> None:
+    monkeypatch.setenv("INKA_SKIP_LYRIA", "1")
+    with (
+        patch("app.engines.harvest.ledger.get_receipt", return_value={
+            "payload": {
+                "assets": {"clip": {"operation": "ops/new", "status": "started"}},
+                "prompts": {},
+            }
+        }),
+        patch("app.engines.harvest.ledger.upsert_campaign"),
+        patch("app.engines.harvest.media.campaign_asset_exists", return_value=True),
+        patch.object(harvest, "_poll_veo", return_value={"operation": "ops/new", "status": "started", "ok": True}) as poll,
+        patch.object(harvest, "derive_videos", return_value={"ok": True, "slots": {}}),
+    ):
+        out = harvest.run({"id": "c1", "_harvestAttempt": 1})
+    assert out["retry"] is True
+    poll.assert_called_once()
+
+
 def test_harvest_finishes_when_clip_has_gcs(monkeypatch) -> None:
     monkeypatch.setenv("INKA_SKIP_LYRIA", "1")
     harvested = {

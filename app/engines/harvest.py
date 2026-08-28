@@ -156,30 +156,12 @@ def _advance_master(
     if not clip.get("operation") and not clip.get("gcs") and clip.get("status") not in _KEEP:
         return clip
     if clip.get("operation") and not clip.get("gcs") and clip.get("status") not in _KEEP:
-        already = False
-        try:
-            already = bool(campaign_id) and media.campaign_asset_exists(campaign_id, already_names)
-        except Exception:  # noqa: BLE001
-            already = False
-        if already:
-            clip = dict(clip)
-            clip.update(
-                {
-                    "ok": True,
-                    "status": "harvested",
-                    "publicPath": f"/media/{campaign_id}/{prefix}",
-                    "note": "already in GCS",
-                }
-            )
-            try:
-                clip["derivatives"] = derive_videos(campaign_id, dest_name, prefix=prefix)
-            except Exception as extra:  # noqa: BLE001
-                errors.append(f"derive:{type(extra).__name__}:{extra}")
-        else:
-            clip = _poll_veo(clip, campaign_id, errors, dest_name=dest_name, prefix=prefix)
-            if clip.get("status") == "done_no_bytes":
-                restarted = _restart_veo(clip, campaign_id, inka, errors, prompt_key=prompt_key)
-                clip = restarted or {**clip, "status": "failed", "ok": False}
+        # Always poll this LRO. A leftover mp4 from a prior Inka on the same
+        # campaign must not count as this film.
+        clip = _poll_veo(clip, campaign_id, errors, dest_name=dest_name, prefix=prefix)
+        if clip.get("status") == "done_no_bytes":
+            restarted = _restart_veo(clip, campaign_id, inka, errors, prompt_key=prompt_key)
+            clip = restarted or {**clip, "status": "failed", "ok": False}
 
     if (
         campaign_id
