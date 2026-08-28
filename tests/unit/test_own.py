@@ -36,6 +36,33 @@ def test_collect_uris_from_brief_and_scout() -> None:
     assert all("facebook.com/people" not in u for u in uris)
 
 
+def test_collect_uris_adds_homepage_from_menu_pdf_and_maps_cid() -> None:
+    rows = collect_uris(
+        {"website": "https://share.google/rLF34cfolz9TJA92F", "googleListing": "https://share.google/rLF34cfolz9TJA92F"},
+        {
+            "ownUris": [
+                {
+                    "uri": "https://glensbakehouse.com/menu.pdf",
+                    "kind": "menu",
+                    "role": "proof",
+                    "title": "Signature Menu",
+                }
+            ],
+            "evidence": [
+                {
+                    "uri": "https://maps.google.com/?cid=1126359482739482019",
+                    "source": "maps",
+                }
+            ],
+        },
+    )
+    uris = [r["uri"] for r in rows]
+    assert "https://glensbakehouse.com/menu.pdf" in uris
+    assert "https://glensbakehouse.com/" in uris
+    assert "https://maps.google.com/?cid=1126359482739482019" in uris
+    assert any(r["kind"] == "website" and r["uri"] == "https://glensbakehouse.com/" for r in rows)
+
+
 def test_extract_html_images_uses_og_and_skips_icons() -> None:
     html = """
     <html><head>

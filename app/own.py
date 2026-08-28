@@ -108,8 +108,16 @@ def collect_uris(brief: dict[str, Any] | None, scout: dict[str, Any] | None) -> 
         src = str((ev or {}).get("source") or "")
         if uri.lower().endswith((".jpg", ".jpeg", ".png", ".webp", ".pdf")):
             _add(uri, "pdf" if uri.lower().endswith(".pdf") else "photo")
-        elif src in ("maps", "url") and "google.com/maps" in uri:
+        elif src in ("maps", "url") and (
+            "google.com/maps" in uri or "maps.google.com" in uri or "share.google/" in uri
+        ):
             _add(uri, "maps")
+    # A menu PDF on the shop's own host is also a homepage we can pull og:images from.
+    for row in list(rows):
+        if row["kind"] in ("menu", "pdf"):
+            parsed = urlparse(row["uri"])
+            if parsed.scheme in ("http", "https") and parsed.netloc:
+                _add(f"{parsed.scheme}://{parsed.netloc}/", "website")
     return rows[:MAX_URIS]
 
 

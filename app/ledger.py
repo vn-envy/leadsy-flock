@@ -34,6 +34,35 @@ def now_iso() -> str:
     return datetime.now(UTC).isoformat()
 
 
+_DONE_STATUSES = {"ok", "skip", "blocked"}
+
+
+def merge_receipt(prev: dict[str, Any] | None, body: dict[str, Any]) -> dict[str, Any]:
+    """Firestore merge is shallow: a started write with {idempotencyKey} would
+    replace a finished engine payload. Never regress a done receipt to started."""
+    incoming = dict(body)
+    incoming_payload = dict(incoming.get("payload") or {})
+    if not prev:
+        out = dict(incoming)
+        out.setdefault("createdAt", incoming.get("updatedAt"))
+        out["payload"] = incoming_payload
+        return out
+    prev_payload = dict(prev.get("payload") or {})
+    if incoming.get("status") == "started" and prev.get("status") in _DONE_STATUSES:
+        out = dict(incoming)
+        out["status"] = prev.get("status")
+        out["payload"] = prev_payload
+        return out
+    out = dict(incoming)
+    if incoming.get("status") == "started":
+        out["payload"] = {**prev_payload, **incoming_payload}
+    elif incoming_payload:
+        out["payload"] = incoming_payload
+    else:
+        out["payload"] = prev_payload
+    return out
+
+
 def write_receipt(
     *,
     campaign_id: str,
@@ -61,11 +90,12 @@ def write_receipt(
     }
     ref = db.collection(COL_RECEIPTS).document(receipt_id)
     snap = ref.get()
-    if not snap.exists:
-        body["createdAt"] = body["updatedAt"]
-        ref.set(body)
+    prev = snap.to_dict() if snap.exists else None
+    merged = merge_receipt(prev, body)
+    if prev is None:
+        ref.set(merged)
     else:
-        ref.set(body, merge=True)
+        ref.set(merged, merge=True)
     return receipt_id
 
 

@@ -158,6 +158,38 @@ def test_inka_kicks_off_harvest_sidecar(
 
 
 @patch("app.worker.publish_next")
+@patch("app.worker.publish_step")
+@patch("app.worker.run_engine")
+@patch("app.worker.ledger")
+def test_inka_starts_harvest_when_only_proof_clip_is_pending(
+    ledger: MagicMock, run_engine: MagicMock, publish_step: MagicMock, publish_next: MagicMock
+) -> None:
+    ledger.get_receipt.return_value = None
+    ledger.get_campaign.return_value = {}
+    publish_next.return_value = "msg-2"
+    publish_step.return_value = "msg-h"
+    run_engine.return_value = {
+        "ok": True,
+        "assets": {
+            "clip": {"ok": False},
+            "clipProof": {"operation": "ops/proof"},
+            "jingle": {"pending": False},
+        },
+    }
+    out = handle_step(
+        {
+            "campaignId": "c1",
+            "step": "inka",
+            "pipeline": ["inka", "creative_gate"],
+            "attempt": 1,
+        }
+    )
+    assert out["status"] == "ok"
+    publish_step.assert_called_once()
+    assert publish_step.call_args.kwargs["step"] == "inka_harvest"
+
+
+@patch("app.worker.publish_next")
 @patch("app.worker.ledger")
 def test_harvest_already_ok_does_not_advance_pipeline(
     ledger: MagicMock, publish_next: MagicMock

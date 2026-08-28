@@ -135,8 +135,13 @@ def run_engine(step: str, campaign_id: str, attempt: int = 1) -> dict[str, Any]:
 def _maybe_start_harvest(campaign_id: str, pipeline: list[str], result: dict[str, Any]) -> None:
     assets = result.get("assets") or {}
     clip = assets.get("clip") or {}
+    proof = assets.get("clipProof") or {}
     jingle = assets.get("jingle") or {}
-    need = bool(clip.get("operation")) or bool(jingle.get("pending"))
+    need = (
+        bool(clip.get("operation"))
+        or bool(proof.get("operation"))
+        or bool(jingle.get("pending"))
+    )
     if not need:
         return
     publish_step(
