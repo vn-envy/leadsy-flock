@@ -102,8 +102,8 @@ def render_html(
       padding: 3rem 0 4.5rem;
     }}
     p.kicker {{
-      letter-spacing: 0.18em; font-size: 0.72rem; text-transform: uppercase;
-      color: var(--accent); margin: 0 0 1.1rem; font-weight: 600;
+      letter-spacing: 0.16em; font-size: 0.8rem; text-transform: uppercase;
+      color: var(--accent); margin: 0 0 1.1rem; font-weight: 650;
     }}
     h1 {{
       font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
@@ -116,6 +116,7 @@ def render_html(
       background: var(--surface); border: 1px solid var(--line);
       display: block;
     }}
+    .hero[hidden], audio[hidden] {{ display: none; }}
     .sub {{
       line-height: 1.6; color: var(--muted); max-width: 34rem;
       margin: 0; font-size: 1.02rem;

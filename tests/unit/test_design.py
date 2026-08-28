@@ -26,6 +26,7 @@ def test_peak_gym_orange_is_accent_not_canvas() -> None:
     assert "--bg:#16120f" in html
     assert "background: var(--bg)" in html
     assert 'data-theme="ember"' in html
+    assert ".hero[hidden]" in html
     assert "#ff6b00" in html  # allowed as accent
     # The loud orange must not be the body fill via a raw assignment.
     assert "background:#FF6B00" not in html

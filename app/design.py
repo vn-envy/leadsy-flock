@@ -60,7 +60,7 @@ THEMES: dict[str, Theme] = {
         muted="#c4b6a8",
         accent="#e08a4a",
         accent_fg="#16120f",
-        surface="#221c18",
+        surface="#2c241e",
         line="#3a322c",
         scheme="dark",
     ),
