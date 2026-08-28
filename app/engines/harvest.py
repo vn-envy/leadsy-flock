@@ -116,7 +116,7 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
                 assets["clip"] = clip
             except Exception as extra:  # noqa: BLE001
                 errors.append(f"captions_en:{type(extra).__name__}:{extra}")
-        if not (clip.get("voices") or {}).get("en"):
+        if not ((clip.get("voices") or {}).get("en") or {}).get("ok"):
             try:
                 voices = dual_tracks(campaign_id, copy, loc)
                 clip = dict(clip)

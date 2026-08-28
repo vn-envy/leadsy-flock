@@ -2,6 +2,13 @@
 # Licensed under the Apache License, Version 2.0
 
 from app.own import collect_uris, extract_html_images, is_image, sanitize_own_uris
+from app.voice import _pcm_to_wav
+
+
+def test_pcm_wraps_as_wav() -> None:
+    wav = _pcm_to_wav(b"\x00\x00" * 24, rate=24000)
+    assert wav[:4] == b"RIFF"
+    assert b"WAVE" in wav[:16]
 
 
 def test_collect_uris_from_brief_and_scout() -> None:

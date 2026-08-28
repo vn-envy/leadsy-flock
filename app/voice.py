@@ -5,9 +5,11 @@
 
 from __future__ import annotations
 
+import io
 import os
 import subprocess
 import tempfile
+import wave
 from pathlib import Path
 from typing import Any
 
@@ -49,11 +51,21 @@ def speak(text: str, *, language: str, voice: str | None = None) -> dict[str, An
         if not blobs:
             return {"ok": False, "error": "no_audio", "model": TTS_MODEL}
         data, mime = blobs[0]
+        mime = mime or "audio/wav"
+        if "l16" in mime.lower() or "pcm" in mime.lower():
+            rate = 24000
+            if "rate=" in mime.lower():
+                try:
+                    rate = int(mime.lower().split("rate=", 1)[-1].split(";")[0])
+                except ValueError:
+                    rate = 24000
+            data = _pcm_to_wav(data, rate=rate)
+            mime = "audio/wav"
         return {
             "ok": True,
             "model": TTS_MODEL,
             "bytes": len(data),
-            "mime": mime or "audio/wav",
+            "mime": mime,
             "_bytes": data,
             "voice": voice,
             "language": language,
@@ -154,3 +166,13 @@ def dual_tracks(
         else:
             out["indic"] = loc
     return out
+
+
+def _pcm_to_wav(pcm: bytes, *, rate: int = 24000, channels: int = 1) -> bytes:
+    buf = io.BytesIO()
+    with wave.open(buf, "wb") as fh:
+        fh.setnchannels(channels)
+        fh.setsampwidth(2)
+        fh.setframerate(rate)
+        fh.writeframes(pcm)
+    return buf.getvalue()
