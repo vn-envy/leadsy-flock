@@ -31,4 +31,4 @@ Judge surfaces:
 - Vertex clients are process-cached. Ephemeral `genai.Client()` objects in google-genai 2.x raise `Cannot send a request, as the client has been closed` before Inka/Gemma/the judge can run.
 - Gemma `gemma-3-12b-it` 404s as a publisher model on this project's `us-central1` Vertex. Regex + Gemini 3.5 Flash judge still fail-closed (proven on `peak-gym-71d02b5c`).
 - Remotion derivatives and zip/paste-guide are day-4 surface area; this kit is copy + dimensions + UTMs + GCS masters.
-- Telegram webhook is wired (`POST /v1/telegram/webhook`) but inactive until `TELEGRAM_BOT_TOKEN` is set on Cloud Run.
+- Stella landings use locked tokens from [design.md](design.md). Scout names a `themeId`; orange brand paint cannot become the page background.

@@ -20,7 +20,7 @@ Hello Flo is live. The flock engines run on Pub/Sub + Cloud Run:
 - `GET /media/{campaignId}/still` — Gemini 3.1 Flash Image (Imagen 3 successor)
 - `GET /media/{campaignId}/clip` · `/jingle` — Veo/Lyria once `inka_harvest` writes GCS
 - `POST /v1/consents` — Model Armor on the way in
-- Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md) · [DAY3.md](DAY3.md)
+- Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md) · [DAY3.md](DAY3.md) · [design.md](design.md)
 
 ## Mandatory stack
 

@@ -9,6 +9,7 @@ from typing import Any
 
 from google.genai import types
 
+from app.design import resolve_theme
 from app.engines import gemini_util as g
 
 
@@ -26,8 +27,9 @@ Return ONLY JSON with this shape:
     }}
   ],
   "brandSpec": {{
+    "themeId": "inkstone" | "ember" | "grove" | "slate" | "paper",
     "palette": ["#hex", "#hex", "#hex"],
-    "typePairing": "headline font + body font (web-safe names)",
+    "typePairing": "Georgia + system-ui",
     "toneWords": ["three", "tone", "words"],
     "logoHint": "what the mark looks like if you saw a site, else a guess from the category",
     "tagline": "one line the business could own"
@@ -41,6 +43,7 @@ Rules:
 - Do not invent personal emails or phone numbers.
 - Discovery is not consent. You research places and public pages, not people to cold-email.
 - If a website URL is in the brief, read it with url context.
+- themeId must be one of inkstone, ember, grove, slate, paper (see design.md). ember = gyms/energy; grove = wellness; paper = clinics/cafés; slate = professional; inkstone = default. palette hex is for image prompts only — never a CSS background.
 
 Business: {business}
 Geo: {geo}
@@ -144,6 +147,12 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
                 }
             )
     brand = body.get("brandSpec") or _default_brand(business, geo)
+    theme = resolve_theme(brand)
+    if isinstance(brand, dict):
+        brand = dict(brand)
+        brand["themeId"] = theme.id
+        brand["palette"] = theme.image_palette
+        brand["typePairing"] = "Georgia + system-ui"
     return {
         "model": g.TEXT_MODEL,
         "evidence": evidence[:12],
@@ -156,8 +165,10 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
 
 
 def _default_brand(business: str, geo: str) -> dict[str, Any]:
+    theme = resolve_theme({"themeId": "inkstone"})
     return {
-        "palette": ["#c4a574", "#0f1419", "#f4efe6"],
+        "themeId": theme.id,
+        "palette": theme.image_palette,
         "typePairing": "Georgia + system-ui",
         "toneWords": ["warm", "direct", "local"],
         "logoHint": f"wordmark for {business}",

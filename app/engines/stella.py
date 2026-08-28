@@ -9,6 +9,7 @@ import html
 from typing import Any
 
 from app import ledger
+from app.design import resolve_theme
 from app.settings import load_settings
 
 
@@ -25,9 +26,15 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
     s = load_settings()
     base = __import__("os").environ.get("APP_URL") or f"https://flock-api.{s.region}.run.app"
     path = f"/l/{campaign_id}"
+    theme = resolve_theme(brand)
     ledger.upsert_campaign(
         campaign_id,
-        {"landingHtml": page, "landingPath": path, "stillPath": still_src or None},
+        {
+            "landingHtml": page,
+            "landingPath": path,
+            "stillPath": still_src or None,
+            "themeId": theme.id,
+        },
     )
     return {
         "landing": path,
@@ -35,6 +42,7 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
         "still": still_src or None,
         "clip": clip_src,
         "jingle": jingle_src,
+        "themeId": theme.id,
         "consentCapture": True,
         "headline": copy.get("headline"),
     }
@@ -54,10 +62,8 @@ def render_html(
     headline = html.escape(str(copy.get("headline") or f"{business} in {geo}"))
     sub = html.escape(str(copy.get("subhead") or copy.get("primaryText") or "Tell us you want to hear from us."))
     cta = html.escape(str(copy.get("cta") or "Count me in"))
-    palette = brand.get("palette") or ["#c4a574", "#0f1419", "#f4efe6"]
-    gold = html.escape(str(palette[0]))
-    ink = html.escape(str(palette[1] if len(palette) > 1 else "#0f1419"))
-    paper = html.escape(str(palette[2] if len(palette) > 2 else "#f4efe6"))
+    theme = resolve_theme(brand)
+    vars_css = theme.css_vars()
     cid = html.escape(str(campaign.get("id") or ""))
     hero = ""
     if still_src:
@@ -76,49 +82,72 @@ def render_html(
         jsrc = html.escape(jingle_src)
         jingle_tag = f'<audio id="jingle" src="{jsrc}" controls hidden></audio>'
     return f"""<!doctype html>
-<html lang="en">
+<html lang="en" data-theme="{html.escape(theme.id)}" data-color-scheme="{theme.scheme}">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="{theme.scheme}"/>
   <title>{business}</title>
   <style>
-    :root {{ --gold:{gold}; --ink:{ink}; --paper:{paper}; }}
+    :root {{ {vars_css} }}
     * {{ box-sizing: border-box; }}
+    html, body {{ margin: 0; min-height: 100%; }}
     body {{
-      margin: 0; min-height: 100vh; display: grid; place-items: center;
-      font-family: Georgia, "Times New Roman", serif;
-      background: var(--ink); color: var(--paper);
+      display: grid; place-items: center;
+      font-family: system-ui, "Segoe UI", sans-serif;
+      background: var(--bg); color: var(--fg);
     }}
     main {{
-      width: min(40rem, calc(100% - 2.5rem));
-      padding: 2.5rem 0 4rem;
+      width: min(38rem, calc(100% - 2.5rem));
+      padding: 3rem 0 4.5rem;
     }}
     p.kicker {{
-      letter-spacing: 0.22em; font-size: 0.72rem; text-transform: uppercase;
-      color: var(--gold); font-family: system-ui, sans-serif; margin: 0 0 1rem;
+      letter-spacing: 0.18em; font-size: 0.72rem; text-transform: uppercase;
+      color: var(--accent); margin: 0 0 1.1rem; font-weight: 600;
     }}
-    h1 {{ font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.15; font-weight: 500; margin: 0 0 1rem; }}
+    h1 {{
+      font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+      font-size: clamp(1.85rem, 4.6vw, 2.85rem); line-height: 1.18;
+      font-weight: 500; margin: 0 0 0.85rem; color: var(--fg);
+    }}
     .hero {{
       width: 100%; aspect-ratio: 16 / 9; object-fit: cover;
-      border-radius: 1rem; margin: 0 0 1.25rem; background: #1a2220;
+      border-radius: 0.85rem; margin: 0 0 1.35rem;
+      background: var(--surface); border: 1px solid var(--line);
+      display: block;
     }}
-    .sub {{ font-family: system-ui, sans-serif; line-height: 1.55; color: #d8d0c4; max-width: 34rem; }}
+    .sub {{
+      line-height: 1.6; color: var(--muted); max-width: 34rem;
+      margin: 0; font-size: 1.02rem;
+    }}
     form {{
-      margin-top: 2rem; display: grid; gap: 0.75rem;
-      font-family: system-ui, sans-serif;
+      margin-top: 2rem; display: grid; gap: 0.8rem;
     }}
-    input {{
-      background: transparent; border: 1px solid #3a433c; color: var(--paper);
-      border-radius: 0.75rem; padding: 0.85rem 1rem; font: inherit;
+    input[type="text"], input:not([type]), input[type="email"] {{
+      background: var(--surface); border: 1px solid var(--line); color: var(--fg);
+      border-radius: 0.7rem; padding: 0.9rem 1rem; font: inherit;
     }}
-    label.check {{ display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.92rem; line-height: 1.4; }}
+    input::placeholder {{ color: var(--muted); opacity: 0.9; }}
+    input:focus-visible, button:focus-visible, label.check:focus-within {{
+      outline: 2px solid var(--accent); outline-offset: 2px;
+    }}
+    label.check {{
+      display: flex; gap: 0.65rem; align-items: flex-start;
+      font-size: 0.95rem; line-height: 1.45; color: var(--fg);
+    }}
+    label.check input {{ margin-top: 0.2rem; accent-color: var(--accent); }}
     button {{
-      justify-self: start; background: var(--gold); color: var(--ink);
-      border: 0; border-radius: 999px; padding: 0.75rem 1.4rem; font-weight: 600; cursor: pointer;
+      justify-self: start; background: var(--accent); color: var(--accent-fg);
+      border: 0; border-radius: 999px; padding: 0.85rem 1.45rem;
+      font-weight: 650; cursor: pointer; min-height: 2.75rem; font: inherit;
     }}
-    button:disabled {{ opacity: 0.5; cursor: wait; }}
-    .note {{ font-size: 0.8rem; color: #9a9286; }}
-    .ok {{ color: var(--gold); }}
+    button:disabled {{ opacity: 0.55; cursor: wait; }}
+    .note {{ font-size: 0.82rem; color: var(--muted); margin: 0.15rem 0 0; }}
+    .ok {{ color: var(--accent); }}
+    audio {{ width: 100%; margin-top: 0.75rem; }}
+    @media (max-width: 640px) {{
+      main {{ width: min(38rem, calc(100% - 1.75rem)); padding: 2rem 0 3.5rem; }}
+    }}
   </style>
 </head>
 <body>
@@ -130,8 +159,8 @@ def render_html(
     <p class="sub">{sub}</p>
     {jingle_tag}
     <form id="optin">
-      <input name="name" placeholder="Your name" required maxlength="80"/>
-      <input name="contact" placeholder="Email or WhatsApp" required maxlength="120"/>
+      <input name="name" placeholder="Your name" required maxlength="80" autocomplete="name"/>
+      <input name="contact" placeholder="Email or WhatsApp" required maxlength="120" autocomplete="email"/>
       <label class="check">
         <input type="checkbox" name="consent" required/>
         <span>I want {business} to contact me about this. Discovery is not consent — this box is.</span>

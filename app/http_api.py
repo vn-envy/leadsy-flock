@@ -206,14 +206,14 @@ _CONSOLE_HTML = """<!doctype html>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Mission Control · Leadsy Flock</title>
   <style>
-    body { margin:0; background:#0f1419; color:#f4efe6; font-family: system-ui, sans-serif; }
+    body { margin:0; background:#14181f; color:#f3eee6; font-family: system-ui, sans-serif; }
     main { width: min(960px, calc(100% - 2rem)); margin: 0 auto; padding: 2.5rem 0 4rem; }
-    h1 { font-weight: 560; }
-    .kicker { letter-spacing: .2em; font-size: 12px; color:#c4a574; }
+    h1 { font-weight: 560; font-family: Georgia, serif; }
+    .kicker { letter-spacing: .2em; font-size: 12px; color:#c4a574; font-weight: 600; }
     a { color:#c4a574; }
     table { width:100%; border-collapse: collapse; }
-    th, td { text-align:left; padding: .7rem .4rem; border-bottom: 1px solid #2a333d; font-size: 14px; }
-    .muted { color:#8b8378; }
+    th, td { text-align:left; padding: .7rem .4rem; border-bottom: 1px solid #2c3340; font-size: 14px; }
+    .muted { color:#b7aea2; }
     .pill { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#c4a574; }
   </style>
 </head>

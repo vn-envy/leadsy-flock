@@ -70,6 +70,8 @@ def test_stella_html_embeds_clip_and_jingle_hooks() -> None:
     assert 'src="/media/peak-1/jingle"' in html
     assert "revealWhenReady" in html
     assert "/media/peak-1/ready" in html
+    assert "--bg:" in html
+    assert "var(--fg)" in html
 
 
 def test_inka_run_never_raises() -> None:
@@ -84,6 +86,7 @@ def test_scout_run_never_raises() -> None:
     with patch.object(scout, "_run_inner", side_effect=RuntimeError("no vertex")):
         out = scout.run({"brief": {"businessName": "Peak Gym", "geo": "Gurgaon"}})
     assert out["brandSpec"]["tagline"]
+    assert out["brandSpec"]["themeId"] == "inkstone"
     assert out["errors"]
 
 

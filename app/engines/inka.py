@@ -13,6 +13,7 @@ from typing import Any
 from google.genai import types
 
 from app import ledger, media
+from app.design import resolve_theme
 from app.engines import gemini_util as g
 
 
@@ -167,7 +168,7 @@ def _policy_lines(campaign_id: str) -> str:
 
 
 def _still(campaign_id: str, prompt: str, brand: dict, errors: list[str]) -> dict[str, Any]:
-    palette = ", ".join(brand.get("palette") or [])
+    palette = ", ".join(resolve_theme(brand).image_palette)
     full = f"{prompt}\nColor palette: {palette}. No letters, logos, watermarks, or people."
     attempts = (
         (g.image_client, g.IMAGE_MODEL),
