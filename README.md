@@ -16,8 +16,9 @@ Hello Flo is live. The flock engines run on Pub/Sub + Cloud Run:
 - `GET /health` — liveness (`/healthz` is intercepted by Cloud Run's frontend)
 - `GET /v1/infra` — runtime inventory (Firestore, topics, Model Armor, Memory Bank)
 - `GET /console` — receipts Mission Control
-- `GET /l/{campaignId}` — Stella consent-first landing with Inka still
+- `GET /l/{campaignId}` — Stella consent-first landing with still; clip/jingle unhide when harvest finishes
 - `GET /media/{campaignId}/still` — Gemini 3.1 Flash Image (Imagen 3 successor)
+- `GET /media/{campaignId}/clip` · `/jingle` — Veo/Lyria once `inka_harvest` writes GCS
 - `POST /v1/consents` — Model Armor on the way in
 - Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md) · [DAY3.md](DAY3.md)
 
@@ -29,7 +30,7 @@ Hello Flo is live. The flock engines run on Pub/Sub + Cloud Run:
 | Google agent framework | ADK 2.x, scaffolded with `agents-cli` (`adk` template, A2A built in) |
 | Google Cloud service | Cloud Run (`flock-api` + `flock-worker`, `asia-south1`) + Firestore + Pub/Sub + Model Armor + Cloud Trace |
 
-Bonus models (Veo 3.1, Lyria, Gemma) are exercised by `scripts/smoke_models.py` and land in Studio / the Creative Gate on later days.
+Veo 3.1 starts in Inka and is harvested by the `inka_harvest` sidecar so the flock never waits on a long-running op. Lyria retries on that sidecar (often 429 on this project's quota). Gemma is still the Creative Gate classifier.
 
 ## Spin-up
 

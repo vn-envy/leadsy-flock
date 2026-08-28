@@ -102,6 +102,42 @@ def attach_flock_routes(app: FastAPI) -> None:
             headers={"Cache-Control": "public, max-age=3600"},
         )
 
+    @app.get("/media/{campaign_id}/clip")
+    def campaign_clip(campaign_id: str, request: Request) -> Response:
+        if not _safe_campaign_id(campaign_id):
+            raise HTTPException(400, "bad campaign id")
+        if request.method == "HEAD":
+            if not media.campaign_asset_exists(campaign_id, media.CLIP_NAMES):
+                raise HTTPException(404, "clip not harvested")
+            return Response(status_code=200, media_type="video/mp4")
+        found = media.get_campaign_clip(campaign_id)
+        if not found:
+            raise HTTPException(404, "clip not harvested")
+        data, mime = found
+        return Response(
+            content=data,
+            media_type=mime or "video/mp4",
+            headers={"Cache-Control": "public, max-age=3600"},
+        )
+
+    @app.get("/media/{campaign_id}/jingle")
+    def campaign_jingle(campaign_id: str, request: Request) -> Response:
+        if not _safe_campaign_id(campaign_id):
+            raise HTTPException(400, "bad campaign id")
+        if request.method == "HEAD":
+            if not media.campaign_asset_exists(campaign_id, media.JINGLE_NAMES):
+                raise HTTPException(404, "jingle not harvested")
+            return Response(status_code=200, media_type="audio/wav")
+        found = media.get_campaign_jingle(campaign_id)
+        if not found:
+            raise HTTPException(404, "jingle not harvested")
+        data, mime = found
+        return Response(
+            content=data,
+            media_type=mime or "audio/wav",
+            headers={"Cache-Control": "public, max-age=3600"},
+        )
+
     @app.post("/v1/consents")
     def consents(body: dict) -> dict:
         campaign_id = (body or {}).get("campaignId") or ""

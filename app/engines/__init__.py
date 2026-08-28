@@ -1,7 +1,7 @@
 # Copyright 2026 Neekhil Vatsa
 # Licensed under the Apache License, Version 2.0
 
-from app.engines import adkit, gate, inka, outreach, scout, stella
+from app.engines import adkit, gate, harvest, inka, outreach, scout, stella
 
 
 def dispatch(step: str, campaign: dict) -> dict:
@@ -9,6 +9,8 @@ def dispatch(step: str, campaign: dict) -> dict:
         return scout.run(campaign)
     if step == "inka":
         return inka.run(campaign)
+    if step == "inka_harvest":
+        return harvest.run(campaign)
     if step == "creative_gate":
         return gate.run(campaign)
     if step == "stella":

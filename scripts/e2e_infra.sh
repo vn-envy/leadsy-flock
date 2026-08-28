@@ -66,6 +66,8 @@ with urllib.request.urlopen(still_url, timeout=30) as resp:
     still_bytes = len(resp.read())
 assert still_type.startswith("image/") and still_bytes > 1000, f"still missing: {still_type} {still_bytes}"
 still_ok = True
+assert f"/media/{cid}/clip" in html, "Stella page is missing the clip <video>"
+assert f"/media/{cid}/jingle" in html, "Stella page is missing the jingle <audio>"
 consent_req = urllib.request.Request(
     api + "/v1/consents",
     data=json.dumps({
@@ -87,15 +89,62 @@ with urllib.request.urlopen(url, timeout=20) as resp:
 gate = next(r for r in last["receipts"] if r.get("step") == "creative_gate")
 scout = next(r for r in last["receipts"] if r.get("step") == "scout")
 inka = next(r for r in last["receipts"] if r.get("step") == "inka")
+inka_assets = (inka.get("payload") or {}).get("assets") or {}
+harvest_rows = [r for r in last.get("receipts") or [] if r.get("step") == "inka_harvest"]
+need_harvest = bool((inka_assets.get("clip") or {}).get("operation") or (inka_assets.get("jingle") or {}).get("pending"))
+if need_harvest and not harvest_rows:
+    print("harvest sidecar never started", flush=True)
+    sys.exit(1)
+
+clip_url = api + "/media/" + cid + "/clip"
+jingle_url = api + "/media/" + cid + "/jingle"
+clip_ok = False
+clip_bytes = 0
+clip_type = ""
+jingle_ok = False
+jingle_bytes = 0
+jingle_type = ""
+
+def _get(url):
+    try:
+        with urllib.request.urlopen(url, timeout=60) as resp:
+            return resp.headers.get("Content-Type") or "", len(resp.read()), True
+    except Exception:
+        return "", 0, False
+
+for i in range(24):
+    clip_type, clip_bytes, clip_ok = _get(clip_url)
+    jingle_type, jingle_bytes, jingle_ok = _get(jingle_url)
+    with urllib.request.urlopen(url, timeout=20) as resp:
+        last = json.loads(resp.read().decode())
+    harvest_rows = [r for r in last.get("receipts") or [] if r.get("step") == "inka_harvest"]
+    print(
+        f"harvest try {i} clip={clip_ok}/{clip_bytes} jingle={jingle_ok}/{jingle_bytes} "
+        f"harvest={[(r.get('status'), r.get('attempt')) for r in harvest_rows]}",
+        flush=True,
+    )
+    if clip_ok and clip_type.startswith("video/") and clip_bytes > 1000:
+        break
+    harvest_done = any(r.get("status") == "ok" for r in harvest_rows)
+    if harvest_done and not clip_ok:
+        break
+    time.sleep(8)
+
 summary = {
     "campaignId": cid,
     "status": last.get("status"),
     "landing": landing,
     "still": {"url": still_url, "ok": still_ok, "bytes": still_bytes, "contentType": still_type},
+    "clip": {"url": clip_url, "ok": clip_ok, "bytes": clip_bytes, "contentType": clip_type},
+    "jingle": {"url": jingle_url, "ok": jingle_ok, "bytes": jingle_bytes, "contentType": jingle_type},
+    "harvest": [
+        {"status": r.get("status"), "attempt": r.get("attempt"), "payload": r.get("payload") or {}}
+        for r in harvest_rows
+    ],
     "consent": consent,
     "gate": (gate.get("payload") or {}),
     "scoutGrounding": (scout.get("payload") or {}).get("groundingUris") or [],
-    "inkaAssets": (inka.get("payload") or {}).get("assets") or {},
+    "inkaAssets": inka_assets,
     "draftRejected": ((gate.get("payload") or {}).get("draft") or {}).get("rejected"),
     "gateVerdict": (gate.get("payload") or {}).get("verdict"),
 }
@@ -103,5 +152,13 @@ out = Path("proof/engines")
 out.mkdir(parents=True, exist_ok=True)
 (out / "e2e-campaign.json").write_text(json.dumps(last, indent=2) + "\n")
 (out / "e2e-summary.json").write_text(json.dumps(summary, indent=2) + "\n")
-print("PASS", json.dumps({"campaignId": cid, "verdict": summary["gateVerdict"], "draftRejected": summary["draftRejected"], "stillBytes": still_bytes}))
+print("PASS", json.dumps({
+    "campaignId": cid,
+    "verdict": summary["gateVerdict"],
+    "draftRejected": summary["draftRejected"],
+    "stillBytes": still_bytes,
+    "clipBytes": clip_bytes,
+    "jingleBytes": jingle_bytes,
+    "harvestStatus": [r.get("status") for r in harvest_rows],
+}))
 PY

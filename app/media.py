@@ -1,7 +1,7 @@
 # Copyright 2026 Neekhil Vatsa
 # Licensed under the Apache License, Version 2.0
 
-"""GCS media writes. One owner: Inka (and Stella's HTML copy)."""
+"""GCS media writes. Inka stills; harvest sidecar clips/jingles; Stella HTML."""
 
 from __future__ import annotations
 
@@ -39,6 +39,39 @@ def get_campaign_still(campaign_id: str) -> tuple[bytes, str] | None:
         if found:
             return found
     return None
+
+
+CLIP_NAMES = ("clip.mp4", "clip.bin", "clip.webm")
+JINGLE_NAMES = ("jingle.wav", "jingle.mp3", "jingle.bin")
+
+
+def get_campaign_clip(campaign_id: str) -> tuple[bytes, str] | None:
+    for name in CLIP_NAMES:
+        found = get_bytes(campaign_path(campaign_id, name))
+        if found:
+            return found
+    return None
+
+
+def get_campaign_jingle(campaign_id: str) -> tuple[bytes, str] | None:
+    for name in JINGLE_NAMES:
+        found = get_bytes(campaign_path(campaign_id, name))
+        if found:
+            return found
+    return None
+
+
+def campaign_asset_exists(campaign_id: str, names: tuple[str, ...]) -> bool:
+    settings = load_settings()
+    bucket = settings.media_bucket
+    if not bucket:
+        return False
+    client = storage.Client(project=settings.project_id or None)
+    bkt = client.bucket(bucket)
+    for name in names:
+        if bkt.blob(campaign_path(campaign_id, name)).exists():
+            return True
+    return False
 
 
 def campaign_path(campaign_id: str, name: str) -> str:

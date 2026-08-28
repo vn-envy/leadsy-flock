@@ -7,7 +7,7 @@ from unittest.mock import patch
 from app.engines.gate import banned_hits, run as gate_run
 from app.engines.adkit import variant, CHANNELS
 from app.engines.stella import render_html
-from app.engines import inka, outreach, scout
+from app.engines import harvest, inka, outreach, scout
 
 
 def test_banned_hits_catches_guaranteed() -> None:
@@ -54,6 +54,22 @@ def test_stella_html_embeds_still_when_present() -> None:
     )
     assert 'src="/media/peak-1/still"' in html
     assert 'class="hero"' in html
+
+
+def test_stella_html_embeds_clip_and_jingle_hooks() -> None:
+    html = render_html(
+        {"id": "peak-1", "brief": {"businessName": "Peak Gym", "geo": "Gurgaon"}},
+        {"headline": "Evenings that fit the commute", "cta": "I'm in"},
+        {"palette": ["#c4a574", "#0f1419", "#f4efe6"]},
+        still_src="/media/peak-1/still",
+        clip_src="/media/peak-1/clip",
+        jingle_src="/media/peak-1/jingle",
+    )
+    assert 'id="clip"' in html
+    assert 'src="/media/peak-1/clip"' in html
+    assert 'src="/media/peak-1/jingle"' in html
+    assert "revealWhenReady" in html
+    assert "HEAD" in html
 
 
 def test_inka_run_never_raises() -> None:
@@ -113,3 +129,68 @@ def test_gate_rejects_draft_passes_clean_headline() -> None:
         out = gate_run({"id": "c1"})
     assert out["draft"]["rejected"] is True
     assert out["verdict"] == "pass"
+
+
+def test_harvest_retries_while_veo_is_running(monkeypatch) -> None:
+    monkeypatch.setenv("INKA_SKIP_LYRIA", "1")
+    with (
+        patch("app.engines.harvest.ledger.get_receipt", return_value={
+            "payload": {
+                "assets": {"clip": {"operation": "ops/abc", "status": "started"}},
+                "prompts": {},
+            }
+        }),
+        patch("app.engines.harvest.ledger.upsert_campaign"),
+        patch("app.engines.harvest.media.campaign_asset_exists", return_value=False),
+        patch.object(harvest, "_poll_veo", return_value={"operation": "ops/abc", "status": "started", "ok": True}),
+    ):
+        out = harvest.run({"id": "c1", "_harvestAttempt": 1})
+    assert out["retry"] is True
+
+
+def test_harvest_finishes_when_clip_has_gcs(monkeypatch) -> None:
+    monkeypatch.setenv("INKA_SKIP_LYRIA", "1")
+    harvested = {
+        "operation": "ops/abc",
+        "status": "harvested",
+        "ok": True,
+        "gcs": "gs://bucket/clip.mp4",
+        "bytes": 12,
+        "publicPath": "/media/c1/clip",
+    }
+    with (
+        patch("app.engines.harvest.ledger.get_receipt", return_value={
+            "payload": {
+                "assets": {"clip": {"operation": "ops/abc", "status": "started"}},
+                "prompts": {},
+            }
+        }),
+        patch("app.engines.harvest.ledger.upsert_campaign") as upsert,
+        patch("app.engines.harvest.media.campaign_asset_exists", return_value=False),
+        patch.object(harvest, "_poll_veo", return_value=harvested),
+    ):
+        out = harvest.run({"id": "c1", "_harvestAttempt": 2})
+    assert out["retry"] is False
+    assert out["clip"]["gcs"]
+    upsert.assert_called_once()
+
+
+def test_harvest_skips_lyria_after_retries(monkeypatch) -> None:
+    monkeypatch.setenv("INKA_SKIP_LYRIA", "0")
+    with (
+        patch("app.engines.harvest.ledger.get_receipt", return_value={
+            "payload": {
+                "assets": {
+                    "clip": {"ok": True, "status": "harvested", "gcs": "gs://b/c.mp4"},
+                    "jingle": {"pending": True},
+                },
+                "prompts": {"lyria": "sting"},
+            }
+        }),
+        patch("app.engines.harvest.ledger.upsert_campaign"),
+        patch.object(harvest, "_lyria") as lyria,
+    ):
+        out = harvest.run({"id": "c1", "_harvestAttempt": 3})
+    lyria.assert_not_called()
+    assert out["jingle"]["skipped"] is True
+    assert out["retry"] is False

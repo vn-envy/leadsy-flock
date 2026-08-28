@@ -103,22 +103,33 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
 
     campaign_id = campaign.get("id") or "campaign"
     assets: dict[str, Any] = {}
-    skip_veo = os.environ.get("INKA_SKIP_VEO", "1") == "1"
-    skip_lyria = os.environ.get("INKA_SKIP_LYRIA", "1") == "1"
+    skip_veo = os.environ.get("INKA_SKIP_VEO", "0") == "1"
     skip_still = os.environ.get("INKA_SKIP_STILL", "0") == "1"
+    skip_lyria = os.environ.get("INKA_SKIP_LYRIA", "0") == "1"
 
     if skip_still:
         assets["still"] = {"ok": False, "skipped": True, "model": g.IMAGE_MODEL}
     else:
         assets["still"] = _still(campaign_id, copy.get("imagePrompt") or "", brand, errors)
     if skip_veo:
-        assets["clip"] = {"ok": False, "skipped": True, "model": g.VEO_MODEL, "note": "INKA_SKIP_VEO=1; use smoke_models.py for Veo proof"}
+        assets["clip"] = {"ok": False, "skipped": True, "model": g.VEO_MODEL, "note": "INKA_SKIP_VEO=1"}
     else:
         assets["clip"] = _veo_start(campaign_id, copy.get("veoPrompt") or "", errors)
     if skip_lyria:
-        assets["jingle"] = {"ok": False, "skipped": True, "model": g.LYRIA_MODEL, "note": "INKA_SKIP_LYRIA=1; Lyria often 429"}
+        assets["jingle"] = {
+            "ok": False,
+            "skipped": True,
+            "pending": False,
+            "model": g.LYRIA_MODEL,
+            "note": "INKA_SKIP_LYRIA=1",
+        }
     else:
-        assets["jingle"] = _lyria(campaign_id, copy.get("lyriaPrompt") or "", errors)
+        assets["jingle"] = {
+            "ok": False,
+            "pending": True,
+            "model": g.LYRIA_MODEL,
+            "note": "Lyria runs on inka_harvest so quota 429 cannot timeout Inka",
+        }
 
     return {
         "model": g.TEXT_MODEL,
@@ -248,7 +259,14 @@ def _lyria(campaign_id: str, prompt: str, errors: list[str]) -> dict[str, Any]:
         data, mime = blobs[0]
         ext = "wav" if "wav" in (mime or "") else "bin"
         uri = media.put_bytes(media.campaign_path(campaign_id, f"jingle.{ext}"), data, mime)
-        return {"ok": True, "model": g.LYRIA_MODEL, "gcs": uri, "bytes": len(data), "mime": mime}
+        return {
+            "ok": True,
+            "model": g.LYRIA_MODEL,
+            "gcs": uri,
+            "bytes": len(data),
+            "mime": mime,
+            "publicPath": f"/media/{campaign_id}/jingle",
+        }
     except Exception as exc:  # noqa: BLE001
         errors.append(f"lyria:{type(exc).__name__}:{exc}")
         return {"ok": False, "model": g.LYRIA_MODEL, "error": str(exc)[:300], "quotaLikely": "429" in str(exc)}

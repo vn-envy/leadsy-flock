@@ -19,7 +19,9 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
     brand = inka.get("brandSpec") or (ledger.get_receipt(campaign_id, "scout") or {}).get("payload", {}).get("brandSpec") or {}
     still = (inka.get("assets") or {}).get("still") or {}
     still_src = f"/media/{campaign_id}/still" if still.get("ok") else ""
-    page = render_html(campaign, copy, brand, still_src=still_src)
+    clip_src = f"/media/{campaign_id}/clip"
+    jingle_src = f"/media/{campaign_id}/jingle"
+    page = render_html(campaign, copy, brand, still_src=still_src, clip_src=clip_src, jingle_src=jingle_src)
     s = load_settings()
     base = __import__("os").environ.get("APP_URL") or f"https://flock-api.{s.region}.run.app"
     path = f"/l/{campaign_id}"
@@ -31,6 +33,8 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
         "landing": path,
         "url": f"{base.rstrip('/')}{path}",
         "still": still_src or None,
+        "clip": clip_src,
+        "jingle": jingle_src,
         "consentCapture": True,
         "headline": copy.get("headline"),
     }
@@ -41,6 +45,8 @@ def render_html(
     copy: dict[str, Any],
     brand: dict[str, Any],
     still_src: str = "",
+    clip_src: str = "",
+    jingle_src: str = "",
 ) -> str:
     brief = campaign.get("brief") or {}
     business = html.escape(str(brief.get("businessName") or "Our studio"))
@@ -56,7 +62,19 @@ def render_html(
     hero = ""
     if still_src:
         src = html.escape(still_src)
-        hero = f'<img class="hero" src="{src}" alt="{business} campaign still" />'
+        hero = f'<img class="hero" id="still" src="{src}" alt="{business} campaign still" />'
+    clip_tag = ""
+    if clip_src:
+        csrc = html.escape(clip_src)
+        poster = html.escape(still_src) if still_src else ""
+        clip_tag = (
+            f'<video class="hero" id="clip" src="{csrc}" poster="{poster}" '
+            f'muted playsinline autoplay loop hidden></video>'
+        )
+    jingle_tag = ""
+    if jingle_src:
+        jsrc = html.escape(jingle_src)
+        jingle_tag = f'<audio id="jingle" src="{jsrc}" controls hidden></audio>'
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -107,8 +125,10 @@ def render_html(
   <main>
     <p class="kicker">{business} · {geo} · consent first</p>
     {hero}
+    {clip_tag}
     <h1>{headline}</h1>
     <p class="sub">{sub}</p>
+    {jingle_tag}
     <form id="optin">
       <input name="name" placeholder="Your name" required maxlength="80"/>
       <input name="contact" placeholder="Email or WhatsApp" required maxlength="120"/>
@@ -153,6 +173,29 @@ def render_html(
         btn.disabled = false;
       }}
     }});
+    async function revealWhenReady(el, onReady, tries) {{
+      if (!el) return;
+      const src = el.getAttribute("src");
+      for (let i = 0; i < tries; i++) {{
+        try {{
+          const r = await fetch(src, {{ method: "HEAD" }});
+          if (r.ok) {{
+            onReady();
+            return;
+          }}
+        }} catch (e) {{}}
+        await new Promise((ok) => setTimeout(ok, 8000));
+      }}
+    }}
+    const clip = document.getElementById("clip");
+    const still = document.getElementById("still");
+    revealWhenReady(clip, () => {{
+      clip.hidden = false;
+      if (still) still.hidden = true;
+      clip.play().catch(() => {{}});
+    }}, 24);
+    const jingle = document.getElementById("jingle");
+    revealWhenReady(jingle, () => {{ jingle.hidden = false; }}, 8);
   </script>
 </body>
 </html>

@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+import os
+import time
 from typing import Any
 
 from opentelemetry import trace
@@ -18,12 +20,17 @@ tracer = trace.get_tracer("leadsy.flock.worker")
 ENGINE_FOR_STEP = {
     "scout": "scout",
     "inka": "inka",
+    "inka_harvest": "inka",
     "creative_gate": "ledge",
     "stella": "stella",
     "ad_kit": "inka",
     "outreach_gate": "ledge",
     "ray": "ray",
 }
+
+SIDECAR_STEPS = {"inka_harvest"}
+HARVEST_MAX_ATTEMPTS = int(os.environ.get("HARVEST_MAX_ATTEMPTS", "16"))
+HARVEST_POLL_SECONDS = int(os.environ.get("HARVEST_POLL_SECONDS", "12"))
 
 
 def handle_step(message: dict[str, Any]) -> dict[str, Any]:
@@ -36,7 +43,9 @@ def handle_step(message: dict[str, Any]) -> dict[str, Any]:
 
     existing = ledger.get_receipt(campaign_id, step)
     if existing and existing.get("status") == "ok" and not force:
-        nxt = publish_next(campaign_id, step, pipeline)
+        nxt = None
+        if step not in SIDECAR_STEPS:
+            nxt = publish_next(campaign_id, step, pipeline)
         return {"status": "already_done", "campaignId": campaign_id, "step": step, "next": nxt}
 
     ledger.write_receipt(
@@ -54,16 +63,17 @@ def handle_step(message: dict[str, Any]) -> dict[str, Any]:
         span.set_attribute("engine.name", engine)
         span.set_attribute("engine.attempt", attempt)
         try:
-            result = run_engine(step, campaign_id)
+            result = run_engine(step, campaign_id, attempt=attempt)
         except Exception as exc:  # noqa: BLE001 — ACK the push; do not 500-loop Pub/Sub
             result = {"ok": False, "error": f"{type(exc).__name__}:{exc}"}
         span.set_attribute("engine.status", result.get("verdict") or result.get("ok") or "ok")
 
+    receipt_status = "polling" if step in SIDECAR_STEPS and result.get("retry") else "ok"
     ledger.write_receipt(
         campaign_id=campaign_id,
         step=step,
         engine=engine,
-        status="ok",
+        status=receipt_status,
         attempt=attempt,
         payload=result,
     )
@@ -75,6 +85,28 @@ def handle_step(message: dict[str, Any]) -> dict[str, Any]:
 
     if step == "creative_gate" and result.get("verdict") == "reject":
         return _revise_or_block(campaign_id, pipeline, result)
+
+    if step == "inka":
+        _maybe_start_harvest(campaign_id, pipeline, result)
+
+    if step in SIDECAR_STEPS:
+        if result.get("retry") and attempt < HARVEST_MAX_ATTEMPTS:
+            time.sleep(HARVEST_POLL_SECONDS)
+            nxt = publish_step(
+                campaign_id=campaign_id,
+                step="inka_harvest",
+                pipeline=pipeline,
+                attempt=attempt + 1,
+                force_retry=True,
+            )
+            return {
+                "status": "polling",
+                "campaignId": campaign_id,
+                "step": step,
+                "nextMessageId": nxt,
+                "result": result,
+            }
+        return {"status": "ok", "campaignId": campaign_id, "step": step, "result": result}
 
     nxt = publish_next(campaign_id, step, pipeline)
     if nxt is None:
@@ -93,10 +125,26 @@ def handle_step(message: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def run_engine(step: str, campaign_id: str) -> dict[str, Any]:
+def run_engine(step: str, campaign_id: str, attempt: int = 1) -> dict[str, Any]:
     campaign = ledger.get_campaign(campaign_id) or {}
     campaign["id"] = campaign_id
+    campaign["_harvestAttempt"] = attempt
     return dispatch(step, campaign)
+
+
+def _maybe_start_harvest(campaign_id: str, pipeline: list[str], result: dict[str, Any]) -> None:
+    assets = result.get("assets") or {}
+    clip = assets.get("clip") or {}
+    jingle = assets.get("jingle") or {}
+    need = bool(clip.get("operation")) or bool(jingle.get("pending"))
+    if not need:
+        return
+    publish_step(
+        campaign_id=campaign_id,
+        step="inka_harvest",
+        pipeline=pipeline,
+        attempt=1,
+    )
 
 
 def _revise_or_block(campaign_id: str, pipeline: list[str], result: dict[str, Any]) -> dict[str, Any]:
