@@ -1,0 +1,968 @@
+{
+  "harvestAssets": {
+    "stillSquare": {
+      "ok": true,
+      "bytes": 1315530,
+      "publicPath": "/media/noya-salon-7384033d/still-square",
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-square.png",
+      "aspect": "1:1"
+    },
+    "stillLandscape": {
+      "ok": true,
+      "bytes": 2297265,
+      "publicPath": "/media/noya-salon-7384033d/still-landscape",
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-landscape.png",
+      "aspect": "1.91:1"
+    },
+    "stillStory": {
+      "ok": true,
+      "mime": "image/png",
+      "bytes": 1882920,
+      "model": "gemini-3.1-flash-image",
+      "publicPath": "/media/noya-salon-7384033d/still-story",
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-story.png",
+      "aspect": "9:16"
+    },
+    "jingle": {
+      "ok": false,
+      "quotaLikely": true,
+      "model": "lyria-002",
+      "note": "Lyria gave up after retries (often 429 quota)",
+      "skipped": true,
+      "pending": false,
+      "error": "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Quota exceeded for aiplatform.googleapis.com/generate_content_requests_per_minute_per_project_per_base_model with base model: lyria-002. Please submit a quota increase request. https://cloud.google.com/vertex-ai/docs/generative-ai/quotas-ge"
+    },
+    "still": {
+      "ok": true,
+      "bytes": 1484133,
+      "model": "gemini-3.1-flash-image",
+      "publicPath": "/media/noya-salon-7384033d/still",
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still.png",
+      "mime": "image/png"
+    },
+    "stillFeed": {
+      "ok": true,
+      "bytes": 1429834,
+      "publicPath": "/media/noya-salon-7384033d/still-feed",
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-feed.png",
+      "aspect": "4:5"
+    },
+    "clip": {
+      "ok": true,
+      "campaignId": "noya-salon-7384033d",
+      "model": "veo-3.1-generate-001",
+      "bytes": 1573372,
+      "derivatives": {
+        "ok": true,
+        "slots": {
+          "square": {
+            "ok": true,
+            "bytes": 596298,
+            "publicPath": "/media/noya-salon-7384033d/clip-square",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip-square.mp4",
+            "aspect": "1:1"
+          },
+          "story": {
+            "ok": true,
+            "bytes": 511630,
+            "publicPath": "/media/noya-salon-7384033d/clip-story",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip-story.mp4",
+            "aspect": "9:16"
+          },
+          "landscape": {
+            "ok": true,
+            "bytes": 667290,
+            "publicPath": "/media/noya-salon-7384033d/clip-landscape",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip-landscape.mp4",
+            "aspect": "1.91:1"
+          },
+          "feed": {
+            "ok": true,
+            "bytes": 575026,
+            "publicPath": "/media/noya-salon-7384033d/clip-feed",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip-feed.mp4",
+            "aspect": "4:5"
+          }
+        }
+      },
+      "publicPath": "/media/noya-salon-7384033d/clip",
+      "seconds": 1.7,
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip.mp4",
+      "status": "harvested",
+      "done": true,
+      "operation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/9c7e178b-5a10-430e-a2b2-0e6bf8e5b4ca",
+      "mime": "video/mp4"
+    },
+    "stillDerivatives": {
+      "ok": true,
+      "slots": {
+        "square": {
+          "ok": true,
+          "bytes": 1315530,
+          "publicPath": "/media/noya-salon-7384033d/still-square",
+          "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-square.png",
+          "aspect": "1:1"
+        },
+        "landscape": {
+          "ok": true,
+          "bytes": 2297265,
+          "publicPath": "/media/noya-salon-7384033d/still-landscape",
+          "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-landscape.png",
+          "aspect": "1.91:1"
+        }
+      }
+    }
+  },
+  "engineConfig": {
+    "currency": "INR",
+    "hired": [
+      "scout",
+      "inka",
+      "stella"
+    ],
+    "price_inr": 5997,
+    "rationale": [
+      "Scout first: local evidence before any creative.",
+      "Inka + Stella: one gated master creative and a consent page.",
+      "Callie is listed but not hired for this hackathon run."
+    ],
+    "pipeline": [
+      "scout",
+      "inka",
+      "creative_gate",
+      "stella",
+      "ad_kit"
+    ],
+    "accepted_recommendation": true,
+    "always_on": [
+      "flo",
+      "bri",
+      "ledge"
+    ]
+  },
+  "brief": {
+    "budgetInr": 8000,
+    "geo": "Gurgaon",
+    "businessName": "Noya Salon",
+    "goal": "25 new colour clients from Golf Course Road professionals",
+    "audience": "women 25-40 working near DLF Phase IV"
+  },
+  "clipPath": "/media/noya-salon-7384033d/clip",
+  "approvedAt": "2026-08-28T16:13:48.377988+00:00",
+  "jinglePath": null,
+  "kitPath": "/k/noya-salon-7384033d",
+  "status": "completed",
+  "rawText": "",
+  "themeId": "paper",
+  "createdAt": "2026-08-28T16:17:01.152745+00:00",
+  "stillPath": "/media/noya-salon-7384033d/still",
+  "updatedAt": "2026-08-28T16:17:01.152745+00:00",
+  "landingPath": "/l/noya-salon-7384033d",
+  "currentStep": "ad_kit",
+  "id": "noya-salon-7384033d",
+  "receipts": [
+    {
+      "service": "flock-api",
+      "status": "ok",
+      "campaignId": "noya-salon-7384033d",
+      "createdAt": "2026-08-28T16:13:47.783140+00:00",
+      "attempt": 1,
+      "payload": {
+        "currency": "INR",
+        "hired": [
+          "scout",
+          "inka",
+          "stella"
+        ],
+        "price_inr": 5997,
+        "rationale": [
+          "Scout first: local evidence before any creative.",
+          "Inka + Stella: one gated master creative and a consent page.",
+          "Callie is listed but not hired for this hackathon run."
+        ],
+        "pipeline": [
+          "scout",
+          "inka",
+          "creative_gate",
+          "stella",
+          "ad_kit"
+        ],
+        "accepted_recommendation": true,
+        "always_on": [
+          "flo",
+          "bri",
+          "ledge"
+        ]
+      },
+      "step": "plan",
+      "project": "leadsy-flock",
+      "updatedAt": "2026-08-28T16:13:47.783140+00:00",
+      "legalBasis": "owner_instruction",
+      "engine": "bri",
+      "id": "noya-salon-7384033d_plan"
+    },
+    {
+      "service": "flock-api",
+      "status": "ok",
+      "campaignId": "noya-salon-7384033d",
+      "createdAt": "2026-08-28T16:13:48.441948+00:00",
+      "attempt": 1,
+      "payload": {
+        "pipeline": [
+          "scout",
+          "inka",
+          "creative_gate",
+          "stella",
+          "ad_kit"
+        ]
+      },
+      "step": "approve",
+      "project": "leadsy-flock",
+      "updatedAt": "2026-08-28T16:13:48.441948+00:00",
+      "legalBasis": "owner_instruction",
+      "engine": "flo",
+      "id": "noya-salon-7384033d_approve"
+    },
+    {
+      "service": "flock-worker",
+      "campaignId": "noya-salon-7384033d",
+      "status": "ok",
+      "createdAt": "2026-08-28T16:13:49.250736+00:00",
+      "attempt": 1,
+      "payload": {
+        "model": "gemini-3.5-flash",
+        "groundingUris": [
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFQkGnzI9M0CFt5seAtqmFCjxI3OEzaXuO1yrGU1RUtgehjbMmd0Zwbxau0J_etraeMm_zxo8DHvAyBiC3Lq6yDGFIYZAmSJoyBnpS1SvY-zonegopccGR4m0XAH3aT5QStq-8WsOaKNJQnfwaV_HMcfzIx5J47u_isFxjKam5w8SyTkBKoCUR0h2avWkhQcXCaKu4TH6_4aB9Hrs0hww==",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHhy6fFw1dDvdMDJHnlgVk3582nPfdyEiFTsJxDkESPsGLkLB1z_xY9pP3LdH3DwQTDZjCrlQpabFH9Q-F2MUtjbBz7Qi4CpI41bXNqZNITDHfs-RXPtkK7dVoIm6GZirUG6cHZJi6-BkqPIA2eH9EmPS5MOMF4sPIwZSyKQZ8u18sur0zVlh8AGrC1TxcLZBgDDytlMWXPb9qgk_e0gZo=",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHjEHlu2Icf9A5n03aK2d-on6Fhe4rmiuRFQgJi3PlJr3Gy84CDxMjUiTc5g_6YNhor43BsSYtUrgjddckAR8u5YVt8knYuO4zLDLBjzGumwDst0TIt1N4y-PR0yQYh20UM0dmp67f1UttMcTtXrge5MKE_kV7GPWZzN42PjqjizgPSjSFFjwGbfC-q_QoRLTdJxs3cgpGIDqf_",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHrHBiLb8wPV9d_GyRHeS9E6nGRKTyHfcyUEApP06V61pXnfOMmWpIBC_9Wzpb4a_k-8YAKmXe69xZc_5idaSkBZ73kZQ8aEMDy6pqs5rZbwzbBBpxQ4SnUiWljhpkbEN_AHco=",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGEcP5Y-ytCkXzvda8MLfGadIRN-U7b6JPYp5uwSZSATllmh-s9P4Rj9k3vA_IGETXMd4MoeUD8T6DPTY6UnKqtJt6uK7gcU8PYaGwrGQD_abQCpPGCo3AKqZ07wIVFcRU6l6uzl9YUBn10GwKed-B_TjsJ5IJC1IHsq67dxpJfjDll9b--0W8HW3zOtq53ouiEwnimHg==",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE6QL4S0GiX1gbDLY41L6_dcXk7hivdLyV1n41BbZBgthgVCYkXTZ2Hbuia27M4Yfa8VYsI-q6t810Gdh8k6CcfHvozVbU82jBBhzxDCHEauglmudt9VF3KjqYk8V7Ywa5iOcnpJVKvhCoxbsJ-ln0tXaBdMM1joLhbUonLtKxDsZa58Rveperz5ij61hGgf0bfhDbgwyU3g2uqTto=",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEDAHy6fwRwI8RkSyeqIxmD-5q4Zl2CDDmStbrMRaf99RqactO35bNiY6XhfhcF0uAu_j1wP5WG-bpFV6oZQIA6LuobHfKuR8VJ8Yj5Aa0XsKmvybHsdtA=",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE1AuxoWb1_wi-QynK4ktLnceZJg4FV6V9y25vW_Y6XqdkhiA_6E1Ix4o9L541PPVry-c5EkdIG37nUID1Gf0NEvrubwhQUe1vrTPC3C8mOcInPHpUhpldCciIJMzaEwBScsKtT8lOhCTdXwM3QdR4wis42Gh04a284lDQ6ZChMlPRrcn1A6TGZmnieUDTekCyaZTt1wNb26OXKgwMHUrdT9pQld4EDo_Ctj3-6ZBfF-r7aBOjbjJJKFUAHOZ4uF9lBYzU0jMB1ubx0nXl0433NjFABekp6",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFGKRq1mA-duuXhHlLQzljWnKj9n-GwyVBdlVftQjyRBScapDDatUP7l8p9XlcJ4pSE5g4_kO1kIwWqnfgGp6_diLiyA8BqU4DDvMdPCXw8aEsLcl0Dfxeijtt-rKPkkhCryA56greN9WTARBA9yZqYm8QnrXZl",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHibxGszKogizKxzW3bnWe7-Q16qML8-498evME7nVps1cZjg8Q_ocXhkdATcYB3U-B531v4hgOv1JUI9b90HhIQ_mz9-qkS9qzsDxMX3EQ4xpXYyNeH9JsKZO9-AlPRjH4xC9NGpXt608RcsQHHEaQJVrSFGpF7z_IHAJanBD1E0aYlndJAY687QlcFR0jvvFBjipop24dv15A1kb-HPPSMYUml9cr1mPTZqc="
+        ],
+        "localInsight": "Noya Salon faces stiff competition on Golf Course Road from established players like Studio 17, Noi Tre Salon, and Geetanjali in South Point Mall. While the area is highly accessible via the Rapid Metro, professionals working in DLF Phase IV prioritize salons with seamless parking or valet options due to heavy local traffic. Nearby reviewers consistently praise highly skilled senior colorists but frequently complain about aggressive upselling, hidden charges, and poor customer service on the phone.",
+        "crowdInsight": "Public discussions on Reddit (r/gurgaon and r/TwoXIndia) highlight a deep frustration with Gurgaon salons that prioritize filming Instagram reels and catering to influencers over paying clients. Women seek transparent, upfront pricing to avoid the common 'salon roulette' of unexpected add-on costs, and there is a strong, underserved demand for colorists who can execute subtle, low-maintenance balayage without overprocessing or damaging natural hair textures.",
+        "brandSpec": {
+          "tagline": "Couture hair color that respects your time and your texture.",
+          "toneWords": [
+            "sophisticated",
+            "transparent",
+            "attentive"
+          ],
+          "themeId": "paper",
+          "logoHint": "A minimalist, elegant wordmark in a refined serif typeface, featuring a clean abstract line-art icon of a single flowing wave.",
+          "palette": [
+            "#3e3e3e",
+            "#f7f1e8",
+            "#1c1814"
+          ],
+          "typePairing": "Georgia + system-ui"
+        },
+        "idempotencyKey": "noya-salon-7384033d:scout:1",
+        "errors": [],
+        "evidence": [
+          {
+            "signal": 0.9,
+            "title": "Studio 17 Luxury Salon",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFQkGnzI9M0CFt5seAtqmFCjxI3OEzaXuO1yrGU1RUtgehjbMmd0Zwbxau0J_etraeMm_zxo8DHvAyBiC3Lq6yDGFIYZAmSJoyBnpS1SvY-zonegopccGR4m0XAH3aT5QStq-8WsOaKNJQnfwaV_HMcfzIx5J47u_isFxjKam5w8SyTkBKoCUR0h2avWkhQcXCaKu4TH6_4aB9Hrs0hww==",
+            "source": "search",
+            "snippet": "A premium competitor located in DLF Phase 1 on Golf Course Road, highly rated for global hair color, balayage, and K\u00e9rastase treatments by senior artists [1.4.2]."
+          },
+          {
+            "signal": 0.8,
+            "title": "Reddit TwoXIndia Salon Recommendations",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHhy6fFw1dDvdMDJHnlgVk3582nPfdyEiFTsJxDkESPsGLkLB1z_xY9pP3LdH3DwQTDZjCrlQpabFH9Q-F2MUtjbBz7Qi4CpI41bXNqZNITDHfs-RXPtkK7dVoIm6GZirUG6cHZJi6-BkqPIA2eH9EmPS5MOMF4sPIwZSyKQZ8u18sur0zVlh8AGrC1TxcLZBgDDytlMWXPb9qgk_e0gZo=",
+            "source": "crowd",
+            "snippet": "Users seek salons in Gurgaon that focus on quality service rather than filming Instagram reels and celebrity promotions, highlighting a desire for a peaceful, professional experience."
+          },
+          {
+            "signal": 0.85,
+            "title": "Reddit Gurgaon Hair Color Recommendations",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHjEHlu2Icf9A5n03aK2d-on6Fhe4rmiuRFQgJi3PlJr3Gy84CDxMjUiTc5g_6YNhor43BsSYtUrgjddckAR8u5YVt8knYuO4zLDLBjzGumwDst0TIt1N4y-PR0yQYh20UM0dmp67f1UttMcTtXrge5MKE_kV7GPWZzN42PjqjizgPSjSFFjwGbfC-q_QoRLTdJxs3cgpGIDqf_",
+            "source": "crowd",
+            "snippet": "Discussion reveals that women are highly skeptical of mixed Google reviews and fear overprocessing or overcharging, with a mid-range budget of around \u20b96,000-7,000 for quality balayage."
+          },
+          {
+            "signal": 0.75,
+            "title": "Luzo Salon Booking Platform",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHrHBiLb8wPV9d_GyRHeS9E6nGRKTyHfcyUEApP06V61pXnfOMmWpIBC_9Wzpb4a_k-8YAKmXe69xZc_5idaSkBZ73kZQ8aEMDy6pqs5rZbwzbBBpxQ4SnUiWljhpkbEN_AHco=",
+            "source": "search",
+            "snippet": "Noi Tre Salon in South Point Mall (Golf Course Road) is a popular premium choice, especially noted for curl-specific cutting and styling, with prices starting around \u20b92,000-3,000."
+          },
+          {
+            "signal": 0.7,
+            "title": "grounding chunk",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGEcP5Y-ytCkXzvda8MLfGadIRN-U7b6JPYp5uwSZSATllmh-s9P4Rj9k3vA_IGETXMd4MoeUD8T6DPTY6UnKqtJt6uK7gcU8PYaGwrGQD_abQCpPGCo3AKqZ07wIVFcRU6l6uzl9YUBn10GwKed-B_TjsJ5IJC1IHsq67dxpJfjDll9b--0W8HW3zOtq53ouiEwnimHg==",
+            "source": "search",
+            "snippet": "Cited by Gemini grounding."
+          },
+          {
+            "signal": 0.7,
+            "title": "grounding chunk",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE6QL4S0GiX1gbDLY41L6_dcXk7hivdLyV1n41BbZBgthgVCYkXTZ2Hbuia27M4Yfa8VYsI-q6t810Gdh8k6CcfHvozVbU82jBBhzxDCHEauglmudt9VF3KjqYk8V7Ywa5iOcnpJVKvhCoxbsJ-ln0tXaBdMM1joLhbUonLtKxDsZa58Rveperz5ij61hGgf0bfhDbgwyU3g2uqTto=",
+            "source": "search",
+            "snippet": "Cited by Gemini grounding."
+          },
+          {
+            "signal": 0.7,
+            "title": "grounding chunk",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEDAHy6fwRwI8RkSyeqIxmD-5q4Zl2CDDmStbrMRaf99RqactO35bNiY6XhfhcF0uAu_j1wP5WG-bpFV6oZQIA6LuobHfKuR8VJ8Yj5Aa0XsKmvybHsdtA=",
+            "source": "search",
+            "snippet": "Cited by Gemini grounding."
+          },
+          {
+            "signal": 0.7,
+            "title": "grounding chunk",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE1AuxoWb1_wi-QynK4ktLnceZJg4FV6V9y25vW_Y6XqdkhiA_6E1Ix4o9L541PPVry-c5EkdIG37nUID1Gf0NEvrubwhQUe1vrTPC3C8mOcInPHpUhpldCciIJMzaEwBScsKtT8lOhCTdXwM3QdR4wis42Gh04a284lDQ6ZChMlPRrcn1A6TGZmnieUDTekCyaZTt1wNb26OXKgwMHUrdT9pQld4EDo_Ctj3-6ZBfF-r7aBOjbjJJKFUAHOZ4uF9lBYzU0jMB1ubx0nXl0433NjFABekp6",
+            "source": "search",
+            "snippet": "Cited by Gemini grounding."
+          },
+          {
+            "signal": 0.7,
+            "title": "grounding chunk",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFGKRq1mA-duuXhHlLQzljWnKj9n-GwyVBdlVftQjyRBScapDDatUP7l8p9XlcJ4pSE5g4_kO1kIwWqnfgGp6_diLiyA8BqU4DDvMdPCXw8aEsLcl0Dfxeijtt-rKPkkhCryA56greN9WTARBA9yZqYm8QnrXZl",
+            "source": "search",
+            "snippet": "Cited by Gemini grounding."
+          },
+          {
+            "signal": 0.7,
+            "title": "grounding chunk",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHibxGszKogizKxzW3bnWe7-Q16qML8-498evME7nVps1cZjg8Q_ocXhkdATcYB3U-B531v4hgOv1JUI9b90HhIQ_mz9-qkS9qzsDxMX3EQ4xpXYyNeH9JsKZO9-AlPRjH4xC9NGpXt608RcsQHHEaQJVrSFGpF7z_IHAJanBD1E0aYlndJAY687QlcFR0jvvFBjipop24dv15A1kb-HPPSMYUml9cr1mPTZqc=",
+            "source": "search",
+            "snippet": "Cited by Gemini grounding."
+          }
+        ]
+      },
+      "step": "scout",
+      "project": "leadsy-flock",
+      "updatedAt": "2026-08-28T16:14:40.019218+00:00",
+      "legalBasis": "owner_instruction",
+      "engine": "scout",
+      "id": "noya-salon-7384033d_scout"
+    },
+    {
+      "service": "flock-worker",
+      "campaignId": "noya-salon-7384033d",
+      "status": "ok",
+      "createdAt": "2026-08-28T16:14:41.070260+00:00",
+      "attempt": 1,
+      "payload": {
+        "brandSpec": {
+          "tagline": "Couture hair color that respects your time and your texture.",
+          "toneWords": [
+            "sophisticated",
+            "transparent",
+            "attentive"
+          ],
+          "themeId": "paper",
+          "logoHint": "A minimalist, elegant wordmark in a refined serif typeface, featuring a clean abstract line-art icon of a single flowing wave.",
+          "palette": [
+            "#3e3e3e",
+            "#f7f1e8",
+            "#1c1814"
+          ],
+          "typePairing": "Georgia + system-ui"
+        },
+        "model": "gemini-3.5-flash",
+        "idempotencyKey": "noya-salon-7384033d:inka:1",
+        "prompts": {
+          "story": "A vertical 9:16 still photograph. In the center third, a close-up of a glass beaker containing a rich, dark brown '#1c1814' hair gloss, next to a clean, minimalist line-art wave icon on a small ceramic card. The background is a soft, elegant warm off-white '#f7f1e8' texture. No faces, no text, sophisticated and peaceful ambiance.",
+          "veo": "A close-up, locked-off cinematic shot of a single, beautifully colored lock of dark hair with subtle warm caramel balayage highlights, gently swaying in a soft breeze. The background is a clean, minimalist off-white '#f7f1e8' wall. No faces, no motion other than the gentle hair movement. Subject dead-centre, 9:16 crop-safe.",
+          "image": "A high-end, minimalist still photograph of a professional hair coloring brush resting on a dark charcoal '#3e3e3e' ceramic dish filled with rich, creamy hair color. The dish is placed on a warm off-white '#f7f1e8' textured stone counter. Sophisticated lighting, shallow depth of field, subject centered, no text, palette of charcoal, cream, and dark brown.",
+          "lyria": "A gentle, sophisticated 2-second acoustic guitar pluck and soft ambient swell, ending on a warm, clean chord. No vocals."
+        },
+        "assets": {
+          "stillSquare": {
+            "ok": true,
+            "bytes": 1315530,
+            "publicPath": "/media/noya-salon-7384033d/still-square",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-square.png",
+            "aspect": "1:1"
+          },
+          "stillLandscape": {
+            "ok": true,
+            "bytes": 2297265,
+            "publicPath": "/media/noya-salon-7384033d/still-landscape",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-landscape.png",
+            "aspect": "1.91:1"
+          },
+          "stillStory": {
+            "ok": true,
+            "mime": "image/png",
+            "bytes": 1882920,
+            "model": "gemini-3.1-flash-image",
+            "publicPath": "/media/noya-salon-7384033d/still-story",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-story.png",
+            "aspect": "9:16"
+          },
+          "jingle": {
+            "ok": false,
+            "note": "Lyria runs on inka_harvest so quota 429 cannot timeout Inka",
+            "pending": true,
+            "model": "lyria-002"
+          },
+          "still": {
+            "ok": true,
+            "bytes": 1484133,
+            "model": "gemini-3.1-flash-image",
+            "publicPath": "/media/noya-salon-7384033d/still",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still.png",
+            "mime": "image/png"
+          },
+          "stillFeed": {
+            "ok": true,
+            "bytes": 1429834,
+            "publicPath": "/media/noya-salon-7384033d/still-feed",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-feed.png",
+            "aspect": "4:5"
+          },
+          "clip": {
+            "ok": true,
+            "campaignId": "noya-salon-7384033d",
+            "model": "veo-3.1-generate-001",
+            "status": "started",
+            "operation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/9c7e178b-5a10-430e-a2b2-0e6bf8e5b4ca",
+            "seconds": 1.7
+          },
+          "stillDerivatives": {
+            "ok": true,
+            "slots": {
+              "square": {
+                "ok": true,
+                "bytes": 1315530,
+                "publicPath": "/media/noya-salon-7384033d/still-square",
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-square.png",
+                "aspect": "1:1"
+              },
+              "landscape": {
+                "ok": true,
+                "bytes": 2297265,
+                "publicPath": "/media/noya-salon-7384033d/still-landscape",
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-landscape.png",
+                "aspect": "1.91:1"
+              }
+            }
+          }
+        },
+        "errors": [],
+        "copy": {
+          "primaryText": "Skip the chaotic salon floors and influencer-focused studios. At Noya Salon near DLF Phase IV, we focus entirely on you, delivering bespoke balayage and global color that respects your hair's health. Enjoy a calm, attentive environment with honest pricing tailored to your lifestyle.",
+          "subhead": "Experience a quiet, professional color service at Noya Salon with transparent pricing and no camera-flashing distractions.",
+          "headline": "Couture hair color designed for your unique hair texture, right on Golf Course Road.",
+          "draftHeadline": "Guaranteed flawless balayage with zero damage at Gurgaon's best salon.",
+          "cta": "Book a Consultation"
+        }
+      },
+      "step": "inka",
+      "project": "leadsy-flock",
+      "updatedAt": "2026-08-28T16:15:25.512190+00:00",
+      "legalBasis": "owner_instruction",
+      "engine": "inka",
+      "id": "noya-salon-7384033d_inka"
+    },
+    {
+      "service": "flock-worker",
+      "campaignId": "noya-salon-7384033d",
+      "status": "ok",
+      "createdAt": "2026-08-28T16:15:26.027132+00:00",
+      "attempt": 4,
+      "payload": {
+        "attempt": 4,
+        "jingle": {
+          "ok": false,
+          "quotaLikely": true,
+          "model": "lyria-002",
+          "note": "Lyria gave up after retries (often 429 quota)",
+          "skipped": true,
+          "pending": false,
+          "error": "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Quota exceeded for aiplatform.googleapis.com/generate_content_requests_per_minute_per_project_per_base_model with base model: lyria-002. Please submit a quota increase request. https://cloud.google.com/vertex-ai/docs/generative-ai/quotas-ge"
+        },
+        "retry": false,
+        "clip": {
+          "ok": true,
+          "campaignId": "noya-salon-7384033d",
+          "model": "veo-3.1-generate-001",
+          "bytes": 1573372,
+          "derivatives": {
+            "ok": true,
+            "slots": {
+              "square": {
+                "ok": true,
+                "bytes": 596298,
+                "publicPath": "/media/noya-salon-7384033d/clip-square",
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip-square.mp4",
+                "aspect": "1:1"
+              },
+              "story": {
+                "ok": true,
+                "bytes": 511630,
+                "publicPath": "/media/noya-salon-7384033d/clip-story",
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip-story.mp4",
+                "aspect": "9:16"
+              },
+              "landscape": {
+                "ok": true,
+                "bytes": 667290,
+                "publicPath": "/media/noya-salon-7384033d/clip-landscape",
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip-landscape.mp4",
+                "aspect": "1.91:1"
+              },
+              "feed": {
+                "ok": true,
+                "bytes": 575026,
+                "publicPath": "/media/noya-salon-7384033d/clip-feed",
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip-feed.mp4",
+                "aspect": "4:5"
+              }
+            }
+          },
+          "publicPath": "/media/noya-salon-7384033d/clip",
+          "seconds": 1.7,
+          "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip.mp4",
+          "status": "harvested",
+          "done": true,
+          "operation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/9c7e178b-5a10-430e-a2b2-0e6bf8e5b4ca",
+          "mime": "video/mp4"
+        },
+        "idempotencyKey": "noya-salon-7384033d:inka_harvest:4",
+        "assets": {
+          "stillSquare": {
+            "ok": true,
+            "bytes": 1315530,
+            "publicPath": "/media/noya-salon-7384033d/still-square",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-square.png",
+            "aspect": "1:1"
+          },
+          "stillLandscape": {
+            "ok": true,
+            "bytes": 2297265,
+            "publicPath": "/media/noya-salon-7384033d/still-landscape",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-landscape.png",
+            "aspect": "1.91:1"
+          },
+          "stillStory": {
+            "ok": true,
+            "mime": "image/png",
+            "bytes": 1882920,
+            "model": "gemini-3.1-flash-image",
+            "publicPath": "/media/noya-salon-7384033d/still-story",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-story.png",
+            "aspect": "9:16"
+          },
+          "jingle": {
+            "ok": false,
+            "quotaLikely": true,
+            "model": "lyria-002",
+            "note": "Lyria gave up after retries (often 429 quota)",
+            "skipped": true,
+            "pending": false,
+            "error": "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Quota exceeded for aiplatform.googleapis.com/generate_content_requests_per_minute_per_project_per_base_model with base model: lyria-002. Please submit a quota increase request. https://cloud.google.com/vertex-ai/docs/generative-ai/quotas-ge"
+          },
+          "still": {
+            "ok": true,
+            "bytes": 1484133,
+            "model": "gemini-3.1-flash-image",
+            "publicPath": "/media/noya-salon-7384033d/still",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still.png",
+            "mime": "image/png"
+          },
+          "stillFeed": {
+            "ok": true,
+            "bytes": 1429834,
+            "publicPath": "/media/noya-salon-7384033d/still-feed",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-feed.png",
+            "aspect": "4:5"
+          },
+          "clip": {
+            "ok": true,
+            "campaignId": "noya-salon-7384033d",
+            "model": "veo-3.1-generate-001",
+            "bytes": 1573372,
+            "derivatives": {
+              "ok": true,
+              "slots": {
+                "square": {
+                  "ok": true,
+                  "bytes": 596298,
+                  "publicPath": "/media/noya-salon-7384033d/clip-square",
+                  "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip-square.mp4",
+                  "aspect": "1:1"
+                },
+                "story": {
+                  "ok": true,
+                  "bytes": 511630,
+                  "publicPath": "/media/noya-salon-7384033d/clip-story",
+                  "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip-story.mp4",
+                  "aspect": "9:16"
+                },
+                "landscape": {
+                  "ok": true,
+                  "bytes": 667290,
+                  "publicPath": "/media/noya-salon-7384033d/clip-landscape",
+                  "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip-landscape.mp4",
+                  "aspect": "1.91:1"
+                },
+                "feed": {
+                  "ok": true,
+                  "bytes": 575026,
+                  "publicPath": "/media/noya-salon-7384033d/clip-feed",
+                  "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip-feed.mp4",
+                  "aspect": "4:5"
+                }
+              }
+            },
+            "publicPath": "/media/noya-salon-7384033d/clip",
+            "seconds": 1.7,
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/clip.mp4",
+            "status": "harvested",
+            "done": true,
+            "operation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/9c7e178b-5a10-430e-a2b2-0e6bf8e5b4ca",
+            "mime": "video/mp4"
+          },
+          "stillDerivatives": {
+            "ok": true,
+            "slots": {
+              "square": {
+                "ok": true,
+                "bytes": 1315530,
+                "publicPath": "/media/noya-salon-7384033d/still-square",
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-square.png",
+                "aspect": "1:1"
+              },
+              "landscape": {
+                "ok": true,
+                "bytes": 2297265,
+                "publicPath": "/media/noya-salon-7384033d/still-landscape",
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-landscape.png",
+                "aspect": "1.91:1"
+              }
+            }
+          }
+        },
+        "errors": [],
+        "maxAttempts": 16
+      },
+      "step": "inka_harvest",
+      "project": "leadsy-flock",
+      "updatedAt": "2026-08-28T16:17:01.220748+00:00",
+      "legalBasis": "owner_instruction",
+      "engine": "inka",
+      "id": "noya-salon-7384033d_inka_harvest"
+    },
+    {
+      "service": "flock-worker",
+      "campaignId": "noya-salon-7384033d",
+      "status": "ok",
+      "createdAt": "2026-08-28T16:15:40.645482+00:00",
+      "attempt": 1,
+      "payload": {
+        "judge": {
+          "reason": "The ad copy contains no guaranteed outcomes, medical claims, or invented testimonials. It is a compliant and straightforward promotion for a local salon in Gurugram, India.",
+          "ok": true,
+          "model": "gemini-3.5-flash",
+          "verdict": "pass"
+        },
+        "rule": "fail_closed_claims",
+        "idempotencyKey": "noya-salon-7384033d:creative_gate:1",
+        "classifier": {
+          "risk": "unknown",
+          "ok": false,
+          "model": "gemma-3-12b-it",
+          "error": "404 NOT_FOUND. {'error': {'code': 404, 'message': 'Publisher model `projects/leadsy-flock/locations/us-central1/publishers/google/models/gemma-3-12b-it` was not found or your project does not have access to it. Ensure you are using a valid model name and that the model is available in the specified "
+        },
+        "verdict": "pass",
+        "final": {
+          "text": "Couture hair color designed for your unique hair texture, right on Golf Course Road.",
+          "hits": []
+        },
+        "draft": {
+          "text": "Guaranteed flawless balayage with zero damage at Gurgaon's best salon.",
+          "hits": [
+            "guaranteed_outcome"
+          ],
+          "rejected": true
+        }
+      },
+      "step": "creative_gate",
+      "project": "leadsy-flock",
+      "updatedAt": "2026-08-28T16:15:46.483744+00:00",
+      "legalBasis": "owner_instruction",
+      "engine": "ledge",
+      "id": "noya-salon-7384033d_creative_gate"
+    },
+    {
+      "service": "flock-worker",
+      "campaignId": "noya-salon-7384033d",
+      "status": "ok",
+      "createdAt": "2026-08-28T16:16:01.391186+00:00",
+      "attempt": 1,
+      "payload": {
+        "landing": "/l/noya-salon-7384033d",
+        "themeId": "paper",
+        "jingle": "/media/noya-salon-7384033d/jingle",
+        "url": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-7384033d",
+        "consentCapture": true,
+        "still": "/media/noya-salon-7384033d/still",
+        "idempotencyKey": "noya-salon-7384033d:stella:1",
+        "headline": "Couture hair color designed for your unique hair texture, right on Golf Course Road.",
+        "clip": "/media/noya-salon-7384033d/clip"
+      },
+      "step": "stella",
+      "project": "leadsy-flock",
+      "updatedAt": "2026-08-28T16:16:01.625460+00:00",
+      "legalBasis": "owner_instruction",
+      "engine": "stella",
+      "id": "noya-salon-7384033d_stella"
+    },
+    {
+      "service": "flock-worker",
+      "campaignId": "noya-salon-7384033d",
+      "status": "ok",
+      "createdAt": "2026-08-28T16:16:16.117945+00:00",
+      "attempt": 1,
+      "payload": {
+        "landing": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-7384033d",
+        "themeId": "paper",
+        "kit": "/k/noya-salon-7384033d",
+        "autopost": false,
+        "variants": [
+          {
+            "charCounts": {
+              "headline": 40,
+              "primaryText": 125
+            },
+            "cta": "Book a Consultation",
+            "organic": false,
+            "placement": "feed",
+            "clip": "/media/noya-salon-7384033d/clip-feed",
+            "still": "/media/noya-salon-7384033d/still-feed",
+            "aspect": "4:5",
+            "clipSlot": "clip-feed",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-7384033d?utm_source=meta&utm_medium=paid&utm_campaign=noya-salon-7384033d&utm_content=meta_feed",
+            "lint": {
+              "ok": true,
+              "issues": []
+            },
+            "primaryText": "Skip the chaotic salon floors and influencer-focused studios. At Noya Salon near DLF Phase IV, we focus entirely on you, del\u2026",
+            "stillSlot": "still-feed",
+            "platform": "meta",
+            "id": "meta_feed",
+            "headline": "Couture hair color designed for your un\u2026"
+          },
+          {
+            "charCounts": {
+              "headline": 40,
+              "primaryText": 125
+            },
+            "cta": "Book a Consultation",
+            "organic": false,
+            "placement": "carousel",
+            "clip": "/media/noya-salon-7384033d/clip-square",
+            "still": "/media/noya-salon-7384033d/still-square",
+            "aspect": "1:1",
+            "clipSlot": "clip-square",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-7384033d?utm_source=meta&utm_medium=paid&utm_campaign=noya-salon-7384033d&utm_content=meta_square",
+            "lint": {
+              "ok": true,
+              "issues": []
+            },
+            "primaryText": "Skip the chaotic salon floors and influencer-focused studios. At Noya Salon near DLF Phase IV, we focus entirely on you, del\u2026",
+            "stillSlot": "still-square",
+            "platform": "meta",
+            "id": "meta_square",
+            "headline": "Couture hair color designed for your un\u2026"
+          },
+          {
+            "charCounts": {
+              "headline": 32,
+              "primaryText": 90
+            },
+            "cta": "Book a Consultation",
+            "organic": false,
+            "placement": "reel",
+            "clip": "/media/noya-salon-7384033d/clip-story",
+            "still": "/media/noya-salon-7384033d/still-story",
+            "aspect": "9:16",
+            "clipSlot": "clip-story",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-7384033d?utm_source=meta&utm_medium=paid&utm_campaign=noya-salon-7384033d&utm_content=meta_reel",
+            "lint": {
+              "ok": true,
+              "issues": []
+            },
+            "primaryText": "Skip the chaotic salon floors and influencer-focused studios. At Noya Salon near DLF Phas\u2026",
+            "stillSlot": "still-story",
+            "platform": "meta",
+            "id": "meta_reel",
+            "headline": "Couture hair color designed for\u2026"
+          },
+          {
+            "charCounts": {
+              "headline": 32,
+              "primaryText": 90
+            },
+            "cta": "Book a Consultation",
+            "organic": true,
+            "placement": "status",
+            "clip": "/media/noya-salon-7384033d/clip-story",
+            "still": "/media/noya-salon-7384033d/still-story",
+            "aspect": "9:16",
+            "clipSlot": "clip-story",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-7384033d?utm_source=whatsapp&utm_medium=paid&utm_campaign=noya-salon-7384033d&utm_content=whatsapp_status",
+            "lint": {
+              "ok": true,
+              "issues": []
+            },
+            "primaryText": "Skip the chaotic salon floors and influencer-focused studios. At Noya Salon near DLF Phas\u2026",
+            "stillSlot": "still-story",
+            "platform": "whatsapp",
+            "id": "whatsapp_status",
+            "headline": "Couture hair color designed for\u2026"
+          },
+          {
+            "charCounts": {
+              "headline": 30,
+              "primaryText": 90
+            },
+            "cta": "Book a Consultation",
+            "organic": false,
+            "placement": "display",
+            "clip": "/media/noya-salon-7384033d/clip-landscape",
+            "still": "/media/noya-salon-7384033d/still-landscape",
+            "aspect": "1.91:1",
+            "clipSlot": "clip-landscape",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-7384033d?utm_source=google&utm_medium=paid&utm_campaign=noya-salon-7384033d&utm_content=google_display",
+            "lint": {
+              "ok": true,
+              "issues": []
+            },
+            "primaryText": "Skip the chaotic salon floors and influencer-focused studios. At Noya Salon near DLF Phas\u2026",
+            "stillSlot": "still-landscape",
+            "platform": "google",
+            "id": "google_display",
+            "headline": "Couture hair color designed f\u2026"
+          },
+          {
+            "aspect": "text",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-7384033d?utm_source=google&utm_medium=paid&utm_campaign=noya-salon-7384033d&utm_content=google_rsa",
+            "charCounts": {
+              "headline": 30,
+              "description": 90,
+              "primaryText": 125
+            },
+            "lint": {
+              "ok": true,
+              "issues": []
+            },
+            "organic": false,
+            "id": "google_rsa",
+            "platform": "google",
+            "description": "Experience a quiet, professional color service at Noya Salon with transparent pricing and\u2026",
+            "primaryText": "Skip the chaotic salon floors and influencer-focused studios. At Noya Salon near DLF Phase IV, we focus entirely on you, del\u2026",
+            "placement": "search",
+            "headline": "Couture hair color designed f\u2026",
+            "cta": "Book a Consultation",
+            "headlines": [
+              "Couture hair color designed f\u2026",
+              "Book a Consultation",
+              "Evenings near you"
+            ]
+          }
+        ],
+        "note": "Ready to upload. Owner makes the final click on their own channels.",
+        "idempotencyKey": "noya-salon-7384033d:ad_kit:1",
+        "assets": {
+          "stillSquare": {
+            "ok": true,
+            "bytes": 1315530,
+            "publicPath": "/media/noya-salon-7384033d/still-square",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-square.png",
+            "aspect": "1:1"
+          },
+          "stillLandscape": {
+            "ok": true,
+            "bytes": 2297265,
+            "publicPath": "/media/noya-salon-7384033d/still-landscape",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-landscape.png",
+            "aspect": "1.91:1"
+          },
+          "stillStory": {
+            "ok": true,
+            "mime": "image/png",
+            "bytes": 1882920,
+            "model": "gemini-3.1-flash-image",
+            "publicPath": "/media/noya-salon-7384033d/still-story",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-story.png",
+            "aspect": "9:16"
+          },
+          "jingle": {
+            "ok": false,
+            "note": "Lyria runs on inka_harvest so quota 429 cannot timeout Inka",
+            "pending": true,
+            "model": "lyria-002"
+          },
+          "still": {
+            "ok": true,
+            "bytes": 1484133,
+            "model": "gemini-3.1-flash-image",
+            "publicPath": "/media/noya-salon-7384033d/still",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still.png",
+            "mime": "image/png"
+          },
+          "stillFeed": {
+            "ok": true,
+            "bytes": 1429834,
+            "publicPath": "/media/noya-salon-7384033d/still-feed",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-feed.png",
+            "aspect": "4:5"
+          },
+          "clip": {
+            "ok": true,
+            "campaignId": "noya-salon-7384033d",
+            "model": "veo-3.1-generate-001",
+            "status": "started",
+            "operation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/9c7e178b-5a10-430e-a2b2-0e6bf8e5b4ca",
+            "seconds": 1.7
+          },
+          "stillDerivatives": {
+            "ok": true,
+            "slots": {
+              "square": {
+                "ok": true,
+                "bytes": 1315530,
+                "publicPath": "/media/noya-salon-7384033d/still-square",
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-square.png",
+                "aspect": "1:1"
+              },
+              "landscape": {
+                "ok": true,
+                "bytes": 2297265,
+                "publicPath": "/media/noya-salon-7384033d/still-landscape",
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-7384033d/still-landscape.png",
+                "aspect": "1.91:1"
+              }
+            }
+          }
+        }
+      },
+      "step": "ad_kit",
+      "project": "leadsy-flock",
+      "updatedAt": "2026-08-28T16:16:16.353143+00:00",
+      "legalBasis": "owner_instruction",
+      "engine": "inka",
+      "id": "noya-salon-7384033d_ad_kit"
+    }
+  ],
+  "consents": [
+    {
+      "campaignId": "noya-salon-7384033d",
+      "source": "salon-e2e",
+      "createdAt": "2026-08-28T16:16:35.825978+00:00",
+      "name": "Judge Demo",
+      "contact": "judge@example.test",
+      "id": "YDJ2gukIo71gaeAtu1NP"
+    }
+  ]
+}

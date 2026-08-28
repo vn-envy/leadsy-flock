@@ -1,0 +1,106 @@
+{
+  "campaignId": "noya-salon-7384033d",
+  "status": "completed",
+  "themeId": "paper",
+  "kit": "https://flock-api-533880600838.asia-south1.run.app/k/noya-salon-7384033d",
+  "landing": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-7384033d",
+  "stills": {
+    "still": {
+      "ok": true,
+      "bytes": 1484133,
+      "contentType": "image/png"
+    },
+    "still-story": {
+      "ok": true,
+      "bytes": 1882920,
+      "contentType": "image/png"
+    },
+    "still-feed": {
+      "ok": true,
+      "bytes": 1429834,
+      "contentType": "image/png"
+    },
+    "still-square": {
+      "ok": true,
+      "bytes": 1315530,
+      "contentType": "image/png"
+    },
+    "still-landscape": {
+      "ok": true,
+      "bytes": 2297265,
+      "contentType": "image/png"
+    }
+  },
+  "clips": {
+    "clip": {
+      "ok": true,
+      "bytes": 1573372,
+      "contentType": "video/mp4"
+    },
+    "clip-story": {
+      "ok": true,
+      "bytes": 511630,
+      "contentType": "video/mp4"
+    },
+    "clip-feed": {
+      "ok": true,
+      "bytes": 575026,
+      "contentType": "video/mp4"
+    },
+    "clip-square": {
+      "ok": true,
+      "bytes": 596298,
+      "contentType": "video/mp4"
+    },
+    "clip-landscape": {
+      "ok": true,
+      "bytes": 667290,
+      "contentType": "video/mp4"
+    }
+  },
+  "jingle": {
+    "ok": false,
+    "bytes": 0,
+    "contentType": "HTTP Error 404: Not Found"
+  },
+  "ready": {
+    "still": true,
+    "still-square": true,
+    "still-feed": true,
+    "still-story": true,
+    "still-landscape": true,
+    "clip": true,
+    "clip-square": true,
+    "clip-feed": true,
+    "clip-story": true,
+    "clip-landscape": true,
+    "jingle": false
+  },
+  "harvest": [
+    {
+      "status": "ok",
+      "attempt": 4
+    }
+  ],
+  "consent": {
+    "id": "YDJ2gukIo71gaeAtu1NP",
+    "campaignId": "noya-salon-7384033d",
+    "ok": true
+  },
+  "draftRejected": true,
+  "gateVerdict": "pass",
+  "scoutGrounding": [
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFQkGnzI9M0CFt5seAtqmFCjxI3OEzaXuO1yrGU1RUtgehjbMmd0Zwbxau0J_etraeMm_zxo8DHvAyBiC3Lq6yDGFIYZAmSJoyBnpS1SvY-zonegopccGR4m0XAH3aT5QStq-8WsOaKNJQnfwaV_HMcfzIx5J47u_isFxjKam5w8SyTkBKoCUR0h2avWkhQcXCaKu4TH6_4aB9Hrs0hww==",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHhy6fFw1dDvdMDJHnlgVk3582nPfdyEiFTsJxDkESPsGLkLB1z_xY9pP3LdH3DwQTDZjCrlQpabFH9Q-F2MUtjbBz7Qi4CpI41bXNqZNITDHfs-RXPtkK7dVoIm6GZirUG6cHZJi6-BkqPIA2eH9EmPS5MOMF4sPIwZSyKQZ8u18sur0zVlh8AGrC1TxcLZBgDDytlMWXPb9qgk_e0gZo=",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHjEHlu2Icf9A5n03aK2d-on6Fhe4rmiuRFQgJi3PlJr3Gy84CDxMjUiTc5g_6YNhor43BsSYtUrgjddckAR8u5YVt8knYuO4zLDLBjzGumwDst0TIt1N4y-PR0yQYh20UM0dmp67f1UttMcTtXrge5MKE_kV7GPWZzN42PjqjizgPSjSFFjwGbfC-q_QoRLTdJxs3cgpGIDqf_",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHrHBiLb8wPV9d_GyRHeS9E6nGRKTyHfcyUEApP06V61pXnfOMmWpIBC_9Wzpb4a_k-8YAKmXe69xZc_5idaSkBZ73kZQ8aEMDy6pqs5rZbwzbBBpxQ4SnUiWljhpkbEN_AHco=",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGEcP5Y-ytCkXzvda8MLfGadIRN-U7b6JPYp5uwSZSATllmh-s9P4Rj9k3vA_IGETXMd4MoeUD8T6DPTY6UnKqtJt6uK7gcU8PYaGwrGQD_abQCpPGCo3AKqZ07wIVFcRU6l6uzl9YUBn10GwKed-B_TjsJ5IJC1IHsq67dxpJfjDll9b--0W8HW3zOtq53ouiEwnimHg==",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE6QL4S0GiX1gbDLY41L6_dcXk7hivdLyV1n41BbZBgthgVCYkXTZ2Hbuia27M4Yfa8VYsI-q6t810Gdh8k6CcfHvozVbU82jBBhzxDCHEauglmudt9VF3KjqYk8V7Ywa5iOcnpJVKvhCoxbsJ-ln0tXaBdMM1joLhbUonLtKxDsZa58Rveperz5ij61hGgf0bfhDbgwyU3g2uqTto=",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEDAHy6fwRwI8RkSyeqIxmD-5q4Zl2CDDmStbrMRaf99RqactO35bNiY6XhfhcF0uAu_j1wP5WG-bpFV6oZQIA6LuobHfKuR8VJ8Yj5Aa0XsKmvybHsdtA=",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE1AuxoWb1_wi-QynK4ktLnceZJg4FV6V9y25vW_Y6XqdkhiA_6E1Ix4o9L541PPVry-c5EkdIG37nUID1Gf0NEvrubwhQUe1vrTPC3C8mOcInPHpUhpldCciIJMzaEwBScsKtT8lOhCTdXwM3QdR4wis42Gh04a284lDQ6ZChMlPRrcn1A6TGZmnieUDTekCyaZTt1wNb26OXKgwMHUrdT9pQld4EDo_Ctj3-6ZBfF-r7aBOjbjJJKFUAHOZ4uF9lBYzU0jMB1ubx0nXl0433NjFABekp6",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFGKRq1mA-duuXhHlLQzljWnKj9n-GwyVBdlVftQjyRBScapDDatUP7l8p9XlcJ4pSE5g4_kO1kIwWqnfgGp6_diLiyA8BqU4DDvMdPCXw8aEsLcl0Dfxeijtt-rKPkkhCryA56greN9WTARBA9yZqYm8QnrXZl",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHibxGszKogizKxzW3bnWe7-Q16qML8-498evME7nVps1cZjg8Q_ocXhkdATcYB3U-B531v4hgOv1JUI9b90HhIQ_mz9-qkS9qzsDxMX3EQ4xpXYyNeH9JsKZO9-AlPRjH4xC9NGpXt608RcsQHHEaQJVrSFGpF7z_IHAJanBD1E0aYlndJAY687QlcFR0jvvFBjipop24dv15A1kb-HPPSMYUml9cr1mPTZqc="
+  ],
+  "autopost": false,
+  "kitHtmlHasAutopostRefusal": true
+}
