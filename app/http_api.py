@@ -21,7 +21,7 @@ from app.campaigns import (
     record_consent,
     screen_text,
 )
-from app.settings import load_settings
+from app.derive import download_name
 from app.telegram_adapter import configured as telegram_configured
 from app.telegram_adapter import handle_update
 from app.worker import handle_step
@@ -144,7 +144,10 @@ def attach_flock_routes(app: FastAPI) -> None:
         return Response(
             content=data,
             media_type=mime,
-            headers={"Cache-Control": "public, max-age=3600"},
+            headers={
+                "Cache-Control": "public, max-age=3600",
+                "Content-Disposition": f'inline; filename="{download_name(campaign_id, slot)}"',
+            },
         )
 
     @app.post("/v1/consents")

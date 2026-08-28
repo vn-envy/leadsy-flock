@@ -33,6 +33,9 @@ def test_ad_kit_variant_clips_and_utms() -> None:
     assert out["aspect"] == "4:5"
     assert out["still"] == "/media/c1/still-feed"
     assert out["clip"] == "/media/c1/clip-feed"
+    assert out["proofClip"] == "/media/c1/clip-proof-feed"
+    assert out["width"] == 1080
+    assert out["height"] == 1350
 
 
 def test_ad_kit_html_is_paste_guide_not_autopost() -> None:
@@ -87,6 +90,10 @@ def test_ad_kit_html_is_paste_guide_not_autopost() -> None:
     assert "/media/noya-1/clip-captioned" in html
     assert "/media/noya-1/clip-en" in html
     assert "/media/noya-1/clip-indic" in html
+    assert "/media/noya-1/clip-proof-feed" in html
+    assert 'data-aspect="4:5"' in html
+    assert "1080×1350" in html
+    assert "Save 1080" in html
     assert "VO English" in html
     assert "this shop's own photos" in html
     assert "anti-influencer" in html

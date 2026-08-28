@@ -20,6 +20,7 @@ from google.genai import types
 
 from app import media
 from app.engines import gemini_util as g
+from app.vertical import infer_role
 
 MAX_URIS = 8
 MAX_BYTES = 6 * 1024 * 1024
@@ -45,7 +46,14 @@ def sanitize_own_uris(
             return
         seen.add(u)
         k = kind if kind in allowed else "photo"
-        out.append({"uri": u[:500], "kind": k, "title": (title or k)[:160]})
+        out.append(
+            {
+                "uri": u[:500],
+                "kind": k,
+                "title": (title or k)[:160],
+                "role": infer_role(u, k, title),
+            }
+        )
 
     _add(website, "website", "brief website")
     for item in rows:
@@ -65,7 +73,7 @@ def collect_uris(brief: dict[str, Any] | None, scout: dict[str, Any] | None) -> 
     scout = scout or {}
     rows: list[dict[str, str]] = []
 
-    def _add(uri: Any, kind: str) -> None:
+    def _add(uri: Any, kind: str, role: str = "") -> None:
         u = str(uri or "").strip()
         if not u.startswith("http"):
             return
@@ -74,7 +82,7 @@ def collect_uris(brief: dict[str, Any] | None, scout: dict[str, Any] | None) -> 
             return
         if any(r["uri"] == u for r in rows):
             return
-        rows.append({"uri": u, "kind": kind})
+        rows.append({"uri": u, "kind": kind, "role": role or infer_role(u, kind)})
 
     for key, kind in (
         ("website", "website"),
@@ -94,7 +102,7 @@ def collect_uris(brief: dict[str, Any] | None, scout: dict[str, Any] | None) -> 
         if isinstance(item, str):
             _add(item, "photo")
         elif isinstance(item, dict):
-            _add(item.get("uri"), str(item.get("kind") or "photo"))
+            _add(item.get("uri"), str(item.get("kind") or "photo"), str(item.get("role") or ""))
     for ev in scout.get("evidence") or []:
         uri = str((ev or {}).get("uri") or "")
         src = str((ev or {}).get("source") or "")
@@ -231,14 +239,19 @@ def apply_to_stills(
     campaign_id: str,
     pack: dict[str, Any],
 ) -> dict[str, Any]:
-    """Map owner frames onto still / still-story / still-detail."""
+    """Map owner frames onto still / still-story / still-detail (proof → detail)."""
     frames = list(pack.get("frames") or [])
     slots = ("still", "still-story", "still-detail")
     kinds = {"interior": "still", "listing": "still", "product": "still-detail", "menu": "still-detail", "photo": "still-story"}
     assigned: dict[str, dict[str, Any]] = {}
     leftover = []
     for rec in frames:
-        want = kinds.get(str(rec.get("kind") or "photo"), "still")
+        role = str(rec.get("role") or infer_role(str(rec.get("uri") or ""), str(rec.get("kind") or "")))
+        rec["role"] = role
+        if role == "proof":
+            want = "still-detail"
+        else:
+            want = kinds.get(str(rec.get("kind") or "photo"), "still")
         if want not in assigned:
             assigned[want] = rec
         else:
@@ -298,6 +311,7 @@ def _store_raw(
         "ok": True,
         "uri": row["uri"],
         "kind": row.get("kind") or "photo",
+        "role": infer_role(row.get("uri") or "", row.get("kind") or "", row.get("title") or ""),
         "gcs": uri,
         "mime": mime,
         "bytes": len(data),
@@ -332,6 +346,7 @@ def _still_from_pdf(
             "ok": True,
             "uri": row["uri"],
             "kind": "menu",
+            "role": "proof",
             "gcs": uri,
             "mime": mime or "image/png",
             "bytes": len(img),

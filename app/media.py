@@ -56,6 +56,13 @@ MEDIA_SLOTS: dict[str, tuple[str, ...]] = {
     "clip-captioned-en": ("clip-captioned-en.mp4",),
     "clip-en": ("clip-en.mp4",),
     "clip-indic": ("clip-indic.mp4",),
+    "clip-proof": ("clip-proof.mp4",),
+    "clip-proof-square": ("clip-proof-square.mp4",),
+    "clip-proof-feed": ("clip-proof-feed.mp4",),
+    "clip-proof-story": ("clip-proof-story.mp4",),
+    "clip-proof-landscape": ("clip-proof-landscape.mp4",),
+    "clip-proof-en": ("clip-proof-en.mp4",),
+    "clip-proof-indic": ("clip-proof-indic.mp4",),
     "jingle": JINGLE_NAMES,
 }
 

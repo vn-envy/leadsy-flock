@@ -17,6 +17,7 @@ from app.derive import derive_images
 from app.design import resolve_theme
 from app.engines import gemini_util as g
 from app.locale import localize_copy, resolve_locale
+from app.vertical import from_scout as vertical_from_scout
 
 
 COPY_PROMPT = """You are Inka, the artist of a local-SMB agency in India.
@@ -30,12 +31,15 @@ Return ONLY JSON:
   "primaryText": "2-3 sentences for a Meta primary text, under 125 words",
   "cta": "short CTA",
   "storyHook": "one sentence: winning shelf trope × local pain × this business",
-  "voEn": "one ENGLISH spoken sentence, Latin script only, under 18 words, for an 8-second film, no claims",
-  "shotList": "three beats for an 8-second 9:16 film: empty interior, product, light — no people, no hands, no faces, no on-screen text",
-  "veoPrompt": "English cinematic direction for Veo 3.1, 8 seconds, 9:16, locked-off or slow push, THIS shop's real interior/product dead-centre, EMPTY of people and body parts, no on-screen text, native room tone only (spoken lines are muxed later in English and the local language)",
-  "imagePrompt": "16:9 still photograph prompt, BrandSpec palette, empty interior or product centred, no people, no hands, no faces, no text in the image",
-  "storyPrompt": "9:16 vertical still, product or empty station in the centre third (Stories/Reels safe zone), BrandSpec palette, no people, no hands, no faces, no text",
-  "detailPrompt": "tight 1:1 still of tools, bowls, bottles or fabric — product only, BrandSpec palette, no people, no hands, no faces, no text",
+  "voEn": "one ENGLISH spoken sentence, Latin script only, under 18 words, for an 8-second PLACE film, no claims",
+  "shotList": "three beats for an 8-second 9:16 PLACE film: this shop's room/station/light — no people, no hands, no faces, no on-screen text",
+  "veoPrompt": "English cinematic direction for Veo 3.1, 8 seconds, 9:16, slow push, THIS shop's real interior dead-centre, EMPTY of people, no on-screen text, room tone only",
+  "shotListProof": "three beats for a second 8-second 9:16 PROOF film: the thing a stranger must see to book (dish / finished colour / published result / SKU), from THEIR menu or photos, no people unless the photo already is their published result and you keep it as product-still, no on-screen text",
+  "veoPromptProof": "English cinematic direction for Veo 3.1, 8 seconds, 9:16, slow push-in on the PROOF object from this shop's own menu/result/SKU photo, EMPTY of invented people, no on-screen text, room tone only",
+  "voEnProof": "one ENGLISH spoken sentence under 18 words about the proof object, no claims",
+  "imagePrompt": "16:9 still of the PLACE (empty interior), BrandSpec palette, no people, no text",
+  "storyPrompt": "9:16 vertical PLACE still, subject in the centre third, BrandSpec palette, no people, no text",
+  "detailPrompt": "tight still of the PROOF object (plated dish, colour result, SKU, published clinic result) from this shop, BrandSpec palette, no invented faces, no text",
   "lyriaPrompt": "2-second instrumental sting, no vocals"
 }}
 
@@ -46,6 +50,7 @@ Local insight: {local}
 Crowd insight: {crowd}
 Evidence (summaries only): {evidence}
 Own visual sources (use these rooms/products, do not invent a different shop): {own}
+Proof object for this vertical: {proof}
 Policy memory from the gate (honor these): {policy}
 Locale for spoken line / captions: {locale}
 Business: {business} in {geo}. Goal: {goal}. Audience: {audience}.
@@ -89,13 +94,15 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
         f"{s.get('hookType')}: {str(s.get('snippet') or s.get('title') or '')[:120]}"
         for s in shelf[:6]
     )
+    vert = vertical_from_scout(scout, brief)
     prompt = COPY_PROMPT.format(
         brand=str(brand),
         shelf=(shelf_bits or "none yet").replace("{", "(").replace("}", ")"),
         local=str(scout.get("localInsight") or "none")[:400].replace("{", "(").replace("}", ")"),
         crowd=str(scout.get("crowdInsight") or "none")[:300].replace("{", "(").replace("}", ")"),
         evidence=snippets.replace("{", "(").replace("}", ")") or "none yet",
-        own=str([u.get("uri") for u in (scout.get("ownUris") or [])][:6] or brief.get("website") or "none given").replace("{", "(").replace("}", ")"),
+        own=str([u.get("uri") for u in (scout.get("ownUris") or [])][:6] or brief.get("website") or brief.get("googleListing") or "none given").replace("{", "(").replace("}", ")"),
+        proof=f"{vert.get('vertical')}: {vert.get('proofObject')}".replace("{", "(").replace("}", ")"),
         policy=(policy or "none").replace("{", "(").replace("}", ")"),
         locale=f"{locale.get('bcp47')} {locale.get('script')}",
         business=brief.get("businessName") or "the business",
@@ -143,6 +150,7 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
         copy["primaryTextLocalized"] = localized.get("primaryText")
         copy["ctaLocalized"] = localized.get("cta")
         copy["voIndic"] = localized.get("vo")
+        copy["voIndicProof"] = localized.get("voProof")
         copy["storyHookLocalized"] = localized.get("storyHook")
     else:
         errors.append("locale:translate_skipped")
@@ -154,6 +162,7 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
     skip_lyria = os.environ.get("INKA_SKIP_LYRIA", "0") == "1"
 
     ref_blobs: list[tuple[bytes, str]] = []
+    proof_blobs: list[tuple[bytes, str]] = []
     own_pack: dict[str, Any] = {"origin": "none", "frames": [], "count": 0}
     if skip_still:
         assets["still"] = {"ok": False, "skipped": True, "model": g.IMAGE_MODEL}
@@ -212,7 +221,16 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
         for rec in (assets["still"], assets["stillStory"], assets["stillDetail"]):
             raw = rec.pop("_bytes", None) if isinstance(rec, dict) else None
             if raw:
-                ref_blobs.append((raw, rec.get("mime") or "image/png"))
+                role = str(rec.get("role") or "")
+                blob = (raw, rec.get("mime") or "image/png")
+                if role == "proof" or rec is assets["stillDetail"]:
+                    proof_blobs.append(blob)
+                else:
+                    ref_blobs.append(blob)
+        if not ref_blobs and proof_blobs:
+            ref_blobs = list(proof_blobs)
+        if not proof_blobs and ref_blobs:
+            proof_blobs = list(ref_blobs)
         if assets["still"].get("ok"):
             derived = derive_images(campaign_id, "still", prefer={"square", "landscape"})
             assets["stillDerivatives"] = derived
@@ -235,6 +253,13 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
             copy.get("veoPrompt") or "",
             errors,
             refs=ref_blobs[:3],
+            vo_line="",
+        )
+        assets["clipProof"] = _veo_start(
+            campaign_id,
+            copy.get("veoPromptProof") or copy.get("veoPrompt") or "",
+            errors,
+            refs=(proof_blobs or ref_blobs)[:3],
             vo_line="",
         )
     if skip_lyria:
@@ -263,26 +288,32 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
             "cta": copy.get("cta"),
             "storyHook": copy.get("storyHook"),
             "voEn": copy.get("voEn"),
+            "voEnProof": copy.get("voEnProof"),
             "headlineLocalized": copy.get("headlineLocalized"),
             "subheadLocalized": copy.get("subheadLocalized"),
             "primaryTextLocalized": copy.get("primaryTextLocalized"),
             "ctaLocalized": copy.get("ctaLocalized"),
             "voIndic": copy.get("voIndic"),
+            "voIndicProof": copy.get("voIndicProof"),
             "storyHookLocalized": copy.get("storyHookLocalized"),
             "shotList": copy.get("shotList"),
+            "shotListProof": copy.get("shotListProof"),
         },
         "prompts": {
             "veo": copy.get("veoPrompt"),
+            "veoProof": copy.get("veoPromptProof"),
             "image": copy.get("imagePrompt"),
             "story": copy.get("storyPrompt"),
             "detail": copy.get("detailPrompt"),
             "lyria": copy.get("lyriaPrompt"),
         },
+        "vertical": vert,
         "brandSpec": brand,
         "shelf": shelf,
         "locale": locale,
         "assets": assets,
         "errors": errors,
+        "resolvedName": scout.get("resolvedName") or "",
     }
 
 

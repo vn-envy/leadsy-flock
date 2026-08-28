@@ -141,17 +141,23 @@ def dual_tracks(
     campaign_id: str,
     copy: dict[str, Any],
     locale: dict[str, Any] | None,
+    *,
+    source_name: str = "clip-story.mp4",
+    dest_en: str = "clip-en.mp4",
+    dest_indic: str = "clip-indic.mp4",
+    vo_en_key: str = "voEn",
+    vo_indic_key: str = "voIndic",
 ) -> dict[str, Any]:
     """Always English. Indic when the geo is not English-only."""
     locale = locale or {}
     out: dict[str, Any] = {}
-    vo_en = str(copy.get("voEn") or "")
-    vo_loc = str(copy.get("voIndic") or "")
+    vo_en = str(copy.get(vo_en_key) or copy.get("voEn") or "")
+    vo_loc = str(copy.get(vo_indic_key) or copy.get("voIndic") or "")
     en = speak(vo_en, language="English", voice=_VOICE_EN)
     if en.get("_bytes"):
         raw = en.pop("_bytes")
-        media.put_bytes(media.campaign_path(campaign_id, "vo-en.bin"), raw, en.get("mime") or "audio/wav")
-        muxed = mux_over_video(campaign_id, raw, dest_name="clip-en.mp4")
+        media.put_bytes(media.campaign_path(campaign_id, dest_en.replace(".mp4", ".bin")), raw, en.get("mime") or "audio/wav")
+        muxed = mux_over_video(campaign_id, raw, dest_name=dest_en, source_name=source_name)
         out["en"] = {**en, **muxed}
     else:
         out["en"] = en
@@ -160,8 +166,12 @@ def dual_tracks(
         loc = speak(vo_loc, language=lang, voice=_VOICE_INDIC)
         if loc.get("_bytes"):
             raw = loc.pop("_bytes")
-            media.put_bytes(media.campaign_path(campaign_id, "vo-indic.bin"), raw, loc.get("mime") or "audio/wav")
-            muxed = mux_over_video(campaign_id, raw, dest_name="clip-indic.mp4")
+            media.put_bytes(
+                media.campaign_path(campaign_id, dest_indic.replace(".mp4", ".bin")),
+                raw,
+                loc.get("mime") or "audio/wav",
+            )
+            muxed = mux_over_video(campaign_id, raw, dest_name=dest_indic, source_name=source_name)
             out["indic"] = {**loc, **muxed}
         else:
             out["indic"] = loc

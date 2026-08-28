@@ -11,6 +11,7 @@ from urllib.parse import quote
 
 from app import ledger
 from app.design import resolve_theme
+from app.derive import PIXEL_BOXES, download_name
 
 
 CHANNELS = (
@@ -23,6 +24,7 @@ CHANNELS = (
         "headlineMax": 40,
         "stillSlot": "still-feed",
         "clipSlot": "clip-feed",
+        "proofClipSlot": "clip-proof-feed",
     },
     {
         "id": "meta_square",
@@ -33,6 +35,7 @@ CHANNELS = (
         "headlineMax": 40,
         "stillSlot": "still-square",
         "clipSlot": "clip-square",
+        "proofClipSlot": "clip-proof-square",
     },
     {
         "id": "meta_reel",
@@ -44,6 +47,8 @@ CHANNELS = (
         "stillSlot": "still-story",
         "clipSlot": "clip-indic",
         "clipSlotEn": "clip-en",
+        "proofClipSlot": "clip-proof-indic",
+        "proofClipSlotEn": "clip-proof-en",
     },
     {
         "id": "whatsapp_status",
@@ -55,6 +60,8 @@ CHANNELS = (
         "stillSlot": "still-story",
         "clipSlot": "clip-indic",
         "clipSlotEn": "clip-en",
+        "proofClipSlot": "clip-proof-indic",
+        "proofClipSlotEn": "clip-proof-en",
         "organic": True,
     },
     {
@@ -66,6 +73,7 @@ CHANNELS = (
         "headlineMax": 30,
         "stillSlot": "still-landscape",
         "clipSlot": "clip-landscape",
+        "proofClipSlot": "clip-proof-landscape",
     },
     {
         "id": "google_rsa",
@@ -87,8 +95,12 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
     locale = inka.get("locale") or {}
     shelf = inka.get("shelf") or []
     landing = stella.get("url") or stella.get("landing") or ""
+    shown = dict(campaign)
+    resolved = str(inka.get("resolvedName") or "").strip()
+    if resolved:
+        shown["brief"] = {**(campaign.get("brief") or {}), "businessName": resolved}
     variants = [variant(ch, copy, landing, campaign_id) for ch in CHANNELS]
-    page = render_kit(campaign, copy, brand, variants, landing, locale=locale, shelf=shelf)
+    page = render_kit(shown, copy, brand, variants, landing, locale=locale, shelf=shelf)
     path = f"/k/{campaign_id}"
     ledger.upsert_campaign(campaign_id, {"kitHtml": page, "kitPath": path, "locale": locale})
     return {
@@ -145,6 +157,17 @@ def variant(channel: dict[str, Any], copy: dict[str, Any], landing: str, campaig
     if channel.get("clipSlotEn"):
         block["clipEn"] = f"/media/{campaign_id}/{channel['clipSlotEn']}"
         block["clipSlotEn"] = channel["clipSlotEn"]
+    if channel.get("proofClipSlot"):
+        block["proofClip"] = f"/media/{campaign_id}/{channel['proofClipSlot']}"
+        block["proofClipSlot"] = channel["proofClipSlot"]
+    if channel.get("proofClipSlotEn"):
+        block["proofClipEn"] = f"/media/{campaign_id}/{channel['proofClipSlotEn']}"
+        block["proofClipSlotEn"] = channel["proofClipSlotEn"]
+    box_key = {"4:5": "feed", "1:1": "square", "9:16": "story", "1.91:1": "landscape"}.get(str(channel.get("aspect") or ""))
+    if box_key and box_key in PIXEL_BOXES:
+        pw, ph, _a = PIXEL_BOXES[box_key]
+        block["width"] = pw
+        block["height"] = ph
     if channel["id"] == "google_rsa":
         desc = _clip(str(copy.get("subhead") or primary), int(channel.get("descriptionMax") or 90))
         block["description"] = desc
@@ -196,27 +219,47 @@ def render_kit(
         u = html.escape(str(v.get("utmUrl") or ""))
         kind = "organic" if v.get("organic") else v.get("platform")
         media_bits = ""
-        if still:
-            media_bits += f'<img class="thumb" src="{still}" alt="{vid} still" />'
-        if clip:
-            slot = html.escape(str(v.get("clipSlot") or clip.rsplit("/", 1)[-1]))
-            media_bits += (
-                f'<video class="thumb" data-slot="{slot}" src="{clip}" '
-                f'muted playsinline controls loop hidden></video>'
+        aspect = html.escape(str(v.get("aspect") or ""))
+        pw = int(v.get("width") or 0)
+        ph = int(v.get("height") or 0)
+        size_label = f"{pw}×{ph}" if pw and ph else aspect
+
+        def _frame(src: str, slot: str, label: str) -> str:
+            if not src:
+                return ""
+            fname = html.escape(download_name(cid, slot))
+            return (
+                f'<figure class="frame" data-aspect="{aspect}">'
+                f'<span class="badge">{html.escape(label)} · {size_label}</span>'
+                f'<video class="thumb" data-slot="{html.escape(slot)}" src="{src}" '
+                f'download="{fname}" muted playsinline controls loop hidden></video>'
+                f'<a class="dl" href="{src}" download="{fname}">Save {size_label}</a>'
+                f"</figure>"
             )
+
+        if still:
+            media_bits += (
+                f'<figure class="frame" data-aspect="{aspect}">'
+                f'<span class="badge">still · {size_label}</span>'
+                f'<img class="thumb" src="{still}" alt="{vid} still" />'
+                f"</figure>"
+            )
+        if clip:
+            slot = str(v.get("clipSlot") or clip.rsplit("/", 1)[-1])
+            media_bits += _frame(clip, slot, "place")
         clip_en = html.escape(str(v.get("clipEn") or ""))
         if clip_en:
-            slot_en = html.escape(str(v.get("clipSlotEn") or "clip-en"))
-            media_bits += (
-                f'<video class="thumb" data-slot="{slot_en}" src="{clip_en}" '
-                f'muted playsinline controls loop hidden></video>'
-            )
+            slot_en = str(v.get("clipSlotEn") or "clip-en")
+            media_bits += _frame(clip_en, slot_en, "place EN")
+        proof = html.escape(str(v.get("proofClip") or ""))
+        if proof:
+            media_bits += _frame(proof, str(v.get("proofClipSlot") or "clip-proof-feed"), "proof")
+        proof_en = html.escape(str(v.get("proofClipEn") or ""))
+        if proof_en:
+            media_bits += _frame(proof_en, str(v.get("proofClipSlotEn") or "clip-proof-en"), "proof EN")
         if str(v.get("aspect") or "") == "9:16":
             cap = html.escape(f"/media/{cid}/clip-captioned")
-            media_bits += (
-                f'<video class="thumb" data-slot="clip-captioned" src="{cap}" '
-                f'muted playsinline controls loop hidden></video>'
-            )
+            media_bits += _frame(cap, "clip-captioned", "captions")
         rsa = ""
         if v.get("headlines"):
             lines = "".join(f"<li>{html.escape(str(x))}</li>" for x in v["headlines"])
@@ -278,9 +321,26 @@ def render_kit(
     }}
     .card h2 {{ font-size: .95rem; margin: 0 0 .75rem; font-weight: 650; }}
     .thumbs {{ display: grid; gap: .5rem; margin-bottom: .85rem; }}
-    .thumb {{
-      width: 100%; max-height: 16rem; object-fit: cover;
-      border-radius: .6rem; background: var(--bg); border: 1px solid var(--line);
+    .frame {{
+      position: relative; width: 100%; background: var(--bg);
+      border: 1px solid var(--line); border-radius: .6rem; overflow: hidden;
+    }}
+    .frame[data-aspect="4:5"] {{ aspect-ratio: 4 / 5; }}
+    .frame[data-aspect="1:1"] {{ aspect-ratio: 1 / 1; }}
+    .frame[data-aspect="9:16"] {{ aspect-ratio: 9 / 16; }}
+    .frame[data-aspect="1.91:1"] {{ aspect-ratio: 1.91 / 1; }}
+    .frame .thumb {{
+      width: 100%; height: 100%; object-fit: contain; display: block;
+      background: var(--bg); max-height: none;
+    }}
+    .frame .badge {{
+      position: absolute; top: .4rem; left: .4rem; z-index: 1;
+      font-size: .65rem; letter-spacing: .08em; text-transform: uppercase;
+      background: var(--surface); color: var(--muted); border: 1px solid var(--line);
+      border-radius: .35rem; padding: .15rem .35rem;
+    }}
+    .frame .dl {{
+      display: block; font-size: .72rem; padding: .35rem .5rem; color: var(--accent);
     }}
     video.thumb[hidden] {{ display: none; }}
     .label {{ font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: .7rem 0 .2rem; }}
@@ -309,7 +369,7 @@ def render_kit(
   <div class="grid">
     {cards_html}
   </div>
-  <p class="note">8s 9:16 Veo from this shop's frames when we have them. English and local-language VO are muxed onto the same picture. Captions are centre safe-zone, 9:16 only. Ratios: 4:5 feed, 1:1 carousel, 9:16 Reels/WhatsApp, 1.91:1 Google display, 16:9 landing.</p>
+  <p class="note">Each card is the declared channel file: 1080×1350 feed, 1080×1080 square, 1080×1920 Reels/WhatsApp, 1200×628 Google display. Place film is the room; proof film is the dish / result / SKU from this shop's own photos. English and local-language VO are muxed onto the same picture. Captions are centre safe-zone, 9:16 only. We do not autopost.</p>
 </main>
 <script>
   async function revealClips() {{

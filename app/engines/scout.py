@@ -54,9 +54,13 @@ Return ONLY JSON with this shape:
     {{
       "uri": "https://...",
       "kind": "website" | "maps" | "listing" | "menu" | "pdf" | "photo",
-      "title": "this shop's own page or photo"
+      "title": "this shop's own page or photo",
+      "role": "place" | "proof"
     }}
-  ]
+  ],
+  "vertical": "salon" | "food" | "clinic" | "fitness" | "retail" | "other",
+  "proofObject": "the thing a stranger must see to book (dish, colour result, SKU, published clinic result)",
+  "resolvedName": "the real business name from Maps or the site if the brief name is a placeholder"
 }}
 
 Rules:
@@ -65,6 +69,9 @@ Rules:
 - Discovery is not consent. You research places and public pages, not people to cold-email.
 - If a website URL is in the brief, read it with url context.
 - ownUris[] is THIS business's own website, Google listing, Maps photos, menu PDF, or shop pictures. Never a competitor. Every item MUST have a real http URI from grounding or the brief. Do not invent photos.
+- role=place for interiors/storefronts. role=proof for menu items, plated food, product SKUs, published results. A restaurant without a dish photo is incomplete research.
+- vertical names the proof object: food→dish, salon→finished colour, clinic→their published result, fitness→session they can show, retail→SKU.
+- If a Google listing or share.google URL is in the brief, open it with url context and Maps. Prefer the listing photos and menu over inventing a shop.
 - themeId must be one of inkstone, ember, grove, slate, paper (see design.md). ember = gyms/energy; grove = wellness; paper = clinics/cafés/salons; slate = professional; inkstone = default. palette hex is for image prompts only — never a CSS background.
 - shelf[] is comparable ads and campaigns in this category and this city/region that are running or newly discussed THIS season. Use Meta Ad Library, Google Ads Transparency, TikTok Creative Center, Campaign Brief / Social Samosa coverage. Store STRUCTURE (hookType, visualGrammar), never clone a frame. Every shelf item MUST have a real http URI from grounding. Do not scrape private people. Do not invent ads.
 
@@ -73,6 +80,7 @@ Geo: {geo}
 Goal: {goal}
 Audience: {audience}
 Website: {website}
+Listing: {listing}
 """
 
 
@@ -104,12 +112,14 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
     goal = brief.get("goal") or ""
     audience = brief.get("audience") or ""
     website = brief.get("website") or brief.get("site") or ""
+    listing = brief.get("googleListing") or brief.get("mapsUrl") or ""
     prompt = SCOUT_PROMPT.format(
         business=business,
         geo=geo,
         goal=goal,
         audience=audience,
-        website=website or "(none given)",
+        website=website or listing or "(none given)",
+        listing=listing or website or "(none given)",
     )
     client = g.text_client()
     errors: list[str] = []
@@ -138,9 +148,12 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
             model=g.TEXT_MODEL,
             contents=(
                 "Turn these research notes into JSON with keys evidence, brandSpec, "
-                "localInsight, crowdInsight, shelf, ownUris. evidence items: source, uri, title, snippet, signal. "
+                "localInsight, crowdInsight, shelf, ownUris, vertical, proofObject, resolvedName. "
+                "evidence items: source, uri, title, snippet, signal. "
                 "shelf items: source, uri, title, snippet, hookType, visualGrammar, audioLanguage, category. "
-                "ownUris items: uri, kind (website|maps|listing|menu|pdf|photo), title. "
+                "ownUris items: uri, kind (website|maps|listing|menu|pdf|photo), title, role (place|proof). "
+                "vertical is salon|food|clinic|fitness|retail|other. "
+                "proofObject is the dish/result/SKU this shop actually shows. "
                 "Only use the URIs listed. ownUris must be THIS shop, not a competitor. "
                 "Do not invent ads or photos. Return JSON only.\n\n"
                 f"NOTES:\n{notes[:6000]}\n\nURIS:\n{uris}"
@@ -192,8 +205,11 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
         "ownUris": own.sanitize_own_uris(
             body.get("ownUris"),
             extra_uris=g.grounding_uris(response),
-            website=website,
+            website=website or listing,
         ),
+        "vertical": body.get("vertical") or "",
+        "proofObject": body.get("proofObject") or "",
+        "resolvedName": body.get("resolvedName") or "",
         "locale": resolve_locale(geo),
         "groundingUris": g.grounding_uris(response),
         "errors": errors,
@@ -206,7 +222,7 @@ def _default_brand(business: str, geo: str, brief: dict[str, Any] | None = None)
     theme_id = "inkstone"
     if any(w in blob for w in ("gym", "fitness", "crossfit", "workout")):
         theme_id = "ember"
-    elif any(w in blob for w in ("salon", "spa", "clinic", "café", "cafe", "bakery")):
+    elif any(w in blob for w in ("salon", "spa", "clinic", "dentist", "café", "cafe", "bakery", "restaurant")):
         theme_id = "paper"
     elif any(w in blob for w in ("yoga", "wellness", "garden")):
         theme_id = "grove"

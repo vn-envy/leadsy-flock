@@ -58,7 +58,7 @@ def test_derive_images_centre_crops_square(tmp_path: Path, monkeypatch) -> None:
     dest = tmp_path / "square.png"
     dest.write_bytes(png)
     w, h = _probe_wh(dest)
-    assert w == h
+    assert (w, h) == (1080, 1080)
 
 
 @pytest.mark.skipif(not ffmpeg_bin(), reason="ffmpeg not installed")
@@ -101,7 +101,7 @@ def test_derive_videos_writes_story_slot(tmp_path: Path, monkeypatch) -> None:
     dest = tmp_path / "story.mp4"
     dest.write_bytes(stored["c1/clip-story.mp4"][0])
     w, h = _probe_wh(dest)
-    assert abs((w / h) - (9 / 16)) < 0.08
+    assert (w, h) == (1080, 1920)
 
 
 def _probe_wh(path: Path) -> tuple[int, int]:

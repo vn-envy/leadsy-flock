@@ -58,6 +58,7 @@ def localize_copy(
         "primaryText": copy.get("primaryText") or "",
         "cta": copy.get("cta") or "",
         "vo": copy.get("voEn") or copy.get("subhead") or "",
+        "voProof": copy.get("voEnProof") or "",
         "storyHook": copy.get("storyHook") or "",
     }
     prompt = (
@@ -67,8 +68,8 @@ def localize_copy(
         "Do not translate brand names, place names that are commonly Latin "
         "(DLF, Golf Course Road may be kept in Latin), or URLs.\n"
         "Do not add guaranteed/miracle/cure claims that were not in the source.\n"
-        "vo must be one spoken sentence, under 22 words, for an 8-second film.\n"
-        "Return ONLY JSON with keys: headline, subhead, primaryText, cta, vo, storyHook.\n\n"
+        "vo and voProof must each be one spoken sentence, under 22 words, for an 8-second film.\n"
+        "Return ONLY JSON with keys: headline, subhead, primaryText, cta, vo, voProof, storyHook.\n\n"
         f"SOURCE:\n{payload}"
     )
     try:
@@ -87,7 +88,7 @@ def localize_copy(
     if not isinstance(body, dict):
         return {}
     out: dict[str, str] = {}
-    for key in ("headline", "subhead", "primaryText", "cta", "vo", "storyHook"):
+    for key in ("headline", "subhead", "primaryText", "cta", "vo", "voProof", "storyHook"):
         val = str(body.get(key) or "").strip()
         if val:
             out[key] = val[:500]
