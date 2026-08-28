@@ -17,6 +17,7 @@ def test_dentist_is_clinic_proof() -> None:
 def test_menu_uri_is_proof_role() -> None:
     assert infer_role("https://shop.example/menu.pdf", "menu") == "proof"
     assert infer_role("https://maps.google.com/?cid=1", "maps") == "place"
+    assert infer_role("https://glensbakehouse.com/images/cupcake.jpg", "photo") == "proof"
 
 
 def test_collect_keeps_scout_proof_role() -> None:

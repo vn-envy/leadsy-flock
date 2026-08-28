@@ -80,6 +80,19 @@ def test_extract_html_images_uses_og_and_skips_icons() -> None:
     assert all(not u.startswith("data:") for u in urls)
 
 
+def test_extract_html_images_reads_css_backgrounds() -> None:
+    html = """
+    <html><body style="background-image:url(https://glensbakehouse.com/images/2023/01/07/a1.jpg)">
+      <div style="background-image:url(/images/cupcake.jpg)"></div>
+      <style>.hero { background-image:url(https://glensbakehouse.com/images/logo/glen-logo.png) }</style>
+    </body></html>
+    """
+    urls = extract_html_images(html, "https://glensbakehouse.com/")
+    assert "https://glensbakehouse.com/images/2023/01/07/a1.jpg" in urls
+    assert "https://glensbakehouse.com/images/cupcake.jpg" in urls
+    assert all("logo" not in u for u in urls)
+
+
 def test_is_image_magic() -> None:
     assert is_image(b"\xff\xd8\xff\xe0rest", "application/octet-stream")
     assert is_image(b"hello", "image/jpeg")

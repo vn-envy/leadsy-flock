@@ -10,6 +10,7 @@ Otherwise it is a refine/filler layer on real presence.
 from __future__ import annotations
 
 import html as html_lib
+import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from html.parser import HTMLParser
 from typing import Any
@@ -135,6 +136,19 @@ class _ImgParser(HTMLParser):
             src = ad.get("src") or ad.get("data-src") or ""
             if src:
                 self.urls.append(src)
+        style = ad.get("style") or ""
+        if "url(" in style.lower():
+            self.urls.extend(_css_urls(style))
+
+
+_CSS_URL = re.compile(
+    r"url\(\s*['\"]?([^)'\"]+\.(?:jpg|jpeg|png|webp|gif))['\"]?\s*\)",
+    re.IGNORECASE,
+)
+
+
+def _css_urls(raw: str) -> list[str]:
+    return [m.group(1).strip() for m in _CSS_URL.finditer(raw or "")]
 
 
 def extract_html_images(raw: str, base: str, *, limit: int = 6) -> list[str]:
@@ -143,13 +157,15 @@ def extract_html_images(raw: str, base: str, *, limit: int = 6) -> list[str]:
         parser.feed(raw)
     except Exception:  # noqa: BLE001
         return []
+    candidates = list(parser.urls)
+    candidates.extend(_css_urls(raw))
     out: list[str] = []
-    for u in parser.urls:
+    for u in candidates:
         abs_u = urljoin(base, html_lib.unescape(u).strip())
         if not abs_u.startswith("http"):
             continue
         path = urlparse(abs_u).path.lower()
-        if any(tok in path for tok in ("logo", "icon", "sprite", "pixel", "1x1", "favicon")):
+        if any(tok in path for tok in ("logo", "icon", "sprite", "pixel", "1x1", "favicon", "background-1", "bg2")):
             continue
         if abs_u not in out:
             out.append(abs_u)
