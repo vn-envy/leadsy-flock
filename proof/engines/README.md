@@ -41,3 +41,26 @@ Fictional salon on Golf Course Road, same geo, **28 Aug 2026**. Campaign **`noya
 | jingle | missing | Lyria-002 quota skip; flock still completed |
 
 Ad Kit paste page lists Meta feed 4:5, square, Reels 9:16, WhatsApp status, Google display 1.91:1, Google RSA. `autopost: false`. Creative Gate rejected the draft claim and passed the final headline. Consent recorded from the landing. No real salon was contacted.
+
+## Noya Salon (shelf short + Indic locale)
+
+Fictional salon, same brief, **28 Aug 2026**. Campaign **`noya-salon-fff1d666`**. Theme **`paper`**. Locale **`hi-IN`**.
+
+- Kit: https://flock-api-533880600838.asia-south1.run.app/k/noya-salon-fff1d666
+- Landing: https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-fff1d666
+- Console: https://flock-api-533880600838.asia-south1.run.app/console
+- Ready: https://flock-api-533880600838.asia-south1.run.app/media/noya-salon-fff1d666/ready
+- Captioned 9:16: https://flock-api-533880600838.asia-south1.run.app/media/noya-salon-fff1d666/clip-captioned
+
+| Check | Result |
+|---|---|
+| Scout shelf | 3 http URIs (Looks Salon, L'Oréal Professionnel, Godrej Professional) — structure only |
+| Locale | `hi-IN` / Devanagari. `voIndic` on the kit. Brand name stays Latin |
+| Inka Veo start | 8s, `9:16`, `generateAudio: true`, 3 ASSET refs |
+| Harvest | Attempt 11. First LRO RAI-filtered people/face; fallback **9:16 no refs**. `clip.mp4` 1.68MB, **720×1280, 8.0s, h264+aac** |
+| Captions | `clip-captioned.mp4` 916KB with `NotoSansDevanagari-Regular.ttf`. Crops kept AAC |
+| Gate | Draft rejected; final **pass**. EN + Indic scanned |
+| Kit | Story hook + spoken line + shelf links. Reels/WhatsApp use `clip-captioned`. `autopost: false` |
+| Jingle | Lyria-002 **429 skipped**; flock still completed |
+
+Does not overwrite `noya-salon-7384033d`. No real salon was contacted.

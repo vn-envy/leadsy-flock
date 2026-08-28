@@ -1,0 +1,1170 @@
+{
+  "currentStep": "ad_kit",
+  "kitPath": "/k/noya-salon-fff1d666",
+  "rawText": "",
+  "jinglePath": null,
+  "themeId": "paper",
+  "brief": {
+    "audience": "women 25-40 working near DLF Phase IV",
+    "goal": "25 new colour clients from Golf Course Road professionals",
+    "geo": "Gurgaon",
+    "businessName": "Noya Salon",
+    "budgetInr": 8000
+  },
+  "updatedAt": "2026-08-28T18:42:35.024849+00:00",
+  "createdAt": "2026-08-28T18:42:35.024849+00:00",
+  "engineConfig": {
+    "always_on": [
+      "flo",
+      "bri",
+      "ledge"
+    ],
+    "price_inr": 5997,
+    "rationale": [
+      "Scout first: local evidence before any creative.",
+      "Inka + Stella: one gated master creative and a consent page.",
+      "Callie is listed but not hired for this hackathon run."
+    ],
+    "currency": "INR",
+    "pipeline": [
+      "scout",
+      "inka",
+      "creative_gate",
+      "stella",
+      "ad_kit"
+    ],
+    "hired": [
+      "scout",
+      "inka",
+      "stella"
+    ],
+    "accepted_recommendation": true
+  },
+  "stillPath": "/media/noya-salon-fff1d666/still",
+  "status": "completed",
+  "locale": {
+    "nativeName": "\u0939\u093f\u0928\u094d\u0926\u0940",
+    "script": "Devanagari",
+    "code": "hi",
+    "language": "Hindi",
+    "bcp47": "hi-IN"
+  },
+  "clipPath": "/media/noya-salon-fff1d666/clip",
+  "landingPath": "/l/noya-salon-fff1d666",
+  "approvedAt": "2026-08-28T18:37:03.111815+00:00",
+  "harvestAssets": {
+    "stillStory": {
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-story.png",
+      "mime": "image/png",
+      "ok": true,
+      "model": "gemini-3.1-flash-image",
+      "aspect": "9:16",
+      "bytes": 2438866,
+      "publicPath": "/media/noya-salon-fff1d666/still-story"
+    },
+    "stillSquare": {
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-square.png",
+      "ok": true,
+      "publicPath": "/media/noya-salon-fff1d666/still-square",
+      "aspect": "1:1",
+      "bytes": 1287765
+    },
+    "stillDetail": {
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-detail.png",
+      "mime": "image/png",
+      "ok": true,
+      "model": "gemini-3.1-flash-image",
+      "publicPath": "/media/noya-salon-fff1d666/still-detail",
+      "bytes": 1511495
+    },
+    "stillDerivatives": {
+      "slots": {
+        "landscape": {
+          "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-landscape.png",
+          "ok": true,
+          "publicPath": "/media/noya-salon-fff1d666/still-landscape",
+          "aspect": "1.91:1",
+          "bytes": 2283243
+        },
+        "square": {
+          "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-square.png",
+          "ok": true,
+          "publicPath": "/media/noya-salon-fff1d666/still-square",
+          "aspect": "1:1",
+          "bytes": 1287765
+        }
+      },
+      "ok": true
+    },
+    "stillLandscape": {
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-landscape.png",
+      "ok": true,
+      "publicPath": "/media/noya-salon-fff1d666/still-landscape",
+      "aspect": "1.91:1",
+      "bytes": 2283243
+    },
+    "still": {
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still.png",
+      "mime": "image/png",
+      "ok": true,
+      "model": "gemini-3.1-flash-image",
+      "publicPath": "/media/noya-salon-fff1d666/still",
+      "bytes": 1378668
+    },
+    "jingle": {
+      "note": "Lyria gave up after retries (often 429 quota)",
+      "ok": false,
+      "skipped": true,
+      "model": "lyria-002",
+      "error": "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Quota exceeded for aiplatform.googleapis.com/generate_content_requests_per_minute_per_project_per_base_model with base model: lyria-002. Please submit a quota increase request. https://cloud.google.com/vertex-ai/docs/generative-ai/quotas-ge",
+      "pending": false,
+      "quotaLikely": true
+    },
+    "stillFeed": {
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-feed.png",
+      "ok": true,
+      "publicPath": "/media/noya-salon-fff1d666/still-feed",
+      "aspect": "4:5",
+      "bytes": 1815410
+    },
+    "clip": {
+      "priorRai": [
+        "Your current safety settings for people/face generation filtered out 1 videos. You will not be charged for blocked videos. Try rephrasing the prompt. If you think this was an error, send feedback. Support codes: 63236870"
+      ],
+      "model": "veo-3.1-generate-001",
+      "generateAudio": true,
+      "bytes": 1676481,
+      "fallbackFrom": "done_no_bytes",
+      "ok": true,
+      "usedRefs": false,
+      "priorOperation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/4e4ff9d8-1dae-4f46-8d40-918c5b08fbec",
+      "publicPath": "/media/noya-salon-fff1d666/clip",
+      "aspectRatio": "9:16",
+      "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip.mp4",
+      "operation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/1bbc5240-16cd-48a0-b41d-552be9edeaf5",
+      "mime": "video/mp4",
+      "done": true,
+      "captions": {
+        "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-captioned.mp4",
+        "ok": true,
+        "font": "/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf",
+        "publicPath": "/media/noya-salon-fff1d666/clip-captioned",
+        "bytes": 915561
+      },
+      "status": "harvested",
+      "campaignId": "noya-salon-fff1d666",
+      "fallbackStage": 1,
+      "durationSeconds": 8,
+      "derivatives": {
+        "slots": {
+          "feed": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-feed.mp4",
+            "ok": true,
+            "publicPath": "/media/noya-salon-fff1d666/clip-feed",
+            "aspect": "4:5",
+            "bytes": 702521
+          },
+          "landscape": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-landscape.mp4",
+            "ok": true,
+            "publicPath": "/media/noya-salon-fff1d666/clip-landscape",
+            "aspect": "1.91:1",
+            "bytes": 305095
+          },
+          "story": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-story.mp4",
+            "ok": true,
+            "publicPath": "/media/noya-salon-fff1d666/clip-story",
+            "aspect": "9:16",
+            "bytes": 900761
+          },
+          "square": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-square.mp4",
+            "ok": true,
+            "publicPath": "/media/noya-salon-fff1d666/clip-square",
+            "aspect": "1:1",
+            "bytes": 588970
+          }
+        },
+        "ok": true
+      },
+      "seconds": 0.4
+    }
+  },
+  "id": "noya-salon-fff1d666",
+  "receipts": [
+    {
+      "step": "plan",
+      "attempt": 1,
+      "status": "ok",
+      "legalBasis": "owner_instruction",
+      "campaignId": "noya-salon-fff1d666",
+      "service": "flock-api",
+      "project": "leadsy-flock",
+      "engine": "bri",
+      "updatedAt": "2026-08-28T18:37:02.497824+00:00",
+      "createdAt": "2026-08-28T18:37:02.497824+00:00",
+      "payload": {
+        "always_on": [
+          "flo",
+          "bri",
+          "ledge"
+        ],
+        "accepted_recommendation": true,
+        "rationale": [
+          "Scout first: local evidence before any creative.",
+          "Inka + Stella: one gated master creative and a consent page.",
+          "Callie is listed but not hired for this hackathon run."
+        ],
+        "currency": "INR",
+        "pipeline": [
+          "scout",
+          "inka",
+          "creative_gate",
+          "stella",
+          "ad_kit"
+        ],
+        "hired": [
+          "scout",
+          "inka",
+          "stella"
+        ],
+        "price_inr": 5997
+      },
+      "id": "noya-salon-fff1d666_plan"
+    },
+    {
+      "step": "approve",
+      "attempt": 1,
+      "status": "ok",
+      "legalBasis": "owner_instruction",
+      "campaignId": "noya-salon-fff1d666",
+      "service": "flock-api",
+      "project": "leadsy-flock",
+      "engine": "flo",
+      "updatedAt": "2026-08-28T18:37:03.205001+00:00",
+      "createdAt": "2026-08-28T18:37:03.205001+00:00",
+      "payload": {
+        "pipeline": [
+          "scout",
+          "inka",
+          "creative_gate",
+          "stella",
+          "ad_kit"
+        ]
+      },
+      "id": "noya-salon-fff1d666_approve"
+    },
+    {
+      "attempt": 1,
+      "payload": {
+        "idempotencyKey": "noya-salon-fff1d666:scout:1",
+        "model": "gemini-3.5-flash",
+        "locale": {
+          "nativeName": "\u0939\u093f\u0928\u094d\u0926\u0940",
+          "script": "Devanagari",
+          "code": "hi",
+          "language": "Hindi",
+          "bcp47": "hi-IN"
+        },
+        "brandSpec": {
+          "tagline": "Color that speaks your professional power.",
+          "typePairing": "Georgia + system-ui",
+          "logoHint": "A minimalist, abstract line-art emblem of flowing hair tresses forming an elegant 'N', set in a soft gold foil finish.",
+          "themeId": "paper",
+          "toneWords": [
+            "Sophisticated",
+            "Bespoke",
+            "Reassuring"
+          ],
+          "palette": [
+            "#8c6239",
+            "#f7f1e8",
+            "#1c1814"
+          ]
+        },
+        "evidence": [
+          {
+            "snippet": "Local customers complain about premium salons in Gurgaon over-bleaching hair and failing to deliver the requested soft brown shades, leading to damaged hair and refund requests [1.1.1].",
+            "title": "Reddit Gurgaon Salon Hair Color Complaints",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEGV0bKr2z9f7bA5QvIhXPoEODvqm4V3i5vWHbsrDjm53rj4mK74CvXMZXeUG1en5BikAs3aTcKvUJVwlLDabZsGVZ6KZOGJtQHc7205_i1xDCVMX6Tyh0J51bY4ULP_PGvRu6okjhpFYqgcE2bM99OdMWjvneFqf2DM43k8x__lz5UFttnlMX3a4aDvuBRiA==",
+            "source": "crowd",
+            "signal": 0.9
+          },
+          {
+            "snippet": "Gurgaon residents discuss how premium salons are crazily priced and often jack up prices at checkout, making transparent pricing a key demand.",
+            "title": "Reddit Gurgaon Well Priced Salons for Hair Color",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGGVd-njyty9fUWtYeyyDucTK1gXGoTY8qKXCQJp-zTAvRJs8erbaQF87-5cEweOk9-9wzM08eQTs-JkmyDKYJjuZeDlnN-vXBwrB4aaBv0CbiQsnl_mbeRzHB5WgD5-rq-hs2sORItOw==",
+            "source": "crowd",
+            "signal": 0.9
+          },
+          {
+            "snippet": "Renowned international salon chain located at Palm Springs Plaza on Golf Course Road, offering premium hair coloring and styling services.",
+            "title": "Toni & Guy Gurgaon Golf Course Road",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFQs1TgEl2BfgnFEnKXJfG95KrxSeawyC9jU4CoiChqTtGHRvZHaYK0nk4u2G2l5GoxcLCPULxrTnZLvhdP553u5h0hPnbohYlOMCCWGagDSU9Yq7a3Ov9l_RrV9DlVGJOFASRUyhV28JbmJI9iDhXDmcn1xwT5AFSaWdGOUn6FzA1TCfdlv9B242iN_cCXH85djZl3bHl7f2r-B5OP",
+            "source": "maps",
+            "signal": 0.8
+          },
+          {
+            "snippet": "A premium boutique salon located in South Point Mall on Golf Course Road, competing directly for high-end hair color clients.",
+            "title": "Noitre Salon South Point Mall",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF4dHWK2cjvKeaZM9CX9Awqw3U46-igtyo9O3PG2-GN1fs0qCeNpFI14OxjuHdGbwXRerjylBzMJMLIT1gQ84cv3mbHrKOKxmwfoJAzP2p99E8i7j207gK9rkOJf_YsKTKnD_9L4o2ggy8tvBf6uOKloa4XgQ_DO1hFVrjGWd4PAmdJAMKXBnDnQevQljCSV4agR9-gV-7fjG1XDjmlUJ8=",
+            "source": "maps",
+            "signal": 0.8
+          },
+          {
+            "snippet": "Cited by Gemini grounding.",
+            "title": "grounding chunk",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHZ4Ftt_rG5dE4E7WN6pTrF5KphXv5DL-AQYmaTfOgocJdG5x3kpTVBZCBCkmWEzRSXhUXO68027cT9iQ2e-c4aN0k2alwnW8Xs_qeoYdCpUbKfUzli2g-ulU3w4ymrrDV-7lmZXiZ2nbfH56nlwvzN5YFDHX7kbbvqIOfijdm1gxTdT9XYUH_YIpB7EnJOvPdf8h1pbdewYi-bcZzP-A==",
+            "source": "search",
+            "signal": 0.7
+          },
+          {
+            "snippet": "Cited by Gemini grounding.",
+            "title": "grounding chunk",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEQ7kr1cf2P-3LsLp8AWgvtlTwhxN2DhtZrEV3Xy3Y_v0J_xZ4wEVaEgeU-2AnL-PnkJg5ECFZQKRUHnUUPtj3K2Qg78RRPC82e5U19gKNSSGFfAbbYj0Qu7bdeuwuhRHxCD5-HlssW7EUW3Qn-bTUY_s0MU9zQ9nNuXETse-_GsG1-jst8AdHEm3XEsQ==",
+            "source": "search",
+            "signal": 0.7
+          },
+          {
+            "snippet": "Cited by Gemini grounding.",
+            "title": "grounding chunk",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGiorw40PplTPHxXrAEAWT6BUsU04fKoHJv1clZa9l7N_51kIBweNOE87l8NTc4fIERIzRqGSVh1Y1Kxt-ZPZwRVL688tmdkBLeXq4EoNQU5Hb4_QCfE5CLW-dE5W5nYYS6MmpS-nxy2srfRdZZfp-GcHguvy6apVrxOjrPH_h4j09Mcr1rgp6nKlN6T3CrLa0FK0ciEi1MdxD0vmsYZ-63b3wC39dd4xIUujd-XXOIcg==",
+            "source": "search",
+            "signal": 0.7
+          },
+          {
+            "snippet": "Cited by Gemini grounding.",
+            "title": "grounding chunk",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEgflwEgml91QfjK1iU694b9bzBEFaMNevE73HrKk4_mW7_977QEILnqJpCskMR4MWDovrUajJSeFDhke0wPGvd4mkOuOQU5Kjmlev9IOPaCwH3etg4IORjKPsfgoUQfnmeSzT-c_pQPFgx4Sla8clEZSW6_cULdvNG1pjRWDboFBKUTanzXU6G6Ksx27ro8Onk15ALtOpql2NHs52Sdg==",
+            "source": "search",
+            "signal": 0.7
+          }
+        ],
+        "localInsight": "Golf Course Road professionals are highly busy corporate workers who value efficiency; they complain about salons being overly crowded, pushy upselling, and long wait times during peak hours. Reviewers praise highly skilled colorists who actually listen to reference photos but complain about salons that overcharge or focus too much on filming Instagram reels rather than customer comfort.",
+        "shelf": [
+          {
+            "hookType": "festive",
+            "category": "salon",
+            "title": "Looks Salon 2025 Wedding Lookbook Campaign",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHZ4Ftt_rG5dE4E7WN6pTrF5KphXv5DL-AQYmaTfOgocJdG5x3kpTVBZCBCkmWEzRSXhUXO68027cT9iQ2e-c4aN0k2alwnW8Xs_qeoYdCpUbKfUzli2g-ulU3w4ymrrDV-7lmZXiZ2nbfH56nlwvzN5YFDHX7kbbvqIOfijdm1gxTdT9XYUH_YIpB7EnJOvPdf8h1pbdewYi-bcZzP-A==",
+            "source": "news",
+            "snippet": "A high-fashion bridal lookbook collaborating with couture designers and digital creators to showcase ceremony-specific hair and makeup transformations [5.2.1].",
+            "audioLanguage": "en",
+            "visualGrammar": "quiet interior"
+          },
+          {
+            "hookType": "anti-influencer",
+            "category": "salon",
+            "title": "L'Or\u00e9al Professionnel iNOA Shades of Red Campaign",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEQ7kr1cf2P-3LsLp8AWgvtlTwhxN2DhtZrEV3Xy3Y_v0J_xZ4wEVaEgeU-2AnL-PnkJg5ECFZQKRUHnUUPtj3K2Qg78RRPC82e5U19gKNSSGFfAbbYj0Qu7bdeuwuhRHxCD5-HlssW7EUW3Qn-bTUY_s0MU9zQ9nNuXETse-_GsG1-jst8AdHEm3XEsQ==",
+            "source": "news",
+            "snippet": "Celebrates bold, professional women (lawyers, civil engineers, scuba divers) embracing vibrant red shades, paired with an AI-powered virtual try-on app to reduce hesitation.",
+            "audioLanguage": "en",
+            "visualGrammar": "quiet interior"
+          },
+          {
+            "hookType": "family-trust",
+            "category": "salon",
+            "title": "Godrej Professional #HairForYou Campaign",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGiorw40PplTPHxXrAEAWT6BUsU04fKoHJv1clZa9l7N_51kIBweNOE87l8NTc4fIERIzRqGSVh1Y1Kxt-ZPZwRVL688tmdkBLeXq4EoNQU5Hb4_QCfE5CLW-dE5W5nYYS6MmpS-nxy2srfRdZZfp-GcHguvy6apVrxOjrPH_h4j09Mcr1rgp6nKlN6T3CrLa0FK0ciEi1MdxD0vmsYZ-63b3wC39dd4xIUujd-XXOIcg==",
+            "source": "news",
+            "snippet": "Influencer-led campaign showcasing safe, hygienic, and professional in-salon hair color transformations to rebuild customer confidence.",
+            "audioLanguage": "hi",
+            "visualGrammar": "hands at work"
+          }
+        ],
+        "crowdInsight": "Public discussions on Reddit (r/gurgaon, r/TwoXIndia) highlight a deep anxiety about salons jacking up prices at checkout and ruining hair color by performing aggressive bleaching when a simpler global color was requested. Women actively seek less busy, non-pretentious salons that focus on hair health rather than social media clout, and they highly value transparent pricing and personalized consultations before any chemical treatment.",
+        "groundingUris": [
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEGV0bKr2z9f7bA5QvIhXPoEODvqm4V3i5vWHbsrDjm53rj4mK74CvXMZXeUG1en5BikAs3aTcKvUJVwlLDabZsGVZ6KZOGJtQHc7205_i1xDCVMX6Tyh0J51bY4ULP_PGvRu6okjhpFYqgcE2bM99OdMWjvneFqf2DM43k8x__lz5UFttnlMX3a4aDvuBRiA==",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGGVd-njyty9fUWtYeyyDucTK1gXGoTY8qKXCQJp-zTAvRJs8erbaQF87-5cEweOk9-9wzM08eQTs-JkmyDKYJjuZeDlnN-vXBwrB4aaBv0CbiQsnl_mbeRzHB5WgD5-rq-hs2sORItOw==",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFQs1TgEl2BfgnFEnKXJfG95KrxSeawyC9jU4CoiChqTtGHRvZHaYK0nk4u2G2l5GoxcLCPULxrTnZLvhdP553u5h0hPnbohYlOMCCWGagDSU9Yq7a3Ov9l_RrV9DlVGJOFASRUyhV28JbmJI9iDhXDmcn1xwT5AFSaWdGOUn6FzA1TCfdlv9B242iN_cCXH85djZl3bHl7f2r-B5OP",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF4dHWK2cjvKeaZM9CX9Awqw3U46-igtyo9O3PG2-GN1fs0qCeNpFI14OxjuHdGbwXRerjylBzMJMLIT1gQ84cv3mbHrKOKxmwfoJAzP2p99E8i7j207gK9rkOJf_YsKTKnD_9L4o2ggy8tvBf6uOKloa4XgQ_DO1hFVrjGWd4PAmdJAMKXBnDnQevQljCSV4agR9-gV-7fjG1XDjmlUJ8=",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHZ4Ftt_rG5dE4E7WN6pTrF5KphXv5DL-AQYmaTfOgocJdG5x3kpTVBZCBCkmWEzRSXhUXO68027cT9iQ2e-c4aN0k2alwnW8Xs_qeoYdCpUbKfUzli2g-ulU3w4ymrrDV-7lmZXiZ2nbfH56nlwvzN5YFDHX7kbbvqIOfijdm1gxTdT9XYUH_YIpB7EnJOvPdf8h1pbdewYi-bcZzP-A==",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEQ7kr1cf2P-3LsLp8AWgvtlTwhxN2DhtZrEV3Xy3Y_v0J_xZ4wEVaEgeU-2AnL-PnkJg5ECFZQKRUHnUUPtj3K2Qg78RRPC82e5U19gKNSSGFfAbbYj0Qu7bdeuwuhRHxCD5-HlssW7EUW3Qn-bTUY_s0MU9zQ9nNuXETse-_GsG1-jst8AdHEm3XEsQ==",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGiorw40PplTPHxXrAEAWT6BUsU04fKoHJv1clZa9l7N_51kIBweNOE87l8NTc4fIERIzRqGSVh1Y1Kxt-ZPZwRVL688tmdkBLeXq4EoNQU5Hb4_QCfE5CLW-dE5W5nYYS6MmpS-nxy2srfRdZZfp-GcHguvy6apVrxOjrPH_h4j09Mcr1rgp6nKlN6T3CrLa0FK0ciEi1MdxD0vmsYZ-63b3wC39dd4xIUujd-XXOIcg==",
+          "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEgflwEgml91QfjK1iU694b9bzBEFaMNevE73HrKk4_mW7_977QEILnqJpCskMR4MWDovrUajJSeFDhke0wPGvd4mkOuOQU5Kjmlev9IOPaCwH3etg4IORjKPsfgoUQfnmeSzT-c_pQPFgx4Sla8clEZSW6_cULdvNG1pjRWDboFBKUTanzXU6G6Ksx27ro8Onk15ALtOpql2NHs52Sdg=="
+        ],
+        "errors": []
+      },
+      "status": "ok",
+      "legalBasis": "owner_instruction",
+      "campaignId": "noya-salon-fff1d666",
+      "service": "flock-worker",
+      "project": "leadsy-flock",
+      "engine": "scout",
+      "updatedAt": "2026-08-28T18:38:25.802174+00:00",
+      "createdAt": "2026-08-28T18:37:04.028296+00:00",
+      "step": "scout",
+      "id": "noya-salon-fff1d666_scout"
+    },
+    {
+      "attempt": 1,
+      "payload": {
+        "idempotencyKey": "noya-salon-fff1d666:inka:1",
+        "model": "gemini-3.5-flash",
+        "locale": {
+          "nativeName": "\u0939\u093f\u0928\u094d\u0926\u0940",
+          "script": "Devanagari",
+          "code": "hi",
+          "language": "Hindi",
+          "bcp47": "hi-IN"
+        },
+        "brandSpec": {
+          "tagline": "Color that speaks your professional power.",
+          "typePairing": "Georgia + system-ui",
+          "logoHint": "A minimalist, abstract line-art emblem of flowing hair tresses forming an elegant 'N', set in a soft gold foil finish.",
+          "themeId": "paper",
+          "toneWords": [
+            "Sophisticated",
+            "Bespoke",
+            "Reassuring"
+          ],
+          "palette": [
+            "#8c6239",
+            "#f7f1e8",
+            "#1c1814"
+          ]
+        },
+        "copy": {
+          "shotList": "Beat 1: A serene, empty styling station with a plush leather chair and a backlit mirror, bathed in soft morning light. Beat 2: A close-up of premium, pre-mixed hair color bowls in soft gold and rich bronze tones resting on a minimalist marble counter. Beat 3: A slow pan across a sunlit, peaceful wash station with clean, rolled linen towels and leaf shadows dancing on a cream wall.",
+          "cta": "Book Your Session",
+          "headline": "Bespoke hair color, formulated without the salon chaos.",
+          "primaryTextLocalized": "\u0928 \u0915\u094b\u0908 \u091a\u092e\u0915\u0926\u093e\u0930 \u0930\u093f\u0902\u0917 \u0932\u093e\u0907\u091f\u094d\u0938, \u0928 \u0915\u094b\u0908 \u091c\u093c\u092c\u0930\u0926\u0938\u094d\u0924\u0940 \u0915\u0940 \u0905\u092a\u0938\u0947\u0932\u093f\u0902\u0917, \u0914\u0930 \u0928 \u0939\u0940 \u092c\u093f\u0932\u093f\u0902\u0917 \u0915\u0947 \u0938\u092e\u092f \u0915\u094b\u0908 \u0905\u0928\u092a\u0947\u0915\u094d\u0937\u093f\u0924 \u0938\u0930\u092a\u094d\u0930\u093e\u0907\u091c\u093c\u0964 Noya Salon \u092e\u0947\u0902, \u0939\u092e\u093e\u0930\u093e \u092a\u0942\u0930\u093e \u0927\u094d\u092f\u093e\u0928 \u0906\u092a\u0915\u0947 \u0930\u0942\u091f\u0940\u0928 \u0915\u0947 \u0905\u0928\u0941\u0938\u093e\u0930 \u0938\u094d\u0935\u0938\u094d\u0925 \u0914\u0930 \u0938\u091f\u0940\u0915 \u0939\u0947\u092f\u0930 \u0915\u0932\u0930 \u092a\u0930 \u0939\u094b\u0924\u093e \u0939\u0948\u0964 \u0905\u092a\u0928\u0947 \u0915\u0949\u0930\u094d\u092a\u094b\u0930\u0947\u091f \u0936\u0947\u0921\u094d\u092f\u0942\u0932 \u0915\u0947 \u0905\u0928\u0941\u0915\u0942\u0932 \u0921\u093f\u091c\u093c\u093e\u0907\u0928 \u0915\u093f\u090f \u0917\u090f \u090f\u0915 \u0936\u093e\u0902\u0924 \u0914\u0930 \u0915\u0941\u0936\u0932 \u0938\u0947\u0936\u0928 \u0915\u093e \u0905\u0928\u0941\u092d\u0935 \u0915\u0930\u0947\u0902\u0964",
+          "subheadLocalized": "\u0935\u094d\u092f\u0938\u094d\u0924 \u092a\u094d\u0930\u094b\u092b\u0947\u0936\u0928\u0932\u094d\u0938 \u0915\u0947 \u0932\u093f\u090f Golf Course Road \u092a\u0930 \u0915\u0947\u0935\u0932-\u0905\u092a\u0949\u0907\u0902\u091f\u092e\u0947\u0902\u091f \u0935\u093e\u0932\u093e \u090f\u0915 \u0936\u093e\u0902\u0924 \u0938\u094d\u0925\u093e\u0928\u0964",
+          "primaryText": "No loud ring lights, no pushy upsells, and no unexpected checkout surprises. At Noya, we focus entirely on healthy, precise hair color tailored to your routine. Experience a tranquil, efficient session designed around your corporate calendar.",
+          "voEn": "Bespoke hair color, crafted in quiet luxury, respecting your time.",
+          "voIndic": "\u0936\u093e\u0902\u0924 \u0932\u0917\u094d\u091c\u0930\u0940 \u0915\u0947 \u092c\u0940\u091a, \u0906\u092a\u0915\u0947 \u0938\u092e\u092f \u0915\u093e \u0938\u092e\u094d\u092e\u093e\u0928 \u0915\u0930\u0924\u0947 \u0939\u0941\u090f \u0924\u0948\u092f\u093e\u0930 \u0915\u093f\u092f\u093e \u0917\u092f\u093e \u0916\u093e\u0938 \u0939\u0947\u092f\u0930 \u0915\u0932\u0930\u0964",
+          "subhead": "A quiet, appointment-only sanctuary on Golf Course Road for busy professionals.",
+          "ctaLocalized": "\u0905\u092a\u0928\u093e \u0938\u0947\u0936\u0928 \u092c\u0941\u0915 \u0915\u0930\u0947\u0902",
+          "storyHook": "An anti-influencer sanctuary that replaces loud ring lights and aggressive bleaching with quiet, precise global coloring for Golf Course Road's busiest corporate leaders.",
+          "draftHeadline": "Guaranteed perfect global color with zero wait times at Gurgaon's best salon",
+          "headlineLocalized": "\u0938\u0948\u0932\u0942\u0928 \u0915\u0947 \u0936\u094b\u0930-\u0936\u0930\u093e\u092c\u0947 \u0915\u0947 \u092c\u093f\u0928\u093e, \u0916\u093e\u0938 \u0906\u092a\u0915\u0947 \u0932\u093f\u090f \u0924\u0948\u092f\u093e\u0930 \u0915\u093f\u092f\u093e \u0917\u092f\u093e \u0939\u0947\u092f\u0930 \u0915\u0932\u0930\u0964",
+          "storyHookLocalized": "\u090f\u0915 \u0910\u0938\u093e \u090f\u0902\u091f\u0940-\u0907\u0928\u094d\u092b\u094d\u0932\u0941\u090f\u0902\u0938\u0930 \u0938\u094d\u0925\u093e\u0928, \u091c\u094b \u091a\u092e\u0915\u0926\u093e\u0930 \u0930\u093f\u0902\u0917 \u0932\u093e\u0907\u091f\u094d\u0938 \u0914\u0930 \u0906\u0915\u094d\u0930\u093e\u092e\u0915 \u092c\u094d\u0932\u0940\u091a\u093f\u0902\u0917 \u0915\u0947 \u092c\u091c\u093e\u092f Golf Course Road \u0915\u0947 \u0935\u094d\u092f\u0938\u094d\u0924 \u0915\u0949\u0930\u094d\u092a\u094b\u0930\u0947\u091f \u0932\u0940\u0921\u0930\u094d\u0938 \u0915\u094b \u0936\u093e\u0902\u0924 \u0914\u0930 \u0938\u091f\u0940\u0915 \u0917\u094d\u0932\u094b\u092c\u0932 \u0939\u0947\u092f\u0930 \u0915\u0932\u0930\u093f\u0902\u0917 \u0915\u093e \u0905\u0928\u0941\u092d\u0935 \u0926\u0947\u0924\u093e \u0939\u0948\u0964"
+        },
+        "prompts": {
+          "detail": "1:1 square macro still photograph. A close-up of a bespoke hair color brush with a gold-trimmed handle resting on the edge of a textured ceramic bowl filled with a glossy, rich hazelnut-brown cream. The background is a clean, textured cream paper surface (#f7f1e8) with soft, warm lighting. Exquisite detail of the cream's texture and the gold accents. No people, no hands, no faces, no text.",
+          "lyria": "A 2-second warm, elegant acoustic guitar and soft ambient synth swell sting, ending in a clean, reassuring low-end note.",
+          "veo": "Cinematic interior video, 8 seconds, 9:16 vertical aspect ratio, slow forward push. An empty, ultra-premium hair salon station at South Point Mall, Gurgaon. A plush black leather chair sits before a grand arched mirror with a subtle, backlit warm gold glow. No people, no hands, no faces. On a sleek marble counter in the foreground, three ceramic bowls filled with rich, glossy chocolate-brown and warm bronze hair color pastes sit next to a gold-trimmed brush. The background is softly out of focus, showing a clean, quiet, sophisticated aesthetic with cream-colored walls (#f7f1e8). Natural sunlight streams in from a side window, casting elegant leaf shadows. Quiet, peaceful atmosphere. Native room tone.",
+          "story": "9:16 vertical still photograph for Instagram Stories. A central close-up of a beautifully organized, empty color-mixing station. Three elegant ceramic bowls holding rich brown and bronze hair creams rest on a cream-colored stone surface. In the background, a soft gold-framed mirror reflects a peaceful, empty boutique salon interior. No people, no hands, no faces, zero text. Safe zone styling with central focus, luxurious and reassuring tone, BrandSpec colors.",
+          "image": "A high-end, minimalist salon interior, 16:9 still photograph. A single empty styling station features a minimalist arch mirror backlit with a soft gold light. On the off-white marble counter sits a small, elegant gold foil line-art emblem of an 'N' resembling flowing hair. The palette is rich charcoal (#1c1814), soft cream (#f7f1e8), and warm bronze (#8c6239). No people, no hands, no faces, clean and quiet luxury aesthetic, architectural digest style, shallow depth of field."
+        },
+        "shelf": [
+          {
+            "hookType": "festive",
+            "category": "salon",
+            "title": "Looks Salon 2025 Wedding Lookbook Campaign",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHZ4Ftt_rG5dE4E7WN6pTrF5KphXv5DL-AQYmaTfOgocJdG5x3kpTVBZCBCkmWEzRSXhUXO68027cT9iQ2e-c4aN0k2alwnW8Xs_qeoYdCpUbKfUzli2g-ulU3w4ymrrDV-7lmZXiZ2nbfH56nlwvzN5YFDHX7kbbvqIOfijdm1gxTdT9XYUH_YIpB7EnJOvPdf8h1pbdewYi-bcZzP-A==",
+            "source": "news",
+            "snippet": "A high-fashion bridal lookbook collaborating with couture designers and digital creators to showcase ceremony-specific hair and makeup transformations [5.2.1].",
+            "audioLanguage": "en",
+            "visualGrammar": "quiet interior"
+          },
+          {
+            "hookType": "anti-influencer",
+            "category": "salon",
+            "title": "L'Or\u00e9al Professionnel iNOA Shades of Red Campaign",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEQ7kr1cf2P-3LsLp8AWgvtlTwhxN2DhtZrEV3Xy3Y_v0J_xZ4wEVaEgeU-2AnL-PnkJg5ECFZQKRUHnUUPtj3K2Qg78RRPC82e5U19gKNSSGFfAbbYj0Qu7bdeuwuhRHxCD5-HlssW7EUW3Qn-bTUY_s0MU9zQ9nNuXETse-_GsG1-jst8AdHEm3XEsQ==",
+            "source": "news",
+            "snippet": "Celebrates bold, professional women (lawyers, civil engineers, scuba divers) embracing vibrant red shades, paired with an AI-powered virtual try-on app to reduce hesitation.",
+            "audioLanguage": "en",
+            "visualGrammar": "quiet interior"
+          },
+          {
+            "hookType": "family-trust",
+            "category": "salon",
+            "title": "Godrej Professional #HairForYou Campaign",
+            "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGiorw40PplTPHxXrAEAWT6BUsU04fKoHJv1clZa9l7N_51kIBweNOE87l8NTc4fIERIzRqGSVh1Y1Kxt-ZPZwRVL688tmdkBLeXq4EoNQU5Hb4_QCfE5CLW-dE5W5nYYS6MmpS-nxy2srfRdZZfp-GcHguvy6apVrxOjrPH_h4j09Mcr1rgp6nKlN6T3CrLa0FK0ciEi1MdxD0vmsYZ-63b3wC39dd4xIUujd-XXOIcg==",
+            "source": "news",
+            "snippet": "Influencer-led campaign showcasing safe, hygienic, and professional in-salon hair color transformations to rebuild customer confidence.",
+            "audioLanguage": "hi",
+            "visualGrammar": "hands at work"
+          }
+        ],
+        "assets": {
+          "stillStory": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-story.png",
+            "mime": "image/png",
+            "ok": true,
+            "model": "gemini-3.1-flash-image",
+            "aspect": "9:16",
+            "bytes": 2438866,
+            "publicPath": "/media/noya-salon-fff1d666/still-story"
+          },
+          "stillSquare": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-square.png",
+            "ok": true,
+            "publicPath": "/media/noya-salon-fff1d666/still-square",
+            "aspect": "1:1",
+            "bytes": 1287765
+          },
+          "stillDetail": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-detail.png",
+            "mime": "image/png",
+            "ok": true,
+            "model": "gemini-3.1-flash-image",
+            "publicPath": "/media/noya-salon-fff1d666/still-detail",
+            "bytes": 1511495
+          },
+          "stillDerivatives": {
+            "slots": {
+              "landscape": {
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-landscape.png",
+                "ok": true,
+                "publicPath": "/media/noya-salon-fff1d666/still-landscape",
+                "aspect": "1.91:1",
+                "bytes": 2283243
+              },
+              "square": {
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-square.png",
+                "ok": true,
+                "publicPath": "/media/noya-salon-fff1d666/still-square",
+                "aspect": "1:1",
+                "bytes": 1287765
+              }
+            },
+            "ok": true
+          },
+          "stillLandscape": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-landscape.png",
+            "ok": true,
+            "publicPath": "/media/noya-salon-fff1d666/still-landscape",
+            "aspect": "1.91:1",
+            "bytes": 2283243
+          },
+          "still": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still.png",
+            "mime": "image/png",
+            "ok": true,
+            "model": "gemini-3.1-flash-image",
+            "publicPath": "/media/noya-salon-fff1d666/still",
+            "bytes": 1378668
+          },
+          "jingle": {
+            "note": "Lyria runs on inka_harvest so quota 429 cannot timeout Inka",
+            "ok": false,
+            "model": "lyria-002",
+            "pending": true
+          },
+          "stillFeed": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-feed.png",
+            "ok": true,
+            "publicPath": "/media/noya-salon-fff1d666/still-feed",
+            "aspect": "4:5",
+            "bytes": 1815410
+          },
+          "clip": {
+            "operation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/4e4ff9d8-1dae-4f46-8d40-918c5b08fbec",
+            "status": "started",
+            "model": "veo-3.1-generate-001",
+            "generateAudio": true,
+            "campaignId": "noya-salon-fff1d666",
+            "usedRefs": true,
+            "ok": true,
+            "durationSeconds": 8,
+            "aspectRatio": "9:16",
+            "seconds": 4.1
+          }
+        },
+        "errors": []
+      },
+      "status": "ok",
+      "legalBasis": "owner_instruction",
+      "campaignId": "noya-salon-fff1d666",
+      "service": "flock-worker",
+      "project": "leadsy-flock",
+      "engine": "inka",
+      "updatedAt": "2026-08-28T18:39:23.036692+00:00",
+      "createdAt": "2026-08-28T18:38:27.265363+00:00",
+      "step": "inka",
+      "id": "noya-salon-fff1d666_inka"
+    },
+    {
+      "attempt": 11,
+      "payload": {
+        "assets": {
+          "stillStory": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-story.png",
+            "mime": "image/png",
+            "ok": true,
+            "model": "gemini-3.1-flash-image",
+            "aspect": "9:16",
+            "bytes": 2438866,
+            "publicPath": "/media/noya-salon-fff1d666/still-story"
+          },
+          "stillSquare": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-square.png",
+            "ok": true,
+            "publicPath": "/media/noya-salon-fff1d666/still-square",
+            "aspect": "1:1",
+            "bytes": 1287765
+          },
+          "stillDetail": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-detail.png",
+            "mime": "image/png",
+            "ok": true,
+            "model": "gemini-3.1-flash-image",
+            "publicPath": "/media/noya-salon-fff1d666/still-detail",
+            "bytes": 1511495
+          },
+          "stillDerivatives": {
+            "slots": {
+              "landscape": {
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-landscape.png",
+                "ok": true,
+                "publicPath": "/media/noya-salon-fff1d666/still-landscape",
+                "aspect": "1.91:1",
+                "bytes": 2283243
+              },
+              "square": {
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-square.png",
+                "ok": true,
+                "publicPath": "/media/noya-salon-fff1d666/still-square",
+                "aspect": "1:1",
+                "bytes": 1287765
+              }
+            },
+            "ok": true
+          },
+          "stillLandscape": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-landscape.png",
+            "ok": true,
+            "publicPath": "/media/noya-salon-fff1d666/still-landscape",
+            "aspect": "1.91:1",
+            "bytes": 2283243
+          },
+          "still": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still.png",
+            "mime": "image/png",
+            "ok": true,
+            "model": "gemini-3.1-flash-image",
+            "publicPath": "/media/noya-salon-fff1d666/still",
+            "bytes": 1378668
+          },
+          "jingle": {
+            "note": "Lyria gave up after retries (often 429 quota)",
+            "ok": false,
+            "skipped": true,
+            "model": "lyria-002",
+            "error": "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Quota exceeded for aiplatform.googleapis.com/generate_content_requests_per_minute_per_project_per_base_model with base model: lyria-002. Please submit a quota increase request. https://cloud.google.com/vertex-ai/docs/generative-ai/quotas-ge",
+            "pending": false,
+            "quotaLikely": true
+          },
+          "stillFeed": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-feed.png",
+            "ok": true,
+            "publicPath": "/media/noya-salon-fff1d666/still-feed",
+            "aspect": "4:5",
+            "bytes": 1815410
+          },
+          "clip": {
+            "priorRai": [
+              "Your current safety settings for people/face generation filtered out 1 videos. You will not be charged for blocked videos. Try rephrasing the prompt. If you think this was an error, send feedback. Support codes: 63236870"
+            ],
+            "model": "veo-3.1-generate-001",
+            "generateAudio": true,
+            "bytes": 1676481,
+            "fallbackFrom": "done_no_bytes",
+            "ok": true,
+            "usedRefs": false,
+            "priorOperation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/4e4ff9d8-1dae-4f46-8d40-918c5b08fbec",
+            "publicPath": "/media/noya-salon-fff1d666/clip",
+            "aspectRatio": "9:16",
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip.mp4",
+            "operation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/1bbc5240-16cd-48a0-b41d-552be9edeaf5",
+            "mime": "video/mp4",
+            "done": true,
+            "captions": {
+              "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-captioned.mp4",
+              "ok": true,
+              "font": "/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf",
+              "publicPath": "/media/noya-salon-fff1d666/clip-captioned",
+              "bytes": 915561
+            },
+            "status": "harvested",
+            "campaignId": "noya-salon-fff1d666",
+            "fallbackStage": 1,
+            "durationSeconds": 8,
+            "derivatives": {
+              "slots": {
+                "feed": {
+                  "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-feed.mp4",
+                  "ok": true,
+                  "publicPath": "/media/noya-salon-fff1d666/clip-feed",
+                  "aspect": "4:5",
+                  "bytes": 702521
+                },
+                "landscape": {
+                  "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-landscape.mp4",
+                  "ok": true,
+                  "publicPath": "/media/noya-salon-fff1d666/clip-landscape",
+                  "aspect": "1.91:1",
+                  "bytes": 305095
+                },
+                "story": {
+                  "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-story.mp4",
+                  "ok": true,
+                  "publicPath": "/media/noya-salon-fff1d666/clip-story",
+                  "aspect": "9:16",
+                  "bytes": 900761
+                },
+                "square": {
+                  "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-square.mp4",
+                  "ok": true,
+                  "publicPath": "/media/noya-salon-fff1d666/clip-square",
+                  "aspect": "1:1",
+                  "bytes": 588970
+                }
+              },
+              "ok": true
+            },
+            "seconds": 0.4
+          }
+        },
+        "idempotencyKey": "noya-salon-fff1d666:inka_harvest:11",
+        "clip": {
+          "priorRai": [
+            "Your current safety settings for people/face generation filtered out 1 videos. You will not be charged for blocked videos. Try rephrasing the prompt. If you think this was an error, send feedback. Support codes: 63236870"
+          ],
+          "model": "veo-3.1-generate-001",
+          "generateAudio": true,
+          "bytes": 1676481,
+          "fallbackFrom": "done_no_bytes",
+          "ok": true,
+          "usedRefs": false,
+          "priorOperation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/4e4ff9d8-1dae-4f46-8d40-918c5b08fbec",
+          "publicPath": "/media/noya-salon-fff1d666/clip",
+          "aspectRatio": "9:16",
+          "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip.mp4",
+          "operation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/1bbc5240-16cd-48a0-b41d-552be9edeaf5",
+          "mime": "video/mp4",
+          "done": true,
+          "captions": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-captioned.mp4",
+            "ok": true,
+            "font": "/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf",
+            "publicPath": "/media/noya-salon-fff1d666/clip-captioned",
+            "bytes": 915561
+          },
+          "status": "harvested",
+          "campaignId": "noya-salon-fff1d666",
+          "fallbackStage": 1,
+          "durationSeconds": 8,
+          "derivatives": {
+            "slots": {
+              "feed": {
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-feed.mp4",
+                "ok": true,
+                "publicPath": "/media/noya-salon-fff1d666/clip-feed",
+                "aspect": "4:5",
+                "bytes": 702521
+              },
+              "landscape": {
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-landscape.mp4",
+                "ok": true,
+                "publicPath": "/media/noya-salon-fff1d666/clip-landscape",
+                "aspect": "1.91:1",
+                "bytes": 305095
+              },
+              "story": {
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-story.mp4",
+                "ok": true,
+                "publicPath": "/media/noya-salon-fff1d666/clip-story",
+                "aspect": "9:16",
+                "bytes": 900761
+              },
+              "square": {
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/clip-square.mp4",
+                "ok": true,
+                "publicPath": "/media/noya-salon-fff1d666/clip-square",
+                "aspect": "1:1",
+                "bytes": 588970
+              }
+            },
+            "ok": true
+          },
+          "seconds": 0.4
+        },
+        "maxAttempts": 24,
+        "retry": false,
+        "jingle": {
+          "note": "Lyria gave up after retries (often 429 quota)",
+          "ok": false,
+          "skipped": true,
+          "model": "lyria-002",
+          "error": "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Quota exceeded for aiplatform.googleapis.com/generate_content_requests_per_minute_per_project_per_base_model with base model: lyria-002. Please submit a quota increase request. https://cloud.google.com/vertex-ai/docs/generative-ai/quotas-ge",
+          "pending": false,
+          "quotaLikely": true
+        },
+        "attempt": 11,
+        "errors": []
+      },
+      "status": "ok",
+      "legalBasis": "owner_instruction",
+      "campaignId": "noya-salon-fff1d666",
+      "service": "flock-worker",
+      "project": "leadsy-flock",
+      "engine": "inka",
+      "updatedAt": "2026-08-28T18:42:35.088043+00:00",
+      "createdAt": "2026-08-28T18:39:23.549419+00:00",
+      "step": "inka_harvest",
+      "id": "noya-salon-fff1d666_inka_harvest"
+    },
+    {
+      "attempt": 1,
+      "payload": {
+        "verdict": "pass",
+        "idempotencyKey": "noya-salon-fff1d666:creative_gate:1",
+        "final": {
+          "hits": [],
+          "text": "Bespoke hair color, formulated without the salon chaos."
+        },
+        "draft": {
+          "hits": [
+            "guaranteed_outcome"
+          ],
+          "rejected": true,
+          "text": "Guaranteed perfect global color with zero wait times at Gurgaon's best salon"
+        },
+        "rule": "fail_closed_claims",
+        "judge": {
+          "verdict": "pass",
+          "ok": true,
+          "reason": "The ad copy contains no guaranteed outcomes, medical claims, or invented testimonials. Both the English and Hindi translations accurately describe the salon's bespoke hair coloring service, focusing on a quiet, efficient experience tailored to the customer's schedule.",
+          "model": "gemini-3.5-flash"
+        },
+        "classifier": {
+          "ok": false,
+          "model": "gemma-3-12b-it",
+          "risk": "unknown",
+          "error": "404 NOT_FOUND. {'error': {'code': 404, 'message': 'Publisher model `projects/leadsy-flock/locations/us-central1/publishers/google/models/gemma-3-12b-it` was not found or your project does not have access to it. Ensure you are using a valid model name and that the model is available in the specified "
+        }
+      },
+      "status": "ok",
+      "legalBasis": "owner_instruction",
+      "campaignId": "noya-salon-fff1d666",
+      "service": "flock-worker",
+      "project": "leadsy-flock",
+      "engine": "ledge",
+      "updatedAt": "2026-08-28T18:39:45.459924+00:00",
+      "createdAt": "2026-08-28T18:39:38.192672+00:00",
+      "step": "creative_gate",
+      "id": "noya-salon-fff1d666_creative_gate"
+    },
+    {
+      "attempt": 1,
+      "payload": {
+        "headline": "Bespoke hair color, formulated without the salon chaos.",
+        "idempotencyKey": "noya-salon-fff1d666:stella:1",
+        "url": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-fff1d666",
+        "consentCapture": true,
+        "themeId": "paper",
+        "still": "/media/noya-salon-fff1d666/still",
+        "jingle": "/media/noya-salon-fff1d666/jingle",
+        "landing": "/l/noya-salon-fff1d666",
+        "clip": "/media/noya-salon-fff1d666/clip"
+      },
+      "status": "ok",
+      "legalBasis": "owner_instruction",
+      "campaignId": "noya-salon-fff1d666",
+      "service": "flock-worker",
+      "project": "leadsy-flock",
+      "engine": "stella",
+      "updatedAt": "2026-08-28T18:40:01.757168+00:00",
+      "createdAt": "2026-08-28T18:40:01.559905+00:00",
+      "step": "stella",
+      "id": "noya-salon-fff1d666_stella"
+    },
+    {
+      "attempt": 1,
+      "payload": {
+        "note": "Ready to upload. Owner makes the final click on their own channels.",
+        "idempotencyKey": "noya-salon-fff1d666:ad_kit:1",
+        "variants": [
+          {
+            "platform": "meta",
+            "headline": "Bespoke hair color, formulated without\u2026",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-fff1d666?utm_source=meta&utm_medium=paid&utm_campaign=noya-salon-fff1d666&utm_content=meta_feed",
+            "stillSlot": "still-feed",
+            "voIndic": "\u0936\u093e\u0902\u0924 \u0932\u0917\u094d\u091c\u0930\u0940 \u0915\u0947 \u092c\u0940\u091a, \u0906\u092a\u0915\u0947 \u0938\u092e\u092f \u0915\u093e \u0938\u092e\u094d\u092e\u093e\u0928 \u0915\u0930\u0924\u0947 \u0939\u0941\u090f \u0924\u0948\u092f\u093e\u0930 \u0915\u093f\u092f\u093e \u0917\u092f\u093e \u0916\u093e\u0938 \u0939\u0947\u092f\u0930 \u0915\u0932\u0930\u0964",
+            "organic": false,
+            "headlineLocalized": "\u0938\u0948\u0932\u0942\u0928 \u0915\u0947 \u0936\u094b\u0930-\u0936\u0930\u093e\u092c\u0947 \u0915\u0947 \u092c\u093f\u0928\u093e, \u0916\u093e\u0938 \u0906\u092a\u0915\u0947 \u0932\u093f\u2026",
+            "clip": "/media/noya-salon-fff1d666/clip-feed",
+            "cta": "Book Your Session",
+            "charCounts": {
+              "headline": 39,
+              "primaryText": 124
+            },
+            "primaryTextLocalized": "\u0928 \u0915\u094b\u0908 \u091a\u092e\u0915\u0926\u093e\u0930 \u0930\u093f\u0902\u0917 \u0932\u093e\u0907\u091f\u094d\u0938, \u0928 \u0915\u094b\u0908 \u091c\u093c\u092c\u0930\u0926\u0938\u094d\u0924\u0940 \u0915\u0940 \u0905\u092a\u0938\u0947\u0932\u093f\u0902\u0917, \u0914\u0930 \u0928 \u0939\u0940 \u092c\u093f\u0932\u093f\u0902\u0917 \u0915\u0947 \u0938\u092e\u092f \u0915\u094b\u0908 \u0905\u0928\u092a\u0947\u0915\u094d\u0937\u093f\u0924 \u0938\u0930\u092a\u094d\u0930\u093e\u0907\u091c\u093c\u0964 Noya Salon \u092e\u0947\u0902, \u0939\u092e\u093e\u0930\u093e\u2026",
+            "primaryText": "No loud ring lights, no pushy upsells, and no unexpected checkout surprises. At Noya, we focus entirely on healthy, precise\u2026",
+            "ctaLocalized": "\u0905\u092a\u0928\u093e \u0938\u0947\u0936\u0928 \u092c\u0941\u0915 \u0915\u0930\u0947\u0902",
+            "id": "meta_feed",
+            "clipSlot": "clip-feed",
+            "still": "/media/noya-salon-fff1d666/still-feed",
+            "aspect": "4:5",
+            "placement": "feed",
+            "lint": {
+              "ok": true,
+              "issues": []
+            }
+          },
+          {
+            "platform": "meta",
+            "headline": "Bespoke hair color, formulated without\u2026",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-fff1d666?utm_source=meta&utm_medium=paid&utm_campaign=noya-salon-fff1d666&utm_content=meta_square",
+            "stillSlot": "still-square",
+            "voIndic": "\u0936\u093e\u0902\u0924 \u0932\u0917\u094d\u091c\u0930\u0940 \u0915\u0947 \u092c\u0940\u091a, \u0906\u092a\u0915\u0947 \u0938\u092e\u092f \u0915\u093e \u0938\u092e\u094d\u092e\u093e\u0928 \u0915\u0930\u0924\u0947 \u0939\u0941\u090f \u0924\u0948\u092f\u093e\u0930 \u0915\u093f\u092f\u093e \u0917\u092f\u093e \u0916\u093e\u0938 \u0939\u0947\u092f\u0930 \u0915\u0932\u0930\u0964",
+            "organic": false,
+            "headlineLocalized": "\u0938\u0948\u0932\u0942\u0928 \u0915\u0947 \u0936\u094b\u0930-\u0936\u0930\u093e\u092c\u0947 \u0915\u0947 \u092c\u093f\u0928\u093e, \u0916\u093e\u0938 \u0906\u092a\u0915\u0947 \u0932\u093f\u2026",
+            "clip": "/media/noya-salon-fff1d666/clip-square",
+            "cta": "Book Your Session",
+            "charCounts": {
+              "headline": 39,
+              "primaryText": 124
+            },
+            "primaryTextLocalized": "\u0928 \u0915\u094b\u0908 \u091a\u092e\u0915\u0926\u093e\u0930 \u0930\u093f\u0902\u0917 \u0932\u093e\u0907\u091f\u094d\u0938, \u0928 \u0915\u094b\u0908 \u091c\u093c\u092c\u0930\u0926\u0938\u094d\u0924\u0940 \u0915\u0940 \u0905\u092a\u0938\u0947\u0932\u093f\u0902\u0917, \u0914\u0930 \u0928 \u0939\u0940 \u092c\u093f\u0932\u093f\u0902\u0917 \u0915\u0947 \u0938\u092e\u092f \u0915\u094b\u0908 \u0905\u0928\u092a\u0947\u0915\u094d\u0937\u093f\u0924 \u0938\u0930\u092a\u094d\u0930\u093e\u0907\u091c\u093c\u0964 Noya Salon \u092e\u0947\u0902, \u0939\u092e\u093e\u0930\u093e\u2026",
+            "primaryText": "No loud ring lights, no pushy upsells, and no unexpected checkout surprises. At Noya, we focus entirely on healthy, precise\u2026",
+            "ctaLocalized": "\u0905\u092a\u0928\u093e \u0938\u0947\u0936\u0928 \u092c\u0941\u0915 \u0915\u0930\u0947\u0902",
+            "id": "meta_square",
+            "clipSlot": "clip-square",
+            "still": "/media/noya-salon-fff1d666/still-square",
+            "aspect": "1:1",
+            "placement": "carousel",
+            "lint": {
+              "ok": true,
+              "issues": []
+            }
+          },
+          {
+            "platform": "meta",
+            "headline": "\u0938\u0948\u0932\u0942\u0928 \u0915\u0947 \u0936\u094b\u0930-\u0936\u0930\u093e\u092c\u0947 \u0915\u0947 \u092c\u093f\u0928\u093e, \u0916\u093e\u0938\u2026",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-fff1d666?utm_source=meta&utm_medium=paid&utm_campaign=noya-salon-fff1d666&utm_content=meta_reel",
+            "stillSlot": "still-story",
+            "voIndic": "\u0936\u093e\u0902\u0924 \u0932\u0917\u094d\u091c\u0930\u0940 \u0915\u0947 \u092c\u0940\u091a, \u0906\u092a\u0915\u0947 \u0938\u092e\u092f \u0915\u093e \u0938\u092e\u094d\u092e\u093e\u0928 \u0915\u0930\u0924\u0947 \u0939\u0941\u090f \u0924\u0948\u092f\u093e\u0930 \u0915\u093f\u092f\u093e \u0917\u092f\u093e \u0916\u093e\u0938 \u0939\u0947\u092f\u0930 \u0915\u0932\u0930\u0964",
+            "organic": false,
+            "headlineLocalized": "\u0938\u0948\u0932\u0942\u0928 \u0915\u0947 \u0936\u094b\u0930-\u0936\u0930\u093e\u092c\u0947 \u0915\u0947 \u092c\u093f\u0928\u093e, \u0916\u093e\u0938\u2026",
+            "clip": "/media/noya-salon-fff1d666/clip-captioned",
+            "cta": "\u0905\u092a\u0928\u093e \u0938\u0947\u0936\u0928 \u092c\u0941\u0915 \u0915\u0930\u0947\u0902",
+            "charCounts": {
+              "headline": 32,
+              "primaryText": 90
+            },
+            "primaryTextLocalized": "\u0928 \u0915\u094b\u0908 \u091a\u092e\u0915\u0926\u093e\u0930 \u0930\u093f\u0902\u0917 \u0932\u093e\u0907\u091f\u094d\u0938, \u0928 \u0915\u094b\u0908 \u091c\u093c\u092c\u0930\u0926\u0938\u094d\u0924\u0940 \u0915\u0940 \u0905\u092a\u0938\u0947\u0932\u093f\u0902\u0917, \u0914\u0930 \u0928 \u0939\u0940 \u092c\u093f\u0932\u093f\u0902\u0917 \u0915\u0947 \u0938\u092e\u092f \u0915\u094b\u0908 \u0905\u0928\u092a\u0947\u0915\u094d\u0937\u093f\u2026",
+            "primaryText": "\u0928 \u0915\u094b\u0908 \u091a\u092e\u0915\u0926\u093e\u0930 \u0930\u093f\u0902\u0917 \u0932\u093e\u0907\u091f\u094d\u0938, \u0928 \u0915\u094b\u0908 \u091c\u093c\u092c\u0930\u0926\u0938\u094d\u0924\u0940 \u0915\u0940 \u0905\u092a\u0938\u0947\u0932\u093f\u0902\u0917, \u0914\u0930 \u0928 \u0939\u0940 \u092c\u093f\u0932\u093f\u0902\u0917 \u0915\u0947 \u0938\u092e\u092f \u0915\u094b\u0908 \u0905\u0928\u092a\u0947\u0915\u094d\u0937\u093f\u2026",
+            "ctaLocalized": "\u0905\u092a\u0928\u093e \u0938\u0947\u0936\u0928 \u092c\u0941\u0915 \u0915\u0930\u0947\u0902",
+            "id": "meta_reel",
+            "clipSlot": "clip-captioned",
+            "still": "/media/noya-salon-fff1d666/still-story",
+            "aspect": "9:16",
+            "placement": "reel",
+            "lint": {
+              "ok": true,
+              "issues": []
+            }
+          },
+          {
+            "platform": "whatsapp",
+            "headline": "\u0938\u0948\u0932\u0942\u0928 \u0915\u0947 \u0936\u094b\u0930-\u0936\u0930\u093e\u092c\u0947 \u0915\u0947 \u092c\u093f\u0928\u093e, \u0916\u093e\u0938\u2026",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-fff1d666?utm_source=whatsapp&utm_medium=paid&utm_campaign=noya-salon-fff1d666&utm_content=whatsapp_status",
+            "stillSlot": "still-story",
+            "voIndic": "\u0936\u093e\u0902\u0924 \u0932\u0917\u094d\u091c\u0930\u0940 \u0915\u0947 \u092c\u0940\u091a, \u0906\u092a\u0915\u0947 \u0938\u092e\u092f \u0915\u093e \u0938\u092e\u094d\u092e\u093e\u0928 \u0915\u0930\u0924\u0947 \u0939\u0941\u090f \u0924\u0948\u092f\u093e\u0930 \u0915\u093f\u092f\u093e \u0917\u092f\u093e \u0916\u093e\u0938 \u0939\u0947\u092f\u0930 \u0915\u0932\u0930\u0964",
+            "organic": true,
+            "headlineLocalized": "\u0938\u0948\u0932\u0942\u0928 \u0915\u0947 \u0936\u094b\u0930-\u0936\u0930\u093e\u092c\u0947 \u0915\u0947 \u092c\u093f\u0928\u093e, \u0916\u093e\u0938\u2026",
+            "clip": "/media/noya-salon-fff1d666/clip-captioned",
+            "cta": "\u0905\u092a\u0928\u093e \u0938\u0947\u0936\u0928 \u092c\u0941\u0915 \u0915\u0930\u0947\u0902",
+            "charCounts": {
+              "headline": 32,
+              "primaryText": 90
+            },
+            "primaryTextLocalized": "\u0928 \u0915\u094b\u0908 \u091a\u092e\u0915\u0926\u093e\u0930 \u0930\u093f\u0902\u0917 \u0932\u093e\u0907\u091f\u094d\u0938, \u0928 \u0915\u094b\u0908 \u091c\u093c\u092c\u0930\u0926\u0938\u094d\u0924\u0940 \u0915\u0940 \u0905\u092a\u0938\u0947\u0932\u093f\u0902\u0917, \u0914\u0930 \u0928 \u0939\u0940 \u092c\u093f\u0932\u093f\u0902\u0917 \u0915\u0947 \u0938\u092e\u092f \u0915\u094b\u0908 \u0905\u0928\u092a\u0947\u0915\u094d\u0937\u093f\u2026",
+            "primaryText": "\u0928 \u0915\u094b\u0908 \u091a\u092e\u0915\u0926\u093e\u0930 \u0930\u093f\u0902\u0917 \u0932\u093e\u0907\u091f\u094d\u0938, \u0928 \u0915\u094b\u0908 \u091c\u093c\u092c\u0930\u0926\u0938\u094d\u0924\u0940 \u0915\u0940 \u0905\u092a\u0938\u0947\u0932\u093f\u0902\u0917, \u0914\u0930 \u0928 \u0939\u0940 \u092c\u093f\u0932\u093f\u0902\u0917 \u0915\u0947 \u0938\u092e\u092f \u0915\u094b\u0908 \u0905\u0928\u092a\u0947\u0915\u094d\u0937\u093f\u2026",
+            "ctaLocalized": "\u0905\u092a\u0928\u093e \u0938\u0947\u0936\u0928 \u092c\u0941\u0915 \u0915\u0930\u0947\u0902",
+            "id": "whatsapp_status",
+            "clipSlot": "clip-captioned",
+            "still": "/media/noya-salon-fff1d666/still-story",
+            "aspect": "9:16",
+            "placement": "status",
+            "lint": {
+              "ok": true,
+              "issues": []
+            }
+          },
+          {
+            "platform": "google",
+            "headline": "Bespoke hair color, formulate\u2026",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-fff1d666?utm_source=google&utm_medium=paid&utm_campaign=noya-salon-fff1d666&utm_content=google_display",
+            "stillSlot": "still-landscape",
+            "voIndic": "\u0936\u093e\u0902\u0924 \u0932\u0917\u094d\u091c\u0930\u0940 \u0915\u0947 \u092c\u0940\u091a, \u0906\u092a\u0915\u0947 \u0938\u092e\u092f \u0915\u093e \u0938\u092e\u094d\u092e\u093e\u0928 \u0915\u0930\u0924\u0947 \u0939\u0941\u090f \u0924\u0948\u092f\u093e\u0930 \u0915\u093f\u092f\u093e \u0917\u092f\u093e \u0916\u093e\u0938 \u0939\u0947\u092f\u0930 \u0915\u0932\u0930\u0964",
+            "organic": false,
+            "headlineLocalized": "\u0938\u0948\u0932\u0942\u0928 \u0915\u0947 \u0936\u094b\u0930-\u0936\u0930\u093e\u092c\u0947 \u0915\u0947 \u092c\u093f\u0928\u093e, \u0916\u2026",
+            "clip": "/media/noya-salon-fff1d666/clip-landscape",
+            "cta": "Book Your Session",
+            "charCounts": {
+              "headline": 30,
+              "primaryText": 89
+            },
+            "primaryTextLocalized": "\u0928 \u0915\u094b\u0908 \u091a\u092e\u0915\u0926\u093e\u0930 \u0930\u093f\u0902\u0917 \u0932\u093e\u0907\u091f\u094d\u0938, \u0928 \u0915\u094b\u0908 \u091c\u093c\u092c\u0930\u0926\u0938\u094d\u0924\u0940 \u0915\u0940 \u0905\u092a\u0938\u0947\u0932\u093f\u0902\u0917, \u0914\u0930 \u0928 \u0939\u0940 \u092c\u093f\u0932\u093f\u0902\u0917 \u0915\u0947 \u0938\u092e\u092f \u0915\u094b\u0908 \u0905\u0928\u092a\u0947\u0915\u094d\u0937\u093f\u2026",
+            "primaryText": "No loud ring lights, no pushy upsells, and no unexpected checkout surprises. At Noya, we\u2026",
+            "ctaLocalized": "\u0905\u092a\u0928\u093e \u0938\u0947\u0936\u0928 \u092c\u0941\u0915 \u0915\u0930\u0947\u0902",
+            "id": "google_display",
+            "clipSlot": "clip-landscape",
+            "still": "/media/noya-salon-fff1d666/still-landscape",
+            "aspect": "1.91:1",
+            "placement": "display",
+            "lint": {
+              "ok": true,
+              "issues": []
+            }
+          },
+          {
+            "platform": "google",
+            "headline": "Bespoke hair color, formulate\u2026",
+            "utmUrl": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-fff1d666?utm_source=google&utm_medium=paid&utm_campaign=noya-salon-fff1d666&utm_content=google_rsa",
+            "headlines": [
+              "Bespoke hair color, formulate\u2026",
+              "Book Your Session",
+              "Evenings near you"
+            ],
+            "voIndic": "\u0936\u093e\u0902\u0924 \u0932\u0917\u094d\u091c\u0930\u0940 \u0915\u0947 \u092c\u0940\u091a, \u0906\u092a\u0915\u0947 \u0938\u092e\u092f \u0915\u093e \u0938\u092e\u094d\u092e\u093e\u0928 \u0915\u0930\u0924\u0947 \u0939\u0941\u090f \u0924\u0948\u092f\u093e\u0930 \u0915\u093f\u092f\u093e \u0917\u092f\u093e \u0916\u093e\u0938 \u0939\u0947\u092f\u0930 \u0915\u0932\u0930\u0964",
+            "description": "A quiet, appointment-only sanctuary on Golf Course Road for busy professionals.",
+            "organic": false,
+            "headlineLocalized": "\u0938\u0948\u0932\u0942\u0928 \u0915\u0947 \u0936\u094b\u0930-\u0936\u0930\u093e\u092c\u0947 \u0915\u0947 \u092c\u093f\u0928\u093e, \u0916\u2026",
+            "cta": "Book Your Session",
+            "charCounts": {
+              "headline": 30,
+              "description": 79,
+              "primaryText": 124
+            },
+            "primaryTextLocalized": "\u0928 \u0915\u094b\u0908 \u091a\u092e\u0915\u0926\u093e\u0930 \u0930\u093f\u0902\u0917 \u0932\u093e\u0907\u091f\u094d\u0938, \u0928 \u0915\u094b\u0908 \u091c\u093c\u092c\u0930\u0926\u0938\u094d\u0924\u0940 \u0915\u0940 \u0905\u092a\u0938\u0947\u0932\u093f\u0902\u0917, \u0914\u0930 \u0928 \u0939\u0940 \u092c\u093f\u0932\u093f\u0902\u0917 \u0915\u0947 \u0938\u092e\u092f \u0915\u094b\u0908 \u0905\u0928\u092a\u0947\u0915\u094d\u0937\u093f\u0924 \u0938\u0930\u092a\u094d\u0930\u093e\u0907\u091c\u093c\u0964 Noya Salon \u092e\u0947\u0902, \u0939\u092e\u093e\u0930\u093e\u2026",
+            "primaryText": "No loud ring lights, no pushy upsells, and no unexpected checkout surprises. At Noya, we focus entirely on healthy, precise\u2026",
+            "ctaLocalized": "\u0905\u092a\u0928\u093e \u0938\u0947\u0936\u0928 \u092c\u0941\u0915 \u0915\u0930\u0947\u0902",
+            "id": "google_rsa",
+            "placement": "search",
+            "lint": {
+              "ok": true,
+              "issues": []
+            },
+            "aspect": "text"
+          }
+        ],
+        "kit": "/k/noya-salon-fff1d666",
+        "locale": {
+          "nativeName": "\u0939\u093f\u0928\u094d\u0926\u0940",
+          "script": "Devanagari",
+          "code": "hi",
+          "language": "Hindi",
+          "bcp47": "hi-IN"
+        },
+        "autopost": false,
+        "storyHook": "An anti-influencer sanctuary that replaces loud ring lights and aggressive bleaching with quiet, precise global coloring for Golf Course Road's busiest corporate leaders.",
+        "assets": {
+          "stillStory": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-story.png",
+            "mime": "image/png",
+            "ok": true,
+            "model": "gemini-3.1-flash-image",
+            "aspect": "9:16",
+            "bytes": 2438866,
+            "publicPath": "/media/noya-salon-fff1d666/still-story"
+          },
+          "stillSquare": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-square.png",
+            "ok": true,
+            "publicPath": "/media/noya-salon-fff1d666/still-square",
+            "aspect": "1:1",
+            "bytes": 1287765
+          },
+          "stillDetail": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-detail.png",
+            "mime": "image/png",
+            "ok": true,
+            "model": "gemini-3.1-flash-image",
+            "publicPath": "/media/noya-salon-fff1d666/still-detail",
+            "bytes": 1511495
+          },
+          "stillDerivatives": {
+            "slots": {
+              "landscape": {
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-landscape.png",
+                "ok": true,
+                "publicPath": "/media/noya-salon-fff1d666/still-landscape",
+                "aspect": "1.91:1",
+                "bytes": 2283243
+              },
+              "square": {
+                "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-square.png",
+                "ok": true,
+                "publicPath": "/media/noya-salon-fff1d666/still-square",
+                "aspect": "1:1",
+                "bytes": 1287765
+              }
+            },
+            "ok": true
+          },
+          "stillLandscape": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-landscape.png",
+            "ok": true,
+            "publicPath": "/media/noya-salon-fff1d666/still-landscape",
+            "aspect": "1.91:1",
+            "bytes": 2283243
+          },
+          "still": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still.png",
+            "mime": "image/png",
+            "ok": true,
+            "model": "gemini-3.1-flash-image",
+            "publicPath": "/media/noya-salon-fff1d666/still",
+            "bytes": 1378668
+          },
+          "jingle": {
+            "note": "Lyria runs on inka_harvest so quota 429 cannot timeout Inka",
+            "ok": false,
+            "model": "lyria-002",
+            "pending": true
+          },
+          "stillFeed": {
+            "gcs": "gs://leadsy-flock-media-asia-south1/campaigns/noya-salon-fff1d666/still-feed.png",
+            "ok": true,
+            "publicPath": "/media/noya-salon-fff1d666/still-feed",
+            "aspect": "4:5",
+            "bytes": 1815410
+          },
+          "clip": {
+            "operation": "projects/leadsy-flock/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/4e4ff9d8-1dae-4f46-8d40-918c5b08fbec",
+            "status": "started",
+            "model": "veo-3.1-generate-001",
+            "generateAudio": true,
+            "campaignId": "noya-salon-fff1d666",
+            "usedRefs": true,
+            "ok": true,
+            "durationSeconds": 8,
+            "aspectRatio": "9:16",
+            "seconds": 4.1
+          }
+        },
+        "themeId": "paper",
+        "landing": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-fff1d666"
+      },
+      "status": "ok",
+      "legalBasis": "owner_instruction",
+      "campaignId": "noya-salon-fff1d666",
+      "service": "flock-worker",
+      "project": "leadsy-flock",
+      "engine": "inka",
+      "updatedAt": "2026-08-28T18:40:16.897532+00:00",
+      "createdAt": "2026-08-28T18:40:16.654585+00:00",
+      "step": "ad_kit",
+      "id": "noya-salon-fff1d666_ad_kit"
+    }
+  ],
+  "consents": [
+    {
+      "name": "Judge Demo",
+      "contact": "judge@example.test",
+      "source": "salon-e2e",
+      "createdAt": "2026-08-28T18:40:36.496211+00:00",
+      "campaignId": "noya-salon-fff1d666",
+      "id": "oZqB29qFtDWkT8Stc6EH"
+    }
+  ]
+}

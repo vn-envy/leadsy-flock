@@ -1,0 +1,194 @@
+{
+  "campaignId": "noya-salon-fff1d666",
+  "status": "completed",
+  "themeId": "paper",
+  "locale": {
+    "nativeName": "हिन्दी",
+    "script": "Devanagari",
+    "code": "hi",
+    "language": "Hindi",
+    "bcp47": "hi-IN"
+  },
+  "shelf": [
+    {
+      "hookType": "festive",
+      "category": "salon",
+      "title": "Looks Salon 2025 Wedding Lookbook Campaign",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHZ4Ftt_rG5dE4E7WN6pTrF5KphXv5DL-AQYmaTfOgocJdG5x3kpTVBZCBCkmWEzRSXhUXO68027cT9iQ2e-c4aN0k2alwnW8Xs_qeoYdCpUbKfUzli2g-ulU3w4ymrrDV-7lmZXiZ2nbfH56nlwvzN5YFDHX7kbbvqIOfijdm1gxTdT9XYUH_YIpB7EnJOvPdf8h1pbdewYi-bcZzP-A==",
+      "source": "news",
+      "snippet": "A high-fashion bridal lookbook collaborating with couture designers and digital creators to showcase ceremony-specific hair and makeup transformations [5.2.1].",
+      "audioLanguage": "en",
+      "visualGrammar": "quiet interior"
+    },
+    {
+      "hookType": "anti-influencer",
+      "category": "salon",
+      "title": "L'Oréal Professionnel iNOA Shades of Red Campaign",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEQ7kr1cf2P-3LsLp8AWgvtlTwhxN2DhtZrEV3Xy3Y_v0J_xZ4wEVaEgeU-2AnL-PnkJg5ECFZQKRUHnUUPtj3K2Qg78RRPC82e5U19gKNSSGFfAbbYj0Qu7bdeuwuhRHxCD5-HlssW7EUW3Qn-bTUY_s0MU9zQ9nNuXETse-_GsG1-jst8AdHEm3XEsQ==",
+      "source": "news",
+      "snippet": "Celebrates bold, professional women (lawyers, civil engineers, scuba divers) embracing vibrant red shades, paired with an AI-powered virtual try-on app to reduce hesitation.",
+      "audioLanguage": "en",
+      "visualGrammar": "quiet interior"
+    },
+    {
+      "hookType": "family-trust",
+      "category": "salon",
+      "title": "Godrej Professional #HairForYou Campaign",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGiorw40PplTPHxXrAEAWT6BUsU04fKoHJv1clZa9l7N_51kIBweNOE87l8NTc4fIERIzRqGSVh1Y1Kxt-ZPZwRVL688tmdkBLeXq4EoNQU5Hb4_QCfE5CLW-dE5W5nYYS6MmpS-nxy2srfRdZZfp-GcHguvy6apVrxOjrPH_h4j09Mcr1rgp6nKlN6T3CrLa0FK0ciEi1MdxD0vmsYZ-63b3wC39dd4xIUujd-XXOIcg==",
+      "source": "news",
+      "snippet": "Influencer-led campaign showcasing safe, hygienic, and professional in-salon hair color transformations to rebuild customer confidence.",
+      "audioLanguage": "hi",
+      "visualGrammar": "hands at work"
+    }
+  ],
+  "storyHook": "An anti-influencer sanctuary that replaces loud ring lights and aggressive bleaching with quiet, precise global coloring for Golf Course Road's busiest corporate leaders.",
+  "voIndic": "शांत लग्जरी के बीच, आपके समय का सम्मान करते हुए तैयार किया गया खास हेयर कलर।",
+  "clipStart": {
+    "durationSeconds": 8,
+    "aspectRatio": "9:16",
+    "generateAudio": true,
+    "usedRefs": true
+  },
+  "kit": "https://flock-api-533880600838.asia-south1.run.app/k/noya-salon-fff1d666",
+  "landing": "https://flock-api-533880600838.asia-south1.run.app/l/noya-salon-fff1d666",
+  "stills": {
+    "still": {
+      "ok": true,
+      "bytes": 1378668,
+      "contentType": "image/png"
+    },
+    "still-story": {
+      "ok": true,
+      "bytes": 2438866,
+      "contentType": "image/png"
+    },
+    "still-detail": {
+      "ok": true,
+      "bytes": 1511495,
+      "contentType": "image/png"
+    },
+    "still-feed": {
+      "ok": true,
+      "bytes": 1815410,
+      "contentType": "image/png"
+    },
+    "still-square": {
+      "ok": true,
+      "bytes": 1287765,
+      "contentType": "image/png"
+    },
+    "still-landscape": {
+      "ok": true,
+      "bytes": 2283243,
+      "contentType": "image/png"
+    }
+  },
+  "clips": {
+    "clip": {
+      "ok": true,
+      "bytes": 1676481,
+      "contentType": "video/mp4"
+    },
+    "clip-story": {
+      "ok": true,
+      "bytes": 900761,
+      "contentType": "video/mp4"
+    },
+    "clip-captioned": {
+      "ok": true,
+      "bytes": 915561,
+      "contentType": "video/mp4"
+    },
+    "clip-feed": {
+      "ok": true,
+      "bytes": 702521,
+      "contentType": "video/mp4"
+    },
+    "clip-square": {
+      "ok": true,
+      "bytes": 588970,
+      "contentType": "video/mp4"
+    },
+    "clip-landscape": {
+      "ok": true,
+      "bytes": 305095,
+      "contentType": "video/mp4"
+    }
+  },
+  "jingle": {
+    "ok": false,
+    "bytes": 0,
+    "contentType": "HTTP Error 404: Not Found"
+  },
+  "ready": {
+    "still": true,
+    "still-square": true,
+    "still-feed": true,
+    "still-story": true,
+    "still-landscape": true,
+    "still-detail": true,
+    "clip": true,
+    "clip-square": true,
+    "clip-feed": true,
+    "clip-story": true,
+    "clip-landscape": true,
+    "clip-captioned": true,
+    "jingle": false
+  },
+  "harvest": [
+    {
+      "status": "ok",
+      "attempt": 11
+    }
+  ],
+  "consent": {
+    "id": "oZqB29qFtDWkT8Stc6EH",
+    "campaignId": "noya-salon-fff1d666",
+    "ok": true
+  },
+  "draftRejected": true,
+  "gateVerdict": "pass",
+  "scoutGrounding": [
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEGV0bKr2z9f7bA5QvIhXPoEODvqm4V3i5vWHbsrDjm53rj4mK74CvXMZXeUG1en5BikAs3aTcKvUJVwlLDabZsGVZ6KZOGJtQHc7205_i1xDCVMX6Tyh0J51bY4ULP_PGvRu6okjhpFYqgcE2bM99OdMWjvneFqf2DM43k8x__lz5UFttnlMX3a4aDvuBRiA==",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGGVd-njyty9fUWtYeyyDucTK1gXGoTY8qKXCQJp-zTAvRJs8erbaQF87-5cEweOk9-9wzM08eQTs-JkmyDKYJjuZeDlnN-vXBwrB4aaBv0CbiQsnl_mbeRzHB5WgD5-rq-hs2sORItOw==",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFQs1TgEl2BfgnFEnKXJfG95KrxSeawyC9jU4CoiChqTtGHRvZHaYK0nk4u2G2l5GoxcLCPULxrTnZLvhdP553u5h0hPnbohYlOMCCWGagDSU9Yq7a3Ov9l_RrV9DlVGJOFASRUyhV28JbmJI9iDhXDmcn1xwT5AFSaWdGOUn6FzA1TCfdlv9B242iN_cCXH85djZl3bHl7f2r-B5OP",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF4dHWK2cjvKeaZM9CX9Awqw3U46-igtyo9O3PG2-GN1fs0qCeNpFI14OxjuHdGbwXRerjylBzMJMLIT1gQ84cv3mbHrKOKxmwfoJAzP2p99E8i7j207gK9rkOJf_YsKTKnD_9L4o2ggy8tvBf6uOKloa4XgQ_DO1hFVrjGWd4PAmdJAMKXBnDnQevQljCSV4agR9-gV-7fjG1XDjmlUJ8=",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHZ4Ftt_rG5dE4E7WN6pTrF5KphXv5DL-AQYmaTfOgocJdG5x3kpTVBZCBCkmWEzRSXhUXO68027cT9iQ2e-c4aN0k2alwnW8Xs_qeoYdCpUbKfUzli2g-ulU3w4ymrrDV-7lmZXiZ2nbfH56nlwvzN5YFDHX7kbbvqIOfijdm1gxTdT9XYUH_YIpB7EnJOvPdf8h1pbdewYi-bcZzP-A==",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEQ7kr1cf2P-3LsLp8AWgvtlTwhxN2DhtZrEV3Xy3Y_v0J_xZ4wEVaEgeU-2AnL-PnkJg5ECFZQKRUHnUUPtj3K2Qg78RRPC82e5U19gKNSSGFfAbbYj0Qu7bdeuwuhRHxCD5-HlssW7EUW3Qn-bTUY_s0MU9zQ9nNuXETse-_GsG1-jst8AdHEm3XEsQ==",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGiorw40PplTPHxXrAEAWT6BUsU04fKoHJv1clZa9l7N_51kIBweNOE87l8NTc4fIERIzRqGSVh1Y1Kxt-ZPZwRVL688tmdkBLeXq4EoNQU5Hb4_QCfE5CLW-dE5W5nYYS6MmpS-nxy2srfRdZZfp-GcHguvy6apVrxOjrPH_h4j09Mcr1rgp6nKlN6T3CrLa0FK0ciEi1MdxD0vmsYZ-63b3wC39dd4xIUujd-XXOIcg==",
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEgflwEgml91QfjK1iU694b9bzBEFaMNevE73HrKk4_mW7_977QEILnqJpCskMR4MWDovrUajJSeFDhke0wPGvd4mkOuOQU5Kjmlev9IOPaCwH3etg4IORjKPsfgoUQfnmeSzT-c_pQPFgx4Sla8clEZSW6_cULdvNG1pjRWDboFBKUTanzXU6G6Ksx27ro8Onk15ALtOpql2NHs52Sdg=="
+  ],
+  "autopost": false,
+  "kitHtmlHasAutopostRefusal": true,
+  "kitHtmlHasDevanagari": true,
+  "harvestClip": {
+    "status": "harvested",
+    "bytes": 1676481,
+    "durationSeconds": 8,
+    "aspectRatio": "9:16",
+    "generateAudio": true,
+    "usedRefs": false,
+    "fallbackStage": 1,
+    "fallbackFrom": "done_no_bytes",
+    "audio": {
+      "codec": "aac",
+      "sampleRate": 48000,
+      "channels": 2
+    },
+    "video": {
+      "codec": "h264",
+      "width": 720,
+      "height": 1280
+    },
+    "captions": {
+      "ok": true,
+      "bytes": 915561,
+      "font": "/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf"
+    }
+  },
+  "lyria": {
+    "ok": false,
+    "skipped": true,
+    "quotaLikely": true
+  }
+}
