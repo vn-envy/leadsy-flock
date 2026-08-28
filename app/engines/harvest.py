@@ -11,11 +11,12 @@ from typing import Any
 from google.genai import types
 
 from app import ledger, media
+from app.captions import burn_story_captions
 from app.derive import derive_videos
 from app.engines import gemini_util as g
 from app.engines.inka import _lyria
 
-MAX_ATTEMPTS = int(os.environ.get("HARVEST_MAX_ATTEMPTS", "16"))
+MAX_ATTEMPTS = int(os.environ.get("HARVEST_MAX_ATTEMPTS", "24"))
 
 
 _KEEP = {"harvested", "failed", "timed_out", "done_no_bytes"}
@@ -71,6 +72,32 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
             assets["clip"] = clip
         except Exception as extra:  # noqa: BLE001
             errors.append(f"derive:{type(extra).__name__}:{extra}")
+
+    if campaign_id and (clip.get("gcs") or clip.get("status") == "harvested"):
+        if not (clip.get("captions") or {}).get("ok"):
+            copy = inka.get("copy") or {}
+            vo = str(copy.get("voIndic") or copy.get("voEn") or "")
+            try:
+                cap = burn_story_captions(campaign_id, vo, inka.get("locale") or {})
+                if not cap.get("ok"):
+                    story = media.get_bytes(media.campaign_path(campaign_id, "clip-story.mp4"))
+                    if story:
+                        uri = media.put_bytes(
+                            media.campaign_path(campaign_id, "clip-captioned.mp4"),
+                            story[0],
+                            "video/mp4",
+                        )
+                        cap = {
+                            "ok": True,
+                            "gcs": uri,
+                            "publicPath": f"/media/{campaign_id}/clip-captioned",
+                            "note": "uncaptioned fallback",
+                        }
+                clip = dict(clip)
+                clip["captions"] = cap
+                assets["clip"] = clip
+            except Exception as extra:  # noqa: BLE001
+                errors.append(f"captions:{type(extra).__name__}:{extra}")
 
     skip_lyria = os.environ.get("INKA_SKIP_LYRIA", "0") == "1"
     if not skip_lyria and not jingle.get("gcs") and not jingle.get("skipped"):

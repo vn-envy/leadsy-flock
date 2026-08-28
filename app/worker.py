@@ -29,7 +29,7 @@ ENGINE_FOR_STEP = {
 }
 
 SIDECAR_STEPS = {"inka_harvest"}
-HARVEST_MAX_ATTEMPTS = int(os.environ.get("HARVEST_MAX_ATTEMPTS", "16"))
+HARVEST_MAX_ATTEMPTS = int(os.environ.get("HARVEST_MAX_ATTEMPTS", "24"))
 HARVEST_POLL_SECONDS = int(os.environ.get("HARVEST_POLL_SECONDS", "12"))
 
 

@@ -6,8 +6,8 @@ Exit criterion: *Scout grounds on Maps/Search, Inka produces multimodal assets, 
 
 | Step | Engine | What it does |
 |---|---|---|
-| `scout` | Gemini 3.5 Flash + Maps + Search + urlContext | `evidence[]`, `brandSpec`, local + crowd insight |
-| `inka` | Gemini copy · `gemini-3.1-flash-image` still · Veo **start only** | copy + GCS still; Veo LRO name on the receipt — no wait |
+| `scout` | Gemini 3.5 Flash + Maps + Search + urlContext | `evidence[]`, `brandSpec`, **shelf tropes**, locale (EN + one Indic) |
+| `inka` | Gemini copy · 3 stills · Veo **8s 9:16 start** with native audio | story hook from shelf; Indic VO; LRO name only — no wait |
 | `creative_gate` | Gemma classifier + Gemini judge + regex | fail-closed; writes policy memory; one Inka revision |
 | `stella` | template | `GET /l/{campaignId}` with required consent checkbox |
 | `ad_kit` | Inka-Adapt | Meta 4:5 / 1:1 / 9:16 + WhatsApp status + Google 1.91:1 / RSA, UTMs, `GET /k/{id}` paste guide, `autopost: false` |

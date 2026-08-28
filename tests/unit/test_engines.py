@@ -42,8 +42,20 @@ def test_ad_kit_html_is_paste_guide_not_autopost() -> None:
             "subhead": "Evenings on Golf Course Road.",
             "primaryText": "Book a colour slot after work.",
             "cta": "See slots",
+            "storyHook": "Quiet colour after work, not an influencer set.",
+            "voIndic": "ऑफिस के बाद, कैमरा नहीं — सिर्फ रंग।",
+            "headlineLocalized": "ऑफिस के बाद वाला रंग",
+            "primaryTextLocalized": "डीएलएफ के पास शांत रंग।",
         },
         "brandSpec": {"themeId": "paper"},
+        "locale": {"bcp47": "hi-IN", "script": "Devanagari", "nativeName": "हिन्दी", "code": "hi"},
+        "shelf": [
+            {
+                "uri": "https://www.facebook.com/ads/library/?id=example",
+                "title": "Quiet salon craft",
+                "hookType": "anti-influencer",
+            }
+        ],
         "assets": {},
     }
     stella_payload = {"url": "https://example.test/l/noya-1", "landing": "/l/noya-1"}
@@ -71,7 +83,10 @@ def test_ad_kit_html_is_paste_guide_not_autopost() -> None:
     assert "--bg:#f7f1e8" in html
     assert "We do not autopost" in html
     assert "/media/noya-1/still-feed" in html
-    assert "/media/noya-1/clip-story" in html
+    assert "/media/noya-1/clip-captioned" in html
+    assert "anti-influencer" in html
+    assert "hi-IN" in html
+    assert "ऑफिस" in html
     assert "/media/noya-1/still-landscape" in html
     assert "whatsapp_status" in html
     assert "google_rsa" in html
@@ -141,14 +156,8 @@ def test_scout_run_never_raises() -> None:
         out = scout.run({"brief": {"businessName": "Peak Gym", "geo": "Gurgaon"}})
     assert out["brandSpec"]["tagline"]
     assert out["brandSpec"]["themeId"] == "ember"
-    assert out["errors"]
-
-
-def test_scout_run_never_raises() -> None:
-    with patch.object(scout, "_run_inner", side_effect=RuntimeError("no vertex")):
-        out = scout.run({"brief": {"businessName": "Peak Gym", "geo": "Gurgaon"}})
-    assert out["brandSpec"]["tagline"]
-    assert out["brandSpec"]["themeId"] == "ember"
+    assert out["locale"]["bcp47"] == "hi-IN"
+    assert out["shelf"] == []
     assert out["errors"]
 
 
@@ -215,6 +224,7 @@ def test_harvest_retries_while_veo_is_running(monkeypatch) -> None:
         patch("app.engines.harvest.media.campaign_asset_exists", return_value=False),
         patch.object(harvest, "_poll_veo", return_value={"operation": "ops/abc", "status": "started", "ok": True}),
         patch.object(harvest, "derive_videos", return_value={"ok": True, "slots": {}}),
+        patch.object(harvest, "burn_story_captions", return_value={"ok": True}),
     ):
         out = harvest.run({"id": "c1", "_harvestAttempt": 1})
     assert out["retry"] is True
@@ -241,6 +251,7 @@ def test_harvest_finishes_when_clip_has_gcs(monkeypatch) -> None:
         patch("app.engines.harvest.media.campaign_asset_exists", return_value=False),
         patch.object(harvest, "_poll_veo", return_value=harvested),
         patch.object(harvest, "derive_videos", return_value={"ok": True, "slots": {"story": {"ok": True}}}),
+        patch.object(harvest, "burn_story_captions", return_value={"ok": True, "publicPath": "/media/c1/clip-captioned"}),
     ):
         out = harvest.run({"id": "c1", "_harvestAttempt": 2})
     assert out["retry"] is False
@@ -263,6 +274,7 @@ def test_harvest_skips_lyria_after_retries(monkeypatch) -> None:
         patch("app.engines.harvest.ledger.upsert_campaign"),
         patch.object(harvest, "_lyria") as lyria,
         patch.object(harvest, "derive_videos", return_value={"ok": True, "slots": {}}),
+        patch.object(harvest, "burn_story_captions", return_value={"ok": True}),
     ):
         out = harvest.run({"id": "c1", "_harvestAttempt": 3})
     lyria.assert_not_called()

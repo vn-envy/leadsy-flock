@@ -43,6 +43,15 @@ def crop_filter(rw: int, rh: int) -> str:
     return _CROP_VF.format(w=rw, h=rh)
 
 
+def video_encode_args(*, audio: bool = True) -> list[str]:
+    args = ["-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart"]
+    if audio:
+        args += ["-c:a", "aac", "-b:a", "128k"]
+    else:
+        args += ["-an"]
+    return args
+
+
 def derive_images(campaign_id: str, source_stem: str, *, prefer: set[str] | None = None) -> dict[str, Any]:
     found = None
     for name in (f"{source_stem}.png", f"{source_stem}.jpg", source_stem):
@@ -92,15 +101,32 @@ def _derive_bytes(
                 crop_filter(rw, rh),
             ]
             if video:
-                cmd += ["-an", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart"]
+                cmd += video_encode_args()
             else:
                 cmd += ["-frames:v", "1"]
             cmd.append(str(dest))
             try:
                 subprocess.run(cmd, check=True, capture_output=True, timeout=60)
             except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as exc:
-                out["slots"][slot] = {"ok": False, "error": str(exc)[:200]}
-                continue
+                if video:
+                    silent = [
+                        bin_path,
+                        "-y",
+                        "-i",
+                        str(src),
+                        "-vf",
+                        crop_filter(rw, rh),
+                        *video_encode_args(audio=False),
+                        str(dest),
+                    ]
+                    try:
+                        subprocess.run(silent, check=True, capture_output=True, timeout=60)
+                    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError):
+                        out["slots"][slot] = {"ok": False, "error": str(exc)[:200]}
+                        continue
+                else:
+                    out["slots"][slot] = {"ok": False, "error": str(exc)[:200]}
+                    continue
             if not dest.exists() or dest.stat().st_size < 32:
                 out["slots"][slot] = {"ok": False, "error": "empty"}
                 continue

@@ -15,9 +15,13 @@ from app.engines import gemini_util as g
 
 BANNED = [
     (r"\bguaranteed?\b", "guaranteed_outcome"),
+    (r"गारंटी", "guaranteed_outcome"),
+    (r"गारन्टी", "guaranteed_outcome"),
     (r"\bmiracle\b", "miracle_claim"),
+    (r"चमत्कार", "miracle_claim"),
     (r"\bcure(s|d)?\b", "medical_claim"),
     (r"\b100\s*%\b", "absolute_claim"),
+    (r"१००\s*%", "absolute_claim"),
     (r"\bno risk\b", "no_risk"),
     (r"\bsix[- ]pack in\b", "body_guarantee"),
     (r"\bclinically proven\b", "clinical_claim"),
@@ -40,11 +44,22 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
     draft = str(copy.get("draftHeadline") or "")
     headline = str(copy.get("headline") or "")
     primary = str(copy.get("primaryText") or "")
+    vo = " ".join(
+        str(copy.get(k) or "")
+        for k in (
+            "voEn",
+            "voIndic",
+            "headlineLocalized",
+            "primaryTextLocalized",
+            "ctaLocalized",
+        )
+    )
+    blob = f"{headline}\n{primary}\n{vo}"
     draft_hits = banned_hits(draft)
-    final_hits = banned_hits(f"{headline}\n{primary}")
+    final_hits = banned_hits(blob)
 
-    gemma = _gemma_classify(f"{headline}\n{primary}")
-    judge = _gemini_judge(headline, primary, final_hits)
+    gemma = _gemma_classify(blob)
+    judge = _gemini_judge(headline, f"{primary}\n{vo}", final_hits)
 
     draft_rejected = bool(draft_hits)
     final_blocked = bool(final_hits) or gemma.get("risk") == "high" or judge.get("verdict") == "reject"
@@ -103,6 +118,7 @@ def _gemini_judge(headline: str, primary: str, hits: list[str]) -> dict[str, Any
     prompt = (
         "You are Ledge, the auditor. Decide if this ad copy may run for a local gym/SMB in India. "
         "Refuse guaranteed outcomes, medical claims, and invented testimonials. "
+        "Copy may be English plus one Indic language — judge both. "
         "Return ONLY JSON {\"verdict\":\"pass\"|\"reject\",\"reason\":\"...\"}.\n\n"
         f"HEADLINE: {headline}\nPRIMARY: {primary}\nREGEX_HITS: {hits}"
     )

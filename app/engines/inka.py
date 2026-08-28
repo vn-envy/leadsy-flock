@@ -16,26 +16,37 @@ from app import ledger, media
 from app.derive import derive_images
 from app.design import resolve_theme
 from app.engines import gemini_util as g
+from app.locale import localize_copy, resolve_locale
 
 
 COPY_PROMPT = """You are Inka, the artist of a local-SMB agency in India.
-Write campaign creative. Return ONLY JSON:
+Write campaign creative that remixes a CURRENT comparable-ad trope for this shop.
+Do not fake UGC. Do not clone another brand's film. Agency/cinematic product craft.
+Return ONLY JSON:
 {{
   "draftHeadline": "a punchy first-pass line that a junior copywriter might overclaim (include one banned-pattern word like guaranteed/miracle if you would have been tempted)",
   "headline": "compliant headline, no guaranteed outcomes, no medical claims, specific to this business",
   "subhead": "one supporting sentence",
   "primaryText": "2-3 sentences for a Meta primary text, under 125 words",
   "cta": "short CTA",
-  "veoPrompt": "a 4-second locked-off cinematic prompt, subject dead-centre so a 9:16 crop still works, no people faces, no on-screen text",
+  "storyHook": "one sentence: winning shelf trope × local pain × this business",
+  "voEn": "one spoken sentence under 18 words for an 8-second film, no claims",
+  "shotList": "three beats for an 8-second 9:16 film, no faces, no on-screen text",
+  "veoPrompt": "English cinematic direction for Veo 3.1, 8 seconds, 9:16, locked-off or slow push, subject dead-centre, no people faces, no on-screen text, native audio (room tone + one spoken line)",
   "imagePrompt": "16:9 still photograph prompt, BrandSpec palette, subject centred, no text in the image",
   "storyPrompt": "9:16 vertical still, subject in the centre third (Stories/Reels safe zone), BrandSpec palette, no text, no faces",
+  "detailPrompt": "tight 1:1 still of hands-at-work or product detail, BrandSpec palette, no faces, no text",
   "lyriaPrompt": "2-second instrumental sting, no vocals"
 }}
 
 Never put a real person's name, email, or phone in the copy.
 BrandSpec: {brand}
+Shelf tropes (remix structure only): {shelf}
+Local insight: {local}
+Crowd insight: {crowd}
 Evidence (summaries only): {evidence}
 Policy memory from the gate (honor these): {policy}
+Locale for spoken line / captions: {locale}
 Business: {business} in {geo}. Goal: {goal}. Audience: {audience}.
 Attempt: {attempt}
 """
@@ -57,6 +68,7 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
                 "cta": "See evening slots",
             },
             "assets": {},
+            "locale": resolve_locale(str(brief.get("geo") or "")),
             "errors": [f"{type(exc).__name__}:{exc}"],
         }
 
@@ -66,14 +78,24 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
     scout = _scout_payload(campaign["id"]) if campaign.get("id") else {}
     brand = scout.get("brandSpec") or {}
     evidence = scout.get("evidence") or []
+    shelf = scout.get("shelf") or []
+    locale = scout.get("locale") or resolve_locale(str(brief.get("geo") or ""))
     policy = _policy_lines(campaign.get("id") or "")
     snippets = "; ".join(
         f"{e.get('title')}: {str(e.get('snippet') or '')[:180]}" for e in evidence[:6]
     )
+    shelf_bits = "; ".join(
+        f"{s.get('hookType')}: {str(s.get('snippet') or s.get('title') or '')[:120]}"
+        for s in shelf[:6]
+    )
     prompt = COPY_PROMPT.format(
         brand=str(brand),
+        shelf=(shelf_bits or "none yet").replace("{", "(").replace("}", ")"),
+        local=str(scout.get("localInsight") or "none")[:400].replace("{", "(").replace("}", ")"),
+        crowd=str(scout.get("crowdInsight") or "none")[:300].replace("{", "(").replace("}", ")"),
         evidence=snippets.replace("{", "(").replace("}", ")") or "none yet",
         policy=(policy or "none").replace("{", "(").replace("}", ")"),
+        locale=f"{locale.get('bcp47')} {locale.get('script')}",
         business=brief.get("businessName") or "the business",
         geo=brief.get("geo") or "",
         goal=brief.get("goal") or "",
@@ -99,11 +121,29 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
             "subhead": "Local, honest, no miracle claims.",
             "primaryText": str(brief.get("goal") or "")[:240],
             "cta": "See evening slots",
-            "veoPrompt": "Empty modern interior, morning light, subject dead-centre, no people, no text.",
+            "storyHook": "Quiet craft after work, not an influencer set.",
+            "voEn": "Evenings that fit the commute. No cameras. Just the work.",
+            "shotList": "interior → hands at work → still product",
+            "veoPrompt": (
+                "8-second 9:16 cinematic, locked-off, morning light, subject dead-centre, "
+                "no people faces, no on-screen text, quiet room tone then one spoken line."
+            ),
             "imagePrompt": "Wide 16:9 still of a calm interior, BrandSpec palette, no text.",
             "storyPrompt": "Vertical 9:16 still of the same interior, subject centred, no text.",
+            "detailPrompt": "Tight still of tools or product on a wood table, no faces, no text.",
             "lyriaPrompt": "Short bright ukulele sting, no vocals.",
         }
+
+    localized = localize_copy(copy, locale, business=str(brief.get("businessName") or ""))
+    if localized:
+        copy["headlineLocalized"] = localized.get("headline")
+        copy["subheadLocalized"] = localized.get("subhead")
+        copy["primaryTextLocalized"] = localized.get("primaryText")
+        copy["ctaLocalized"] = localized.get("cta")
+        copy["voIndic"] = localized.get("vo")
+        copy["storyHookLocalized"] = localized.get("storyHook")
+    else:
+        errors.append("locale:translate_skipped")
 
     campaign_id = campaign.get("id") or "campaign"
     assets: dict[str, Any] = {}
@@ -111,23 +151,39 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
     skip_still = os.environ.get("INKA_SKIP_STILL", "0") == "1"
     skip_lyria = os.environ.get("INKA_SKIP_LYRIA", "0") == "1"
 
+    ref_blobs: list[tuple[bytes, str]] = []
     if skip_still:
         assets["still"] = {"ok": False, "skipped": True, "model": g.IMAGE_MODEL}
         assets["stillStory"] = {"ok": False, "skipped": True}
+        assets["stillDetail"] = {"ok": False, "skipped": True}
     else:
-        land_prompt = copy.get("imagePrompt") or "Wide 16:9 interior still, no text, no people."
-        story_prompt = copy.get("storyPrompt") or (
-            "Vertical 9:16 interior still, subject in the centre third, no text, no people."
+        jobs = (
+            ("still", copy.get("imagePrompt") or "Wide 16:9 interior still, no text, no people."),
+            (
+                "still-story",
+                copy.get("storyPrompt")
+                or "Vertical 9:16 interior still, subject in the centre third, no text, no people.",
+            ),
+            (
+                "still-detail",
+                copy.get("detailPrompt") or "Tight product or hands-at-work still, no faces, no text.",
+            ),
         )
-        land_err: list[str] = []
-        story_err: list[str] = []
-        with ThreadPoolExecutor(max_workers=2) as pool:
-            land_f = pool.submit(_still, campaign_id, land_prompt, brand, "still", land_err)
-            story_f = pool.submit(_still, campaign_id, story_prompt, brand, "still-story", story_err)
-            assets["still"] = land_f.result()
-            assets["stillStory"] = story_f.result()
-        errors.extend(land_err)
-        errors.extend(story_err)
+        err_bags = {stem: [] for stem, _p in jobs}
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            futs = {
+                stem: pool.submit(_still, campaign_id, prompt_s, brand, stem, err_bags[stem])
+                for stem, prompt_s in jobs
+            }
+            assets["still"] = futs["still"].result()
+            assets["stillStory"] = futs["still-story"].result()
+            assets["stillDetail"] = futs["still-detail"].result()
+        for stem, bag in err_bags.items():
+            errors.extend(bag)
+        for rec in (assets["still"], assets["stillStory"], assets["stillDetail"]):
+            raw = rec.pop("_bytes", None)
+            if raw:
+                ref_blobs.append((raw, rec.get("mime") or "image/png"))
         if assets["still"].get("ok"):
             derived = derive_images(campaign_id, "still", prefer={"square", "landscape"})
             assets["stillDerivatives"] = derived
@@ -136,18 +192,22 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
                 assets["stillStory"] = (extra.get("slots") or {}).get("story") or assets["stillStory"]
                 assets["stillFeed"] = (extra.get("slots") or {}).get("feed")
             else:
-                # Re-crop the vertical master so Gemini's native size cannot leak a 16:9 story slot.
                 extra = derive_images(campaign_id, "still-story", prefer={"story", "feed"})
                 if (extra.get("slots") or {}).get("story", {}).get("ok"):
                     assets["stillStory"] = {**assets["stillStory"], **(extra["slots"]["story"])}
                 assets["stillFeed"] = (extra.get("slots") or {}).get("feed")
-        if assets["still"].get("ok"):
             assets["stillSquare"] = ((assets.get("stillDerivatives") or {}).get("slots") or {}).get("square")
             assets["stillLandscape"] = ((assets.get("stillDerivatives") or {}).get("slots") or {}).get("landscape")
     if skip_veo:
         assets["clip"] = {"ok": False, "skipped": True, "model": g.VEO_MODEL, "note": "INKA_SKIP_VEO=1"}
     else:
-        assets["clip"] = _veo_start(campaign_id, copy.get("veoPrompt") or "", errors)
+        assets["clip"] = _veo_start(
+            campaign_id,
+            copy.get("veoPrompt") or "",
+            errors,
+            refs=ref_blobs[:3],
+            vo_line=str(copy.get("voIndic") or copy.get("voEn") or ""),
+        )
     if skip_lyria:
         assets["jingle"] = {
             "ok": False,
@@ -172,14 +232,26 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
             "subhead": copy.get("subhead"),
             "primaryText": copy.get("primaryText"),
             "cta": copy.get("cta"),
+            "storyHook": copy.get("storyHook"),
+            "voEn": copy.get("voEn"),
+            "headlineLocalized": copy.get("headlineLocalized"),
+            "subheadLocalized": copy.get("subheadLocalized"),
+            "primaryTextLocalized": copy.get("primaryTextLocalized"),
+            "ctaLocalized": copy.get("ctaLocalized"),
+            "voIndic": copy.get("voIndic"),
+            "storyHookLocalized": copy.get("storyHookLocalized"),
+            "shotList": copy.get("shotList"),
         },
         "prompts": {
             "veo": copy.get("veoPrompt"),
             "image": copy.get("imagePrompt"),
             "story": copy.get("storyPrompt"),
+            "detail": copy.get("detailPrompt"),
             "lyria": copy.get("lyriaPrompt"),
         },
         "brandSpec": brand,
+        "shelf": shelf,
+        "locale": locale,
         "assets": assets,
         "errors": errors,
     }
@@ -234,6 +306,7 @@ def _still(
                 "bytes": len(data),
                 "mime": mime,
                 "publicPath": f"/media/{campaign_id}/{stem}",
+                "_bytes": data,
             }
         except Exception as extra:  # noqa: BLE001
             last_error = f"{model}:{type(extra).__name__}:{extra}"
@@ -258,27 +331,82 @@ def _call_timeout(fn, seconds: int, fallback: Any) -> Any:
         pool.shutdown(wait=False, cancel_futures=True)
 
 
-def _veo_start(campaign_id: str, prompt: str, errors: list[str]) -> dict[str, Any]:
-    """Kick off Veo without blocking the rest of the flock."""
+def _veo_start(
+    campaign_id: str,
+    prompt: str,
+    errors: list[str],
+    *,
+    refs: list[tuple[bytes, str]] | None = None,
+    vo_line: str = "",
+) -> dict[str, Any]:
+    """Kick off 8s 9:16 Veo with native audio. Never wait on the LRO."""
     t0 = time.time()
-    try:
-        client = g.media_client()
-        operation = client.models.generate_videos(
-            model=g.VEO_MODEL,
-            prompt=prompt or "Empty modern gym, morning light, no people, no text.",
-            config=types.GenerateVideosConfig(number_of_videos=1, duration_seconds=4),
+    spoken = " ".join((vo_line or "").split())[:180]
+    body = prompt or (
+        "8-second 9:16 cinematic interior, morning light, subject dead-centre, "
+        "no people faces, no on-screen text."
+    )
+    if spoken:
+        body = (
+            f"{body}\nSpoken dialogue, one line only, in the local language: \"{spoken}\"\n"
+            "No burned-in captions or subtitles. Quiet room tone under the line."
         )
-        return {
-            "ok": True,
-            "model": g.VEO_MODEL,
-            "status": "started" if not getattr(operation, "done", False) else "done",
-            "operation": getattr(operation, "name", None),
-            "seconds": round(time.time() - t0, 1),
-            "campaignId": campaign_id,
+    ref_images = []
+    for data, mime in (refs or [])[:3]:
+        try:
+            ref_images.append(
+                types.VideoGenerationReferenceImage(
+                    image=types.Image(image_bytes=data, mime_type=mime or "image/png"),
+                    reference_type=types.VideoGenerationReferenceType.ASSET,
+                )
+            )
+        except Exception:  # noqa: BLE001
+            continue
+
+    def _start(use_refs: bool, aspect: str) -> Any:
+        cfg: dict[str, Any] = {
+            "number_of_videos": 1,
+            "duration_seconds": 8,
+            "aspect_ratio": aspect,
+            "generate_audio": True,
+            "person_generation": "dont_allow",
+            "negative_prompt": (
+                "on-screen text, captions, subtitles, logos, watermarks, "
+                "celebrity lookalikes, children, minors, faces"
+            ),
         }
-    except Exception as exc:  # noqa: BLE001
-        errors.append(f"veo:{type(exc).__name__}:{exc}")
-        return {"ok": False, "model": g.VEO_MODEL, "error": str(exc)[:300]}
+        if use_refs and ref_images:
+            cfg["reference_images"] = ref_images
+        client = g.media_client()
+        return client.models.generate_videos(
+            model=g.VEO_MODEL,
+            prompt=body,
+            config=types.GenerateVideosConfig(**cfg),
+        )
+
+    last_error = ""
+    for use_refs, aspect in ((True, "9:16"), (False, "9:16"), (False, "16:9")):
+        if use_refs and not ref_images:
+            continue
+        try:
+            operation = _start(use_refs, aspect)
+            return {
+                "ok": True,
+                "model": g.VEO_MODEL,
+                "status": "started" if not getattr(operation, "done", False) else "done",
+                "operation": getattr(operation, "name", None),
+                "seconds": round(time.time() - t0, 1),
+                "campaignId": campaign_id,
+                "durationSeconds": 8,
+                "aspectRatio": aspect,
+                "generateAudio": True,
+                "usedRefs": bool(use_refs and ref_images),
+            }
+        except Exception as exc:  # noqa: BLE001
+            last_error = f"{aspect}:{'refs' if use_refs else 'plain'}:{type(exc).__name__}:{exc}"
+            continue
+    errors.append(f"veo:{last_error}")
+    return {"ok": False, "model": g.VEO_MODEL, "error": last_error[:300]}
 
 
 def _lyria(campaign_id: str, prompt: str, errors: list[str]) -> dict[str, Any]:

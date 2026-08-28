@@ -42,7 +42,7 @@ CHANNELS = (
         "primaryMax": 90,
         "headlineMax": 32,
         "stillSlot": "still-story",
-        "clipSlot": "clip-story",
+        "clipSlot": "clip-captioned",
     },
     {
         "id": "whatsapp_status",
@@ -52,7 +52,7 @@ CHANNELS = (
         "primaryMax": 90,
         "headlineMax": 32,
         "stillSlot": "still-story",
-        "clipSlot": "clip-story",
+        "clipSlot": "clip-captioned",
         "organic": True,
     },
     {
@@ -82,17 +82,21 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
     stella = (ledger.get_receipt(campaign_id, "stella") or {}).get("payload") or {}
     copy = inka.get("copy") or {}
     brand = inka.get("brandSpec") or {}
+    locale = inka.get("locale") or {}
+    shelf = inka.get("shelf") or []
     landing = stella.get("url") or stella.get("landing") or ""
     variants = [variant(ch, copy, landing, campaign_id) for ch in CHANNELS]
-    page = render_kit(campaign, copy, brand, variants, landing)
+    page = render_kit(campaign, copy, brand, variants, landing, locale=locale, shelf=shelf)
     path = f"/k/{campaign_id}"
-    ledger.upsert_campaign(campaign_id, {"kitHtml": page, "kitPath": path})
+    ledger.upsert_campaign(campaign_id, {"kitHtml": page, "kitPath": path, "locale": locale})
     return {
         "autopost": False,
         "note": "Ready to upload. Owner makes the final click on their own channels.",
         "landing": landing,
         "kit": path,
         "themeId": resolve_theme(brand).id,
+        "locale": locale,
+        "storyHook": copy.get("storyHook"),
         "variants": variants,
         "assets": inka.get("assets") or {},
     }
@@ -102,8 +106,13 @@ def variant(channel: dict[str, Any], copy: dict[str, Any], landing: str, campaig
     headline = _clip(str(copy.get("headline") or ""), int(channel.get("headlineMax") or 40))
     primary = _clip(str(copy.get("primaryText") or copy.get("subhead") or ""), int(channel.get("primaryMax") or 125))
     cta = str(copy.get("cta") or "Learn more")
+    loc_h = _clip(str(copy.get("headlineLocalized") or ""), int(channel.get("headlineMax") or 40))
+    loc_p = _clip(str(copy.get("primaryTextLocalized") or ""), int(channel.get("primaryMax") or 125))
+    loc_cta = str(copy.get("ctaLocalized") or "")
+    if channel.get("aspect") == "9:16" and loc_h:
+        headline, primary, cta = loc_h, loc_p or primary, loc_cta or cta
     utm = _utm(landing, campaign_id, channel["id"])
-    lint = _lint(channel, headline, primary)
+    lint = _lint(channel, f"{headline} {loc_h} {loc_p}", primary)
     block: dict[str, Any] = {
         "id": channel["id"],
         "platform": channel["platform"],
@@ -115,6 +124,10 @@ def variant(channel: dict[str, Any], copy: dict[str, Any], landing: str, campaig
         "utmUrl": utm,
         "lint": lint,
         "organic": bool(channel.get("organic")),
+        "headlineLocalized": loc_h,
+        "primaryTextLocalized": loc_p,
+        "ctaLocalized": loc_cta,
+        "voIndic": str(copy.get("voIndic") or ""),
         "charCounts": {
             "headline": len(headline),
             "primaryText": len(primary),
@@ -140,6 +153,8 @@ def render_kit(
     brand: dict[str, Any],
     variants: list[dict[str, Any]],
     landing: str,
+    locale: dict[str, Any] | None = None,
+    shelf: list[dict[str, Any]] | None = None,
 ) -> str:
     theme = resolve_theme(brand)
     brief = campaign.get("brief") or {}
@@ -149,6 +164,20 @@ def render_kit(
     headline = html.escape(str(copy.get("headline") or ""))
     sub = html.escape(str(copy.get("subhead") or ""))
     cta = html.escape(str(copy.get("cta") or "Learn more"))
+    loc = locale or {}
+    hook = html.escape(str(copy.get("storyHook") or ""))
+    hook_l = html.escape(str(copy.get("storyHookLocalized") or ""))
+    vo_l = html.escape(str(copy.get("voIndic") or ""))
+    lang_label = html.escape(f"{loc.get('nativeName') or ''} ({loc.get('bcp47') or 'hi-IN'})".strip())
+    shelf_rows = []
+    for s in (shelf or [])[:6]:
+        uri = html.escape(str(s.get("uri") or ""))
+        title = html.escape(str(s.get("title") or "comparable"))
+        ht = html.escape(str(s.get("hookType") or "craft"))
+        shelf_rows.append(f'<li><span class="label">{ht}</span> <a href="{uri}">{title}</a></li>')
+    shelf_html = (
+        f"<ul class='shelf'>{''.join(shelf_rows)}</ul>" if shelf_rows else "<p class='muted'>No public comparables this run.</p>"
+    )
     land_href = html.escape(landing or f"/l/{cid}")
     cards = []
     for v in variants:
@@ -175,6 +204,15 @@ def render_kit(
             rsa = f"<p class='label'>RSA headlines</p><ul>{lines}</ul>"
             if v.get("description"):
                 rsa += f"<p class='label'>Description</p><p class='copy'>{html.escape(str(v['description']))}</p>"
+        loc_block = ""
+        vo = html.escape(str(v.get("voIndic") or copy.get("voIndic") or ""))
+        if vo and str(v.get("aspect") or "") == "9:16":
+            loc_block = f"<p class='label'>VO / captions · {lang_label}</p><p class='copy'>{vo}</p>"
+        elif v.get("headlineLocalized") and str(v.get("aspect") or "") != "9:16":
+            loc_block = (
+                f"<p class='label'>{lang_label}</p>"
+                f"<p class='copy'>{html.escape(str(v.get('headlineLocalized')))}</p>"
+            )
         cards.append(
             f"""<article class="card" data-id="{vid}">
   <p class="kicker">{html.escape(str(kind))} · {aspect}</p>
@@ -182,6 +220,7 @@ def render_kit(
   <div class="thumbs">{media_bits or "<p class='muted'>Text only</p>"}</div>
   <p class="label">Headline</p><p class="copy">{h}</p>
   <p class="label">Primary</p><p class="copy">{p}</p>
+  {loc_block}
   {rsa}
   <p class="label">UTM</p><p class="copy utm">{u}</p>
   <p class="muted">CTA: {html.escape(str(v.get("cta") or cta))}</p>
@@ -223,20 +262,27 @@ def render_kit(
     .copy {{ margin: 0; font-size: .92rem; line-height: 1.45; word-break: break-word; }}
     .utm {{ font-size: .78rem; color: var(--muted); }}
     .muted {{ color: var(--muted); font-size: .85rem; }}
-    ul {{ margin: .2rem 0 .4rem 1.1rem; padding: 0; }}
+    ul.shelf {{ margin: .4rem 0 0 1.1rem; padding: 0; }}
+    ul.shelf .label {{ margin: 0 .4rem 0 0; display: inline; }}
     .note {{ margin-top: 2rem; color: var(--muted); font-size: .85rem; }}
   </style>
 </head>
 <body>
 <main>
-  <p class="kicker">{business} · {geo} · asset kit</p>
+  <p class="kicker">{business} · {geo} · {lang_label} · asset kit</p>
   <h1>{headline or "Launch kit"}</h1>
-  <p class="lede">{sub} Copy stays off the pixels — upload the file, paste the text. We do not autopost.
+  <p class="lede">{html.escape(str(copy.get("storyHook") or sub))} Remix a live shelf trope — do not fake UGC, do not clone pixels. Copy stays off Veo; 9:16 may carry Indic captions. We do not autopost.
   <a href="{land_href}">Consent landing</a>.</p>
+  <p class="label">Story hook · {lang_label}</p>
+  <p class="copy">{hook_l or hook or sub}</p>
+  <p class="label">Spoken line</p>
+  <p class="copy">{vo_l or html.escape(str(copy.get("voEn") or ""))}</p>
+  <p class="label">Comparables this run</p>
+  {shelf_html}
   <div class="grid">
     {cards_html}
   </div>
-  <p class="note">Ratios follow design.md: 4:5 feed, 1:1 carousel, 9:16 Reels/WhatsApp, 1.91:1 Google display, 16:9 on the landing. Veo clips appear here once harvest writes GCS.</p>
+  <p class="note">8s 9:16 Veo with native audio. ffmpeg crops keep sound. Captions are Indic, centre safe-zone, 9:16 only. Ratios: 4:5 feed, 1:1 carousel, 9:16 Reels/WhatsApp, 1.91:1 Google display, 16:9 landing.</p>
 </main>
 <script>
   async function revealClips() {{

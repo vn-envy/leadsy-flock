@@ -11,6 +11,7 @@ from google.genai import types
 
 from app.design import resolve_theme
 from app.engines import gemini_util as g
+from app.locale import resolve_locale, sanitize_shelf
 
 
 SCOUT_PROMPT = """You are Scout, research tracker for a local-SMB growth agency in India.
@@ -35,7 +36,19 @@ Return ONLY JSON with this shape:
     "tagline": "one line the business could own"
   }},
   "localInsight": "2-3 sentences: competitors, commute, what nearby reviewers praise or complain about",
-  "crowdInsight": "category-level pain points from public discussion (Reddit/HN/forums), not private contacts"
+  "crowdInsight": "category-level pain points from public discussion (Reddit/HN/forums), not private contacts",
+  "shelf": [
+    {{
+      "source": "search" | "url" | "library" | "news",
+      "uri": "https://...",
+      "title": "comparable ad or campaign",
+      "snippet": "what structure is working (hook, offer, visual), not a pixel copy",
+      "hookType": "anti-influencer" | "after-work" | "price-transparent" | "festive" | "family-trust" | "craft" | "humour",
+      "visualGrammar": "quiet interior" | "macro product" | "hands at work" | "humour cut",
+      "audioLanguage": "hi" | "en" | "silent",
+      "category": "beauty" | "salon" | "jewellery" | "qsr" | "fitness" | "other"
+    }}
+  ]
 }}
 
 Rules:
@@ -44,6 +57,7 @@ Rules:
 - Discovery is not consent. You research places and public pages, not people to cold-email.
 - If a website URL is in the brief, read it with url context.
 - themeId must be one of inkstone, ember, grove, slate, paper (see design.md). ember = gyms/energy; grove = wellness; paper = clinics/cafés/salons; slate = professional; inkstone = default. palette hex is for image prompts only — never a CSS background.
+- shelf[] is comparable ads and campaigns in this category and this city/region that are running or newly discussed THIS season. Use Meta Ad Library, Google Ads Transparency, TikTok Creative Center, Campaign Brief / Social Samosa coverage. Store STRUCTURE (hookType, visualGrammar), never clone a frame. Every shelf item MUST have a real http URI from grounding. Do not scrape private people. Do not invent ads.
 
 Business: {business}
 Geo: {geo}
@@ -66,6 +80,8 @@ def run(campaign: dict[str, Any]) -> dict[str, Any]:
             "brandSpec": _default_brand(business, geo, brief),
             "localInsight": "",
             "crowdInsight": "",
+            "shelf": [],
+            "locale": resolve_locale(geo),
             "groundingUris": [],
             "errors": [f"{type(exc).__name__}:{exc}"],
         }
@@ -112,8 +128,9 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
             model=g.TEXT_MODEL,
             contents=(
                 "Turn these research notes into JSON with keys evidence, brandSpec, "
-                "localInsight, crowdInsight. evidence items: source, uri, title, snippet, signal. "
-                "Use the URIs listed. Return JSON only.\n\n"
+                "localInsight, crowdInsight, shelf. evidence items: source, uri, title, snippet, signal. "
+                "shelf items: source, uri, title, snippet, hookType, visualGrammar, audioLanguage, category. "
+                "Only use the URIs listed. Do not invent ads. Return JSON only.\n\n"
                 f"NOTES:\n{notes[:6000]}\n\nURIS:\n{uris}"
             ),
             config=types.GenerateContentConfig(
@@ -159,6 +176,8 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
         "brandSpec": brand,
         "localInsight": body.get("localInsight") or "",
         "crowdInsight": body.get("crowdInsight") or "",
+        "shelf": sanitize_shelf(body.get("shelf"), extra_uris=g.grounding_uris(response)),
+        "locale": resolve_locale(geo),
         "groundingUris": g.grounding_uris(response),
         "errors": errors,
     }
