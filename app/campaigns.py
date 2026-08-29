@@ -7,10 +7,11 @@ from __future__ import annotations
 
 import json
 import re
+import secrets
 import uuid
 from typing import Any
 
-from app import ledger
+from app import channel, ledger
 from app.armor import ArmorBlocked, sanitize_user_prompt
 from app.planner import recommend_flock
 from app.pipeline import publish_step
@@ -42,6 +43,12 @@ def create_campaign(brief: dict[str, Any], *, raw_text: str = "") -> dict[str, A
         budget_inr=_as_int(brief.get("budgetInr")),
         include_outreach=bool(brief.get("includeOutreach")),
     )
+    studio_key = secrets.token_urlsafe(18)
+    extra: dict[str, Any] = {}
+    ctx = channel.get()
+    if ctx and ctx.chat_id is not None:
+        extra["telegramChatId"] = ctx.chat_id
+        extra["telegramUserId"] = ctx.user_id
     ledger.upsert_campaign(
         campaign_id,
         {
@@ -49,6 +56,9 @@ def create_campaign(brief: dict[str, Any], *, raw_text: str = "") -> dict[str, A
             "brief": brief,
             "engineConfig": rec,
             "rawText": raw_text[:2000],
+            "studioKey": studio_key,
+            "quotedInr": rec["price_inr"],
+            **extra,
         },
     )
     ledger.write_receipt(
@@ -63,7 +73,14 @@ def create_campaign(brief: dict[str, Any], *, raw_text: str = "") -> dict[str, A
         kind="planned",
         detail={"hired": rec["hired"], "price_inr": rec["price_inr"]},
     )
-    return {"id": campaign_id, "status": "planned", "brief": brief, "engineConfig": rec}
+    channel.stamp_campaign(campaign_id)
+    return {
+        "id": campaign_id,
+        "status": "planned",
+        "brief": brief,
+        "engineConfig": rec,
+        "studioPath": f"/s/{campaign_id}?k={studio_key}",
+    }
 
 
 def approve_campaign(campaign_id: str) -> dict[str, Any]:
@@ -89,12 +106,14 @@ def approve_campaign(campaign_id: str) -> dict[str, Any]:
         payload={"pipeline": pipeline},
     )
     message_id = publish_step(campaign_id=campaign_id, step=first, pipeline=pipeline)
+    key = campaign.get("studioKey") or ""
     return {
         "id": campaign_id,
         "status": "running",
         "pipeline": pipeline,
         "publishedStep": first,
         "pubsubMessageId": message_id,
+        "studioPath": f"/s/{campaign_id}?k={key}" if key else f"/s/{campaign_id}",
     }
 
 
@@ -104,6 +123,9 @@ def campaign_view(campaign_id: str) -> dict[str, Any] | None:
         return None
     campaign["receipts"] = ledger.list_receipts(campaign_id)
     campaign["consents"] = ledger.list_consents(campaign_id)
+    campaign.pop("studioKey", None)
+    campaign.pop("landingHtml", None)
+    campaign.pop("kitHtml", None)
     return campaign
 
 
@@ -136,6 +158,19 @@ def record_consent(campaign_id: str, *, name: str, contact: str, source: str = "
         detail={"consentId": consent_id, "source": source},
     )
     return {"id": consent_id, "campaignId": campaign_id, "ok": True}
+
+
+def record_landing_hit(campaign_id: str, utm: dict[str, str], *, path: str = "") -> dict[str, Any] | None:
+    campaign = ledger.get_campaign(campaign_id)
+    if not campaign:
+        return None
+    detail = {k: v[:200] for k, v in utm.items() if k.startswith("utm_") and v}
+    if not detail:
+        return None
+    if path:
+        detail["path"] = path[:200]
+    ledger.write_event(campaign_id=campaign_id, kind="landing_hit", detail=detail)
+    return {"ok": True, "campaignId": campaign_id, "utm": detail}
 
 
 def screen_text(text: str) -> dict[str, Any]:

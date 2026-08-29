@@ -119,6 +119,7 @@ def handle_step(message: dict[str, Any]) -> dict[str, Any]:
                 "nextMessageId": nxt,
                 "result": result,
             }
+        _after_step(campaign_id, step, result)
         return {"status": "ok", "campaignId": campaign_id, "step": step, "result": result}
 
     nxt = publish_next(campaign_id, step, pipeline)
@@ -129,6 +130,7 @@ def handle_step(message: dict[str, Any]) -> dict[str, Any]:
             campaign_id,
             {"status": "running", "currentStep": _next_name(step, pipeline)},
         )
+    _after_step(campaign_id, step, result)
     return {
         "status": "ok",
         "campaignId": campaign_id,
@@ -204,3 +206,37 @@ def _next_name(current: str, pipeline: list[str]) -> str | None:
     if idx + 1 >= len(pipeline):
         return None
     return pipeline[idx + 1]
+
+
+def _after_step(campaign_id: str, step: str, result: dict[str, Any]) -> None:
+    try:
+        from app.cost import estimate_campaign
+
+        receipts = ledger.list_receipts(campaign_id)
+        campaign = ledger.get_campaign(campaign_id)
+        rec_list = receipts if isinstance(receipts, list) else []
+        camp = campaign if isinstance(campaign, dict) else {}
+        est = estimate_campaign(campaign_id, rec_list, campaign=camp)
+        ledger.upsert_campaign(
+            campaign_id,
+            {
+                "costUsd": est["estimatedUsd"],
+                "costInr": est["estimatedInr"],
+                "quotedInr": est["quotedInr"],
+            },
+        )
+    except Exception:  # noqa: BLE001
+        pass
+    try:
+        from app.notify import after_step
+
+        campaign = ledger.get_campaign(campaign_id)
+        if isinstance(campaign, dict):
+            after_step(
+                campaign_id,
+                step,
+                result if isinstance(result, dict) else {},
+                campaign=campaign,
+            )
+    except Exception:  # noqa: BLE001
+        pass

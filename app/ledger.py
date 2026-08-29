@@ -229,3 +229,20 @@ def write_event(
             "createdAt": now_iso(),
         }
     )
+
+
+def list_events(
+    campaign_id: str,
+    kind: str | None = None,
+    db: firestore.Client | None = None,
+) -> list[dict]:
+    db = db or client()
+    rows = []
+    for doc in db.collection(COL_EVENTS).where("campaignId", "==", campaign_id).stream():
+        row = doc.to_dict() or {}
+        if kind and row.get("kind") != kind:
+            continue
+        row["id"] = doc.id
+        rows.append(row)
+    rows.sort(key=lambda r: r.get("createdAt") or "")
+    return rows

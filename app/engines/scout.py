@@ -10,6 +10,7 @@ from typing import Any
 from google.genai import types
 
 from app.design import resolve_theme
+from app.cost import merge_usage, usage_from_response
 from app.engines import gemini_util as g
 from app.locale import resolve_locale, sanitize_shelf
 from app import own
@@ -143,6 +144,7 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
 
     notes = g.response_text(response)
     uris = g.grounding_uris(response)
+    shaped = None
     try:
         shaped = client.models.generate_content(
             model=g.TEXT_MODEL,
@@ -195,7 +197,7 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
         brand["themeId"] = theme.id
         brand["palette"] = theme.image_palette
         brand["typePairing"] = "Georgia + system-ui"
-    return {
+    out = {
         "model": g.TEXT_MODEL,
         "evidence": evidence[:12],
         "brandSpec": brand,
@@ -214,6 +216,12 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
         "groundingUris": g.grounding_uris(response),
         "errors": errors,
     }
+    merge_usage(
+        out,
+        usage_from_response(response, model=g.TEXT_MODEL, kind="text") if response else None,
+        usage_from_response(shaped, model=g.TEXT_MODEL, kind="text") if shaped is not None else None,
+    )
+    return out
 
 
 def _default_brand(business: str, geo: str, brief: dict[str, Any] | None = None) -> dict[str, Any]:

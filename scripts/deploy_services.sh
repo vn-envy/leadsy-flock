@@ -61,6 +61,7 @@ echo "==> Build ${IMAGE}"
 gcloud builds submit --project="${PROJECT}" --tag="${IMAGE}" .
 
 echo "==> Deploy flock-api"
+# --update-env-vars merges; --set-env-vars would wipe Telegram / OPS_TOKEN secrets.
 gcloud run deploy flock-api \
   --project="${PROJECT}" \
   --region="${REGION}" \
@@ -70,7 +71,7 @@ gcloud run deploy flock-api \
   --timeout=300 \
   --cpu=1 \
   --memory=1Gi \
-  --set-env-vars="${COMMON_ENV},OTEL_SERVICE_NAME=flock-api"
+  --update-env-vars="${COMMON_ENV},OTEL_SERVICE_NAME=flock-api"
 
 echo "==> Deploy flock-worker"
 gcloud run deploy flock-worker \
@@ -82,7 +83,7 @@ gcloud run deploy flock-worker \
   --timeout=3600 \
   --cpu=1 \
   --memory=2Gi \
-  --set-env-vars="${COMMON_ENV},OTEL_SERVICE_NAME=flock-worker"
+  --update-env-vars="${COMMON_ENV},OTEL_SERVICE_NAME=flock-worker"
 
 WORKER_URL="$(gcloud run services describe flock-worker --project="${PROJECT}" --region="${REGION}" --format='value(status.url)')"
 echo "==> Grant Pub/Sub push invoker on flock-worker"

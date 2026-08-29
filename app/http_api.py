@@ -19,12 +19,21 @@ from app.campaigns import (
     decode_pubsub_push,
     list_campaign_summaries,
     record_consent,
+    record_landing_hit,
     screen_text,
 )
+from app.demo import render_html as render_demo
 from app.derive import download_name
+from app.ops import configured as ops_configured
+from app.ops import extract_token as ops_extract_token
+from app.ops import render_html as render_ops
+from app.ops import verify_token as ops_verify_token
 from app.settings import load_settings
+from app.studio import check_key as studio_check_key
+from app.studio import render_html as render_studio
 from app.telegram_adapter import configured as telegram_configured
 from app.telegram_adapter import handle_update
+from app.telegram_adapter import verify_webhook_secret
 from app.worker import handle_step
 
 
@@ -45,6 +54,8 @@ def attach_flock_routes(app: FastAPI) -> None:
             "modelArmor": f"projects/{s.project_id}/locations/{s.armor_location}/templates/{s.armor_template}",
             "memoryBankId": s.memory_bank_id or None,
             "telegram": telegram_configured(),
+            "ops": ops_configured(),
+            "surfaces": {"demo": "/demo", "ops": "/ops", "studio": "/s/{id}?k="},
         }
 
     @app.post("/v1/screen")
@@ -84,11 +95,43 @@ def attach_flock_routes(app: FastAPI) -> None:
             raise HTTPException(404, "campaign not found") from None
 
     @app.get("/l/{campaign_id}", response_class=HTMLResponse)
-    def landing(campaign_id: str) -> HTMLResponse:
+    def landing(campaign_id: str, request: Request) -> HTMLResponse:
         campaign = ledger.get_campaign(campaign_id)
         if not campaign or not campaign.get("landingHtml"):
             raise HTTPException(404, "landing not published")
+        utm = {k: str(v) for k, v in request.query_params.items() if k.startswith("utm_")}
+        if utm:
+            record_landing_hit(campaign_id, utm, path=str(request.url.path))
         return HTMLResponse(campaign["landingHtml"])
+
+    @app.get("/s/{campaign_id}", response_class=HTMLResponse)
+    def studio(campaign_id: str, request: Request) -> HTMLResponse:
+        if not _safe_campaign_id(campaign_id):
+            raise HTTPException(400, "bad campaign id")
+        campaign = ledger.get_campaign(campaign_id)
+        if not campaign:
+            raise HTTPException(404, "campaign not found")
+        key = request.query_params.get("k")
+        if not studio_check_key(campaign, key):
+            raise HTTPException(403, "studio key required")
+        return HTMLResponse(render_studio(campaign_id, campaign))
+
+    @app.get("/ops", response_class=HTMLResponse)
+    def ops(request: Request) -> HTMLResponse:
+        if not ops_configured():
+            raise HTTPException(501, "OPS_TOKEN not set")
+        token = ops_extract_token(
+            request.headers.get("x-ops-token"),
+            request.headers.get("authorization"),
+            request.query_params.get("token"),
+        )
+        if not ops_verify_token(token):
+            raise HTTPException(403, "bad ops token")
+        return HTMLResponse(render_ops())
+
+    @app.get("/demo", response_class=HTMLResponse)
+    def demo() -> HTMLResponse:
+        return HTMLResponse(render_demo())
 
     @app.get("/k/{campaign_id}", response_class=HTMLResponse)
     def kit(campaign_id: str) -> HTMLResponse:
@@ -180,8 +223,11 @@ def attach_flock_routes(app: FastAPI) -> None:
     async def telegram(request: Request) -> dict:
         if not telegram_configured():
             raise HTTPException(501, "TELEGRAM_BOT_TOKEN not set")
+        if not verify_webhook_secret(request.headers.get("X-Telegram-Bot-Api-Secret-Token")):
+            raise HTTPException(403, "bad telegram secret")
         body = await request.json()
-        return handle_update(body)
+        runner = getattr(request.app.state, "runner", None)
+        return await handle_update(body, runner=runner)
 
     @app.post("/internal/pubsub/campaign-steps")
     async def pubsub_push(request: Request) -> dict:
@@ -224,7 +270,8 @@ _CONSOLE_HTML = """<!doctype html>
 <main>
   <p class="kicker">LEADSY FLOCK · MISSION CONTROL</p>
   <h1>Receipts</h1>
-  <p class="muted">Live from Firestore via flock-api. Open a campaign to watch Scout → Inka → Gate → Stella.</p>
+  <p class="muted">Live from Firestore via flock-api. Open a campaign to watch Scout → Inka → Gate → Stella.
+  Clocked judge path: <a href="/demo">/demo</a>. Delivery room is <code>/s/{id}?k=</code> after YES. Founder burn: <code>/ops</code>.</p>
   <table>
     <thead><tr><th>Campaign</th><th>Status</th><th>Updated</th><th></th></tr></thead>
     <tbody id="rows"><tr><td class="muted" colspan="4">Loading…</td></tr></tbody>

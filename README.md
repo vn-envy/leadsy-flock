@@ -16,12 +16,16 @@ Hello Flo is live. The flock engines run on Pub/Sub + Cloud Run:
 - `GET /health` — liveness (`/healthz` is intercepted by Cloud Run's frontend)
 - `GET /v1/infra` — runtime inventory (Firestore, topics, Model Armor, Memory Bank)
 - `GET /console` — receipts Mission Control
-- `GET /l/{campaignId}` — Stella consent-first landing with still; clip/jingle unhide when harvest finishes
+- `GET /demo` — clocked judge script (fictional Mira's Chai)
+- `GET /s/{campaignId}?k=` — owner studio (delivery room, UTM hits, quoted vs production band)
+- `GET /ops` — founder quoted vs burn (`OPS_TOKEN`)
+- `GET /l/{campaignId}` — Stella consent-first landing with still; clip/jingle unhide when harvest finishes; `utm_*` query records a hit
 - `GET /k/{campaignId}` — agency paste kit (own-shop frames when we have them, 8s Veo, English + Indic VO, UTMs, no autopost)
+- `POST /v1/telegram/webhook` — same ADK Flo as `/run_sse` when `TELEGRAM_BOT_TOKEN` is set
 - `GET /media/{campaignId}/still` — Gemini 3.1 Flash Image (Imagen 3 successor)
 - `GET /media/{campaignId}/{slot}` — `still-*` crops, Veo `clip` / `clip-captioned` / `clip-story` / …, Lyria `jingle` once harvest writes GCS
 - `POST /v1/consents` — Model Armor on the way in
-- Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md) · [DAY3.md](DAY3.md) · [design.md](design.md)
+- Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md) · [DAY3.md](DAY3.md) · [DAY4.md](DAY4.md) · [design.md](design.md)
 
 ## Mandatory stack
 

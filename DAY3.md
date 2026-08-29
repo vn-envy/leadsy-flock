@@ -18,8 +18,11 @@ Judge surfaces:
 
 - https://flock-api-533880600838.asia-south1.run.app/console
 - `GET /l/{id}` after Stella
+- `GET /s/{id}?k=` owner studio (DAY4)
+- `GET /demo` clocked fictional brief
+- `GET /ops` founder burn (token)
 - `POST /v1/consents` (Model Armor on the way in)
-- Telegram webhook `POST /v1/telegram/webhook` when `TELEGRAM_BOT_TOKEN` is set
+- Telegram webhook `POST /v1/telegram/webhook` — ADK Flo, secret header, DM only ([DAY4.md](DAY4.md))
 
 ## Honest residuals
 

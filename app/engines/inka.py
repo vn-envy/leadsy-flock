@@ -15,6 +15,7 @@ from google.genai import types
 from app import ledger, media, own
 from app.derive import derive_images
 from app.design import resolve_theme
+from app.cost import merge_usage, usage_from_response
 from app.engines import gemini_util as g
 from app.locale import localize_copy, resolve_locale
 from app.vertical import from_scout as vertical_from_scout
@@ -113,6 +114,7 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
     )
     errors: list[str] = []
     client = g.text_client()
+    text_resp = None
     try:
         text_resp = client.models.generate_content(
             model=g.TEXT_MODEL,
@@ -278,7 +280,7 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
             "note": "Lyria runs on inka_harvest so quota 429 cannot timeout Inka",
         }
 
-    return {
+    out = {
         "model": g.TEXT_MODEL,
         "copy": {
             "draftHeadline": copy.get("draftHeadline"),
@@ -315,6 +317,11 @@ def _run_inner(campaign: dict[str, Any]) -> dict[str, Any]:
         "errors": errors,
         "resolvedName": scout.get("resolvedName") or "",
     }
+    merge_usage(
+        out,
+        usage_from_response(text_resp, model=g.TEXT_MODEL, kind="text") if text_resp is not None else None,
+    )
+    return out
 
 
 def _scout_payload(campaign_id: str) -> dict[str, Any]:
