@@ -45,6 +45,10 @@ Commands in chat: `/start` · brief · `YES` / `/approve` · `/status`.
 
 Use a shop you own or this fictional stall. Do not cold-contact Glen's Bakehouse or any live listing.
 
+## Parked (after the hackathon)
+
+[PULSE.md](PULSE.md) — OpenSEO market intel sidecar. Approved, not in this event build.
+
 ## Cost honesty
 
 Receipts now carry Flash token usage when Vertex returns `usage_metadata`. Veo/TTS/Lyria are inferred from harvested assets at list price ($0.40/s Veo + audio). `/ops` is **not** a Google invoice.

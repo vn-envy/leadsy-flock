@@ -26,6 +26,7 @@ Hello Flo is live. The flock engines run on Pub/Sub + Cloud Run:
 - `GET /media/{campaignId}/{slot}` — `still-*` crops, Veo `clip` / `clip-captioned` / `clip-story` / …, Lyria `jingle` once harvest writes GCS
 - `POST /v1/consents` — Model Armor on the way in
 - Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md) · [DAY3.md](DAY3.md) · [DAY4.md](DAY4.md) · [design.md](design.md)
+- Parked: [PULSE.md](PULSE.md) — OpenSEO market intel after the hackathon
 
 ## Mandatory stack
 
