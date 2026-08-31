@@ -11,11 +11,11 @@
 </p>
 
 <p align="center">
-  <a href="https://flock-api-533880600838.asia-south1.run.app/demo"><strong>Open the judge demo →</strong></a>
+  <a href="https://flock-api-533880600838.asia-south1.run.app/demo"><strong>Watch the demo →</strong></a>
+  &nbsp;·&nbsp;
+  <a href="https://flock-api-533880600838.asia-south1.run.app/trace"><strong>Verify the run →</strong></a>
   &nbsp;·&nbsp;
   <a href="https://flock-api-533880600838.asia-south1.run.app/architecture">Architecture</a>
-  &nbsp;·&nbsp;
-  <a href="https://flock-api-533880600838.asia-south1.run.app/trace">Backend path</a>
   &nbsp;·&nbsp;
   <a href="https://flock-api-533880600838.asia-south1.run.app/dash">Observatory</a>
   &nbsp;·&nbsp;
@@ -35,13 +35,18 @@
 
 ## For judges — how to see the demo
 
-You do **not** need a login, a Google Cloud project, or a YES on a live campaign. The public roost is a **seeded Glen’s Bakehouse kit** (`google-listing-eaf57cae`). Hire is closed so a blog link cannot burn Vertex. Watch the audition. Do **not** email, call, or review the bakery.
+You do **not** need a login, a Google Cloud project, or a YES on a live campaign. The public roost is a **seeded Glen’s Bakehouse kit** (`google-listing-eaf57cae`). Hire is closed so a blog link cannot burn Vertex. Watch the audition. Then open `/trace` to verify what actually ran. Do **not** email, call, or review the bakery.
+
+| Stop | Open this |
+|---|---|
+| **Watch** | [**/demo**](https://flock-api-533880600838.asia-south1.run.app/demo) |
+| **Verify the run** (send judges here for Cloud Run traces) | [**/trace**](https://flock-api-533880600838.asia-south1.run.app/trace) |
 
 ### 1. The roost (start here)
 
 **[https://flock-api-533880600838.asia-south1.run.app/demo](https://flock-api-533880600838.asia-south1.run.app/demo)**
 
-Wait on this page. Do not skip.
+Wait on this page. Do not skip. The theatrical play does **not** start Vertex.
 
 | Beat | What you should see |
 |---|---|
@@ -53,25 +58,9 @@ Wait on this page. Do not skip.
 
 `GET /` redirects here. Hard-refresh if the old fast play is cached.
 
-### 2. Open these next (same seed)
+### 2. Verify the run (Cloud Run traces)
 
-| What | Open this |
-|---|---|
-| **Paste kit** — Meta / WhatsApp / Google slots, English + Hindi, UTMs, own-shop stills & films | [**/k/google-listing-eaf57cae**](https://flock-api-533880600838.asia-south1.run.app/k/google-listing-eaf57cae) |
-| **Landing** — consent checkbox, UTM hit on the record, no autopost | [**/l/google-listing-eaf57cae**](https://flock-api-533880600838.asia-south1.run.app/l/google-listing-eaf57cae) |
-| **Observatory** — tokens, tools, models, Vertex **list-price** burn **$6.41 · ₹545** (not a Google invoice) | [**/dash**](https://flock-api-533880600838.asia-south1.run.app/dash) |
-| **Backend path** — exact hops that ran, Cloud Run span names, Cloud Trace console | [**/trace**](https://flock-api-533880600838.asia-south1.run.app/trace) |
-| **Architecture diagram** | [**/architecture**](https://flock-api-533880600838.asia-south1.run.app/architecture) |
-| **Hackathon write-up** | [**/blog**](https://flock-api-533880600838.asia-south1.run.app/blog) |
-
-Optional second device:  
-[landing with UTM](https://flock-api-533880600838.asia-south1.run.app/l/google-listing-eaf57cae?utm_source=meta&utm_medium=paid&utm_campaign=google-listing-eaf57cae&utm_content=meta_feed) — that is “run ads” without posting.
-
-### 3. Verify the backend path (Cloud Run traces)
-
-The theatrical `/demo` does **not** start a new Vertex run. The Glen’s kit already ran. To see **what actually executed**:
-
-**Anyone (no GCP login)** — Firestore receipts, one hop per engine:
+Send judges here. No GCP login. This is the Glen’s pipeline that **already ran**, not the theatre on `/demo`.
 
 **[https://flock-api-533880600838.asia-south1.run.app/trace](https://flock-api-533880600838.asia-south1.run.app/trace)**
 
@@ -84,19 +73,33 @@ You should see this order, with Cloud Run service + OpenTelemetry span name:
 | plan | `flock-api` | `campaign.plan` |
 | approve (YES) | `flock-api` | `campaign.approve` |
 | scout | `flock-worker` | `engine.scout` |
-| inka | `flock-worker` | `engine.inka` |
-| inka_harvest | `flock-worker` | `engine.inka_harvest` |
-| creative_gate | `flock-worker` | `engine.creative_gate` |
-| stella | `flock-worker` | `engine.stella` |
-| ad_kit | `flock-worker` | `engine.ad_kit` |
+| inka | `flock-worker` (this seed: `local`) | `engine.inka` |
+| inka_harvest | `flock-worker` (this seed: `local`) | `engine.inka_harvest` |
+| creative_gate | `flock-worker` (this seed: `local`) | `engine.creative_gate` |
+| stella | `flock-worker` (this seed: `local`) | `engine.stella` |
+| ad_kit | `flock-worker` (this seed: `local`) | `engine.ad_kit` |
+
+Scout is on `flock-worker`. Inka → kit receipts on this seed still say `local` because that harvest ran before the worker stamp. Span names are still `engine.*`. Later worker hops stamp `traceId` / `spanId` on the ok receipt.
 
 **Google account on this GCP project** — same page has console chips. Direct:
 
-- Cloud Run **flock-worker → Traces** (this is where `engine.*` spans live)
-- Cloud Run **flock-api → Traces** (the door)
-- **Cloud Trace Explorer** — search `engine.scout`, then the other `engine.*` names. Attribute `campaign.id` = `google-listing-eaf57cae`.
+- [Cloud Run **flock-worker → Traces**](https://console.cloud.google.com/run/detail/asia-south1/flock-worker/observability/traces?project=leadsy-flock) — `engine.*` spans
+- [Cloud Run **flock-api → Traces**](https://console.cloud.google.com/run/detail/asia-south1/flock-api/observability/traces?project=leadsy-flock) — the door
+- [**Cloud Trace Explorer**](https://console.cloud.google.com/traces/explorer?project=leadsy-flock) — search `engine.scout`, then the other `engine.*` names. Attribute `campaign.id` = `google-listing-eaf57cae`
+- [**Worker logs**](https://console.cloud.google.com/logs/query;query=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22flock-worker%22?project=leadsy-flock)
 
-The `/trace` page prints the live console URLs for this project. Worker logs are linked there too.
+### 3. Open these next (same seed)
+
+| What | Open this |
+|---|---|
+| **Paste kit** — Meta / WhatsApp / Google slots, English + Hindi, UTMs, own-shop stills & films | [**/k/google-listing-eaf57cae**](https://flock-api-533880600838.asia-south1.run.app/k/google-listing-eaf57cae) |
+| **Landing** — consent checkbox, UTM hit on the record, no autopost | [**/l/google-listing-eaf57cae**](https://flock-api-533880600838.asia-south1.run.app/l/google-listing-eaf57cae) |
+| **Observatory** — tokens, tools, models, Vertex **list-price** burn **$6.41 · ₹545** (not a Google invoice) | [**/dash**](https://flock-api-533880600838.asia-south1.run.app/dash) |
+| **Architecture diagram** | [**/architecture**](https://flock-api-533880600838.asia-south1.run.app/architecture) |
+| **Hackathon write-up** | [**/blog**](https://flock-api-533880600838.asia-south1.run.app/blog) |
+
+Optional second device:  
+[landing with UTM](https://flock-api-533880600838.asia-south1.run.app/l/google-listing-eaf57cae?utm_source=meta&utm_medium=paid&utm_campaign=google-listing-eaf57cae&utm_content=meta_feed) — that is “run ads” without posting.
 
 ### 4. Please do not
 
