@@ -397,11 +397,8 @@ def test_video_bible_is_readable() -> None:
     assert res.status_code == 200
     text = res.text
     assert "You already live on Google" in text
-    assert "engine.scout" in text
-    assert "/trace" in text
+    assert "Paste a listing you own" in text
     assert "5997" not in text
-    assert "<table" in text.lower()
-    assert "<blockquote" in text.lower()
     md = _client().get("/video.md")
     assert md.status_code == 200
     assert b"You already live on Google" in md.content
