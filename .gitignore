@@ -112,6 +112,9 @@ proof/model-smoke/*
 proof/run-ledger.json
 proof/trace/
 
+# Gemini source PNGs — the roost ships webp
+app/static/flock/*.png
+
 # Cursor
 .cursor/
 web/tsconfig.tsbuildinfo

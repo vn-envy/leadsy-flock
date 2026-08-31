@@ -187,7 +187,7 @@ def test_demo_page_is_seeded_bakehouse_kit() -> None:
     assert DEMO_SHOP["campaignId"] in html
     assert DEMO_SHOP["kitPath"] in html
     assert DEMO_SHOP["url"] in html
-    assert "do not tap yes" in html.lower()
+    assert "do not contact the bakery" in html.lower()
     assert "autopost" in html.lower()
     assert "Mira" not in html
     assert "Telegram is the meeting" not in html

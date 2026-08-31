@@ -34,8 +34,21 @@ def test_home_is_capture_form() -> None:
     assert res.status_code == 200
     assert 'name="url"' in res.text
     assert "required" in res.text
+    assert "Hire the flock" in res.text
+    assert "theater.css" in res.text
+    assert "<form" not in res.text.lower()
+    assert "<label" not in res.text.lower()
+    assert "Get a quote" not in res.text
     assert "Open Telegram" not in res.text
     assert "t.me" not in res.text.lower()
+
+
+def test_flock_hero_asset() -> None:
+    res = _client().get("/assets/flock/hero.webp")
+    assert res.status_code == 200
+    assert "image/webp" in res.headers["content-type"]
+    assert _client().get("/assets/flock/theater.css").status_code == 200
+    assert _client().get("/assets/flock/../http_api.py").status_code == 404
 
 
 def test_home_prefills_query() -> None:

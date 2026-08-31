@@ -6,9 +6,10 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, Response
 
 from app import ledger, media
 from app.armor import ArmorBlocked
@@ -36,6 +37,32 @@ from app.telegram_adapter import configured as telegram_configured
 from app.telegram_adapter import handle_update
 from app.telegram_adapter import verify_webhook_secret
 from app.worker import handle_step
+
+_FLOCK_DIR = Path(__file__).resolve().parent / "static" / "flock"
+_FLOCK_ASSETS = {
+    "hero.png",
+    "hero.webp",
+    "flo.png",
+    "flo.webp",
+    "bri.png",
+    "bri.webp",
+    "scout.png",
+    "scout.webp",
+    "inka.png",
+    "inka.webp",
+    "stella.png",
+    "stella.webp",
+    "theater.css",
+    "theater.js",
+    "art-brief.json",
+}
+_FLOCK_MIME = {
+    ".css": "text/css",
+    ".js": "text/javascript",
+    ".png": "image/png",
+    ".webp": "image/webp",
+    ".json": "application/json",
+}
 
 
 def attach_flock_routes(app: FastAPI) -> None:
@@ -262,6 +289,7 @@ def attach_flock_routes(app: FastAPI) -> None:
                 geo=q.get("geo") or "",
                 goal=q.get("goal") or "",
                 assets=q.get("assets") or "",
+                play=q.get("play") or "",
             )
         )
 
@@ -319,6 +347,16 @@ def attach_flock_routes(app: FastAPI) -> None:
         if not studio_check_key(campaign, key):
             raise HTTPException(403, "studio key required")
         return HTMLResponse(render_run(campaign_id, campaign, key=key or ""))
+
+    @app.get("/assets/flock/{name}")
+    def flock_asset(name: str) -> FileResponse:
+        if name not in _FLOCK_ASSETS:
+            raise HTTPException(404, "unknown flock asset")
+        path = _FLOCK_DIR / name
+        if not path.is_file():
+            raise HTTPException(404, "missing flock asset")
+        mime = _FLOCK_MIME.get(path.suffix, "application/octet-stream")
+        return FileResponse(path, media_type=mime, headers={"Cache-Control": "public, max-age=86400"})
 
     _claim_root(app)
 
