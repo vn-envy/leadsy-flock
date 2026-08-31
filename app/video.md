@@ -38,17 +38,11 @@ Speed is paste, yes, walk away. Effort is you paste the kit. We never autopost.
 
 This is Leadsy Flock. Five birds. One roost.
 
-Watch. The box starts empty. The listing types itself. Hire is closed on the public roost so a tweet can’t burn Vertex. Yes is still the expensive door.
-
-Scout. Inka. Harvest. Gate. Stella. Kit.
-
-Own photos. English. Hindi. Paste.
+You paste a Google listing you own. You say yes. Scout reads what’s already on the listing — the pin, the photos, the hours. Inka films from those photos, and we put English and Hindi on the same picture. A gate checks the copy so we don’t invent a dish you don’t sell. Stella writes you a landing. Then you get a kit for Meta, WhatsApp, and Google, and you paste it yourself. We never post it for you.
 
 *pause — hold a few seconds; kit and landing will sit under this*
 
-And this is what actually ran. Cloud Run is the door. Flo is an agent on Gemini. Nothing expensive starts until a human says yes. Then the work fans out. Scout reads Search and Maps. Inka films from the shop’s own frames. A gate fails closed. Stella writes a landing with a checkbox. The kit is something you paste. We never post.
-
-The receipts are public. The tokens, the tools, the burn. You can see the hops.
+That’s the product. Under it, Cloud Run is the door. Flo is an agent on Gemini. After you say yes, the work fans out — Search, Maps, Veo, the voices, the crops. Receipts stay on the record. Tokens, tools, the burn. You can see the hops.
 
 *pause*
 
