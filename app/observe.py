@@ -87,46 +87,49 @@ def cloud_run_proof(*, live: bool = True) -> dict[str, Any]:
 
 
 def _campaigns() -> list[dict[str, Any]]:
+    from concurrent.futures import ThreadPoolExecutor
+
     try:
         rows = ledger.list_campaigns(limit=40)
     except Exception:  # noqa: BLE001 — dash must still render Cloud Run proof
         return []
     if not isinstance(rows, list):
         return []
-    out = []
-    for c in rows:
-        if not isinstance(c, dict):
-            continue
-        cid = str(c.get("id") or "")
-        if not cid:
-            continue
-        try:
-            receipts = ledger.list_receipts(cid)
-        except Exception:  # noqa: BLE001
-            receipts = []
-        if not isinstance(receipts, list):
-            receipts = []
-        try:
-            hits = ledger.list_events(cid, kind="landing_hit")
-        except Exception:  # noqa: BLE001
-            hits = []
-        hit_n = len(hits) if isinstance(hits, list) else 0
-        recs = [
-            {"step": r.get("step"), "status": r.get("status")}
-            for r in receipts
-            if isinstance(r, dict)
-        ]
-        out.append(
-            {
-                "id": cid,
-                "name": (c.get("brief") or {}).get("businessName") or cid,
-                "status": c.get("status"),
-                "kitPath": c.get("kitPath"),
-                "hits": hit_n,
-                "receipts": recs,
-            }
-        )
-    return out
+    jobs = [c for c in rows if isinstance(c, dict) and c.get("id")]
+    if not jobs:
+        return []
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        return [row for row in pool.map(_campaign_row, jobs) if row]
+
+
+def _campaign_row(c: dict[str, Any]) -> dict[str, Any] | None:
+    cid = str(c.get("id") or "")
+    if not cid:
+        return None
+    try:
+        receipts = ledger.list_receipts(cid)
+    except Exception:  # noqa: BLE001
+        receipts = []
+    if not isinstance(receipts, list):
+        receipts = []
+    try:
+        hits = ledger.list_events(cid, kind="landing_hit")
+    except Exception:  # noqa: BLE001
+        hits = []
+    hit_n = len(hits) if isinstance(hits, list) else 0
+    recs = [
+        {"step": r.get("step"), "status": r.get("status")}
+        for r in receipts
+        if isinstance(r, dict)
+    ]
+    return {
+        "id": cid,
+        "name": (c.get("brief") or {}).get("businessName") or cid,
+        "status": c.get("status"),
+        "kitPath": c.get("kitPath"),
+        "hits": hit_n,
+        "receipts": recs,
+    }
 
 
 def _engine_bars(steps: Counter[str]) -> list[dict[str, Any]]:
