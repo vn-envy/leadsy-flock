@@ -175,6 +175,6 @@ DISCLOSURE.md        pre-existing work statement
 
 Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md) · [DAY3.md](DAY3.md) · [DAY4.md](DAY4.md) · [design.md](design.md). Pulse / OpenSEO is parked in [PULSE.md](PULSE.md).
 
-Built for **Fortified Enterprise Fleet** (AgentCards, gates, traces, Memory Bank). Falls back to **Taskmaster** if the governance surface slips.
+Built for **Taskmaster** 
 
 Apache-2.0. Scaffolding © Google LLC.
