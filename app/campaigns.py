@@ -13,6 +13,7 @@ from typing import Any
 
 from app import channel, ledger
 from app.armor import ArmorBlocked, sanitize_user_prompt
+from app.brief import normalize_brief
 from app.planner import recommend_flock
 from app.pipeline import publish_step
 
@@ -29,11 +30,14 @@ def _brief_blob(brief: dict[str, Any], raw_text: str) -> str:
         str(brief.get("geo") or ""),
         str(brief.get("goal") or ""),
         str(brief.get("audience") or ""),
+        str(brief.get("website") or ""),
+        str(brief.get("googleListing") or ""),
     ]
     return " ".join(p for p in parts if p).strip()
 
 
 def create_campaign(brief: dict[str, Any], *, raw_text: str = "") -> dict[str, Any]:
+    brief = normalize_brief(brief)
     blob = _brief_blob(brief, raw_text)
     if blob:
         sanitize_user_prompt(blob)
@@ -80,6 +84,7 @@ def create_campaign(brief: dict[str, Any], *, raw_text: str = "") -> dict[str, A
         "brief": brief,
         "engineConfig": rec,
         "studioPath": f"/s/{campaign_id}?k={studio_key}",
+        "runPath": f"/r/{campaign_id}?k={studio_key}",
     }
 
 
@@ -114,6 +119,7 @@ def approve_campaign(campaign_id: str) -> dict[str, Any]:
         "publishedStep": first,
         "pubsubMessageId": message_id,
         "studioPath": f"/s/{campaign_id}?k={key}" if key else f"/s/{campaign_id}",
+        "runPath": f"/r/{campaign_id}?k={key}" if key else f"/r/{campaign_id}",
     }
 
 

@@ -187,6 +187,10 @@ def test_demo_page_is_fictional_and_clocked() -> None:
     assert "YES" in html
     assert "autopost" in html.lower()
     assert "Glen" not in html
+    assert "Telegram is the meeting" not in html
+    assert "Open Telegram" not in html
+    assert "/?" in html
+    assert "name=" in html
 
 
 def test_ops_token_extract_and_compare(monkeypatch: pytest.MonkeyPatch) -> None:

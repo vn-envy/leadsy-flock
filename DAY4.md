@@ -1,53 +1,38 @@
 # Day 4 — Meeting, delivery room, founder ops
 
-Exit criterion: *Telegram talks to the same ADK Flo as `/run_sse`. The owner gets a studio URL when the kit is ready. Founder `/ops` shows quoted vs burn. Judges can clock a fictional brief. No autopost. No outreach to a real shop.*
+Exit criterion: *The capture form is the meeting. YES on `/r/{id}?k=` starts the flock. The same URL becomes the delivery room when the kit is ready. Founder `/ops` shows quoted vs burn. Judges can clock a fictional brief. No autopost. No outreach to a real shop. Telegram is off the hackathon door.*
 
 ## Surfaces
 
 | Who | URL | Auth |
 |---|---|---|
-| Owner meeting | Telegram DM → `POST /v1/telegram/webhook` | Bot token + `X-Telegram-Bot-Api-Secret-Token` |
+| Owner meeting | `GET /` — paste website or Google listing | public |
+| Owner run | `GET /r/{id}?k=` — quote, YES, tracker, studio | `studioKey` query |
 | Owner delivery | `GET /s/{id}?k=` | `studioKey` query |
 | Paste kit | `GET /k/{id}` | public (same as before) |
 | Consent + UTM | `GET /l/{id}?utm_*` | public; `utm_*` writes `landing_hit` |
 | Founder | `GET /ops?token=` | `OPS_TOKEN` |
-| Judges | `GET /demo` | public, fictional Mira's Chai |
+| Judges | `GET /demo` | public, fictional Mira's Chai; prefill `/?name=&geo=&goal=` |
 | Receipts | `GET /console` | public Mission Control |
 
-## Telegram (you configure)
-
-1. BotFather `/newbot`. Copy the token — never commit it.
-2. Optional: `/setjoingroups` disable. Flo is **DM only**.
-3. After flock-api is deployed with this hop:
-
-```bash
-gcloud run services update flock-api --project=leadsy-flock --region=asia-south1 \
-  --update-env-vars="TELEGRAM_BOT_TOKEN=...,TELEGRAM_WEBHOOK_SECRET=...,TELEGRAM_ALLOW_USER_IDS=your_numeric_id,OPS_TOKEN=..."
-
-curl -sS "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" \
-  -d "url=https://flock-api-533880600838.asia-south1.run.app/v1/telegram/webhook" \
-  -d "secret_token=${TELEGRAM_WEBHOOK_SECRET}" \
-  -d "allowed_updates=[\"message\"]"
-```
-
-Commands in chat: `/start` · brief · `YES` / `/approve` · `/status`.
-
-`--update-env-vars` keeps other Cloud Run env (do not `--set-env-vars` or you wipe Vertex).
+Telegram (`POST /v1/telegram/webhook`) stays in the codebase and returns 501 without a bot token. It is **not** the event door. Pulse / OpenSEO is parked in [PULSE.md](PULSE.md).
 
 ## Clocked judge script
 
 1. Open `/demo` and a stopwatch.
-2. Paste the Mira's Chai brief into Telegram (or Flo on the API).
-3. YES. Do not wait for a Friday email — the kit URL is stable.
-4. Second device: studio from the kit-ready ping.
+2. Follow the prefilled form on `/`. Paste a listing or website **you own** (Mira's stall has none). Any public shop URL works for the clock.
+3. YES. Do not wait for a Friday email — the run URL is stable.
+4. Watch Scout → Inka → Gate → Stella → Ad Kit. Studio iframe opens on the same page.
 5. Click a kit UTM. Studio hit count moves. That is “run ads” without autopost.
 6. Founder tablet: `/ops?token=` quoted vs list-price burn (Veo is ~90% of COGS).
 
-Use a shop you own or this fictional stall. Do not cold-contact Glen's Bakehouse or any live listing.
+Use a shop you own or this fictional stall plus a URL you control. Do not cold-contact Glen's Bakehouse or any live listing.
 
 ## Parked (after the hackathon)
 
 [PULSE.md](PULSE.md) — OpenSEO market intel sidecar. Approved, not in this event build.
+
+Telegram DM Flo — code remains; not the product path for the event.
 
 ## Cost honesty
 

@@ -2,7 +2,7 @@
 
 **An AI growth agency for small businesses, rebuilt on Gemini + ADK + Google Cloud.**
 
-One chat message in. A researched, gated, consented campaign out. Every action on the record.
+Paste a shop URL. A researched, gated, consented campaign out. Every action on the record.
 
 > **Hackathon entry** — Google All Things Agentic, 27–31 August 2026.
 > Concept lineage: an earlier prototype on a different stack. **This repo is a ground-up rebuild.** See [DISCLOSURE.md](DISCLOSURE.md).
@@ -13,15 +13,17 @@ Hello Flo is live. The flock engines run on Pub/Sub + Cloud Run:
 
 - **API:** https://flock-api-533880600838.asia-south1.run.app — Flo (`gemini-3.5-flash`) + `/v1/campaigns`
 - **Worker:** https://flock-worker-533880600838.asia-south1.run.app — Scout → Inka → Creative Gate → Stella → Ad Kit
+- `GET /` — capture form (website or Google listing URL). This is the hackathon door.
+- `GET /r/{campaignId}?k=` — run room (Bri quote, YES, tracker, studio)
 - `GET /health` — liveness (`/healthz` is intercepted by Cloud Run's frontend)
 - `GET /v1/infra` — runtime inventory (Firestore, topics, Model Armor, Memory Bank)
 - `GET /console` — receipts Mission Control
-- `GET /demo` — clocked judge script (fictional Mira's Chai)
+- `GET /demo` — clocked judge script (fictional Mira's Chai → the form)
 - `GET /s/{campaignId}?k=` — owner studio (delivery room, UTM hits, quoted vs production band)
 - `GET /ops` — founder quoted vs burn (`OPS_TOKEN`)
 - `GET /l/{campaignId}` — Stella consent-first landing with still; clip/jingle unhide when harvest finishes; `utm_*` query records a hit
 - `GET /k/{campaignId}` — agency paste kit (own-shop frames when we have them, 8s Veo, English + Indic VO, UTMs, no autopost)
-- `POST /v1/telegram/webhook` — same ADK Flo as `/run_sse` when `TELEGRAM_BOT_TOKEN` is set
+- `POST /v1/telegram/webhook` — parked for the event (501 without a bot token; not the product door)
 - `GET /media/{campaignId}/still` — Gemini 3.1 Flash Image (Imagen 3 successor)
 - `GET /media/{campaignId}/{slot}` — `still-*` crops, Veo `clip` / `clip-captioned` / `clip-story` / …, Lyria `jingle` once harvest writes GCS
 - `POST /v1/consents` — Model Armor on the way in

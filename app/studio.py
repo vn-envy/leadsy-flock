@@ -158,7 +158,7 @@ def render_html(campaign_id: str, campaign: dict[str, Any]) -> str:
 <main>
   <p class="kicker">{business} · {geo} · {lang} · delivery room</p>
   <h1>{headline}</h1>
-  <p class="lede">Telegram was the meeting. This URL is the delivery room. Paste into your own Ads Manager.
+  <p class="lede">This page is the delivery room. Paste into your own Ads Manager.
   We do not autopost. <a href="{html.escape(str(data['kitPath']))}">Full kit</a> ·
   <a href="{html.escape(str(data['landingPath']))}">Consent landing</a>.</p>
   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(18rem,1fr))">

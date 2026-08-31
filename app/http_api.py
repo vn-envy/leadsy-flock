@@ -8,7 +8,7 @@ from __future__ import annotations
 import re
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, Response
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 from app import ledger, media
 from app.armor import ArmorBlocked
@@ -28,6 +28,7 @@ from app.ops import configured as ops_configured
 from app.ops import extract_token as ops_extract_token
 from app.ops import render_html as render_ops
 from app.ops import verify_token as ops_verify_token
+from app.run_ui import render_capture, render_run
 from app.settings import load_settings
 from app.studio import check_key as studio_check_key
 from app.studio import render_html as render_studio
@@ -55,7 +56,13 @@ def attach_flock_routes(app: FastAPI) -> None:
             "memoryBankId": s.memory_bank_id or None,
             "telegram": telegram_configured(),
             "ops": ops_configured(),
-            "surfaces": {"demo": "/demo", "ops": "/ops", "studio": "/s/{id}?k="},
+            "surfaces": {
+                "home": "/",
+                "run": "/r/{id}?k=",
+                "demo": "/demo",
+                "ops": "/ops",
+                "studio": "/s/{id}?k=",
+            },
         }
 
     @app.post("/v1/screen")
@@ -243,6 +250,95 @@ def attach_flock_routes(app: FastAPI) -> None:
         except Exception as exc:  # noqa: BLE001 — nack by returning 500 so Pub/Sub retries
             raise HTTPException(500, f"step failed: {exc}") from exc
 
+    @app.get("/", response_class=HTMLResponse, name="capture_home")
+    def capture_home(request: Request) -> HTMLResponse:
+        q = request.query_params
+        return HTMLResponse(
+            render_capture(
+                url=q.get("url") or "",
+                name=q.get("name") or "",
+                geo=q.get("geo") or "",
+                goal=q.get("goal") or "",
+                assets=q.get("assets") or "",
+            )
+        )
+
+    @app.post("/", name="capture_submit")
+    async def capture_submit(request: Request):
+        ctype = (request.headers.get("content-type") or "").lower()
+        if "application/json" in ctype:
+            body = await request.json()
+            brief = dict((body or {}).get("brief") or body or {})
+            raw = str((body or {}).get("rawText") or "")
+        else:
+            form = await request.form()
+            brief = {
+                "url": str(form.get("url") or ""),
+                "businessName": str(form.get("name") or form.get("businessName") or ""),
+                "geo": str(form.get("geo") or ""),
+                "goal": str(form.get("goal") or ""),
+                "assetUris": str(form.get("assets") or form.get("assetUris") or ""),
+            }
+            raw = " ".join(
+                p for p in (brief["businessName"], brief["geo"], brief["goal"]) if p
+            )
+        url = str(brief.get("url") or brief.get("website") or brief.get("googleListing") or "").strip()
+        if not url:
+            return HTMLResponse(
+                render_capture(
+                    url=str(brief.get("url") or ""),
+                    name=str(brief.get("businessName") or ""),
+                    geo=str(brief.get("geo") or ""),
+                    goal=str(brief.get("goal") or ""),
+                    assets=str(brief.get("assetUris") or ""),
+                    error="Paste a website or Google listing URL.",
+                ),
+                status_code=400,
+            )
+        try:
+            created = create_campaign(brief, raw_text=raw)
+        except ArmorBlocked as exc:
+            raise HTTPException(
+                status_code=403, detail={"error": "blocked", "verdict": exc.verdict}
+            ) from exc
+        accept = (request.headers.get("accept") or "").lower()
+        if "application/json" in ctype or "application/json" in accept:
+            return created
+        return RedirectResponse(created["runPath"], status_code=303)
+
+    @app.get("/r/{campaign_id}", response_class=HTMLResponse, name="run_room")
+    def run_room(campaign_id: str, request: Request) -> HTMLResponse:
+        if not _safe_campaign_id(campaign_id) or "-" not in campaign_id:
+            raise HTTPException(400, "bad campaign id")
+        campaign = ledger.get_campaign(campaign_id)
+        if not campaign:
+            raise HTTPException(404, "campaign not found")
+        key = request.query_params.get("k")
+        if not studio_check_key(campaign, key):
+            raise HTTPException(403, "studio key required")
+        return HTMLResponse(render_run(campaign_id, campaign, key=key or ""))
+
+    _claim_root(app)
+
+
+def _claim_root(app: FastAPI) -> None:
+    """ADK DevServer registers GET / first (web=True). Capture form is the event door."""
+    capture = None
+    rest = []
+    for route in app.router.routes:
+        name = getattr(route, "name", None)
+        path = getattr(route, "path", None)
+        methods = getattr(route, "methods", None) or set()
+        if name == "capture_home":
+            capture = route
+            continue
+        if path == "/" and "GET" in methods:
+            continue
+        rest.append(route)
+    if capture is None:
+        return
+    app.router.routes[:] = [capture, *rest]
+
 
 def _safe_campaign_id(campaign_id: str) -> bool:
     return bool(re.fullmatch(r"[a-z0-9-]{3,80}", campaign_id or ""))
@@ -270,8 +366,9 @@ _CONSOLE_HTML = """<!doctype html>
 <main>
   <p class="kicker">LEADSY FLOCK · MISSION CONTROL</p>
   <h1>Receipts</h1>
-  <p class="muted">Live from Firestore via flock-api. Open a campaign to watch Scout → Inka → Gate → Stella.
-  Clocked judge path: <a href="/demo">/demo</a>. Delivery room is <code>/s/{id}?k=</code> after YES. Founder burn: <code>/ops</code>.</p>
+  <p class="muted">Live from Firestore via flock-api. Capture is <a href="/">/</a>. Delivery is
+  <code>/r/{id}?k=</code> (studio also at <code>/s/{id}?k=</code>). Clocked judge path:
+  <a href="/demo">/demo</a>. Founder burn: <code>/ops</code>.</p>
   <table>
     <thead><tr><th>Campaign</th><th>Status</th><th>Updated</th><th></th></tr></thead>
     <tbody id="rows"><tr><td class="muted" colspan="4">Loading…</td></tr></tbody>
