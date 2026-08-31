@@ -11,7 +11,11 @@ from pathlib import Path
 
 from app.run_ui import ASSET, _cast_html, _src
 
-POST = Path(__file__).resolve().parents[1] / "docs" / "blog.md"
+_CANDIDATES = (
+    Path(__file__).resolve().parent / "blog.md",
+    Path(__file__).resolve().parents[1] / "docs" / "blog.md",
+)
+POST = next((p for p in _CANDIDATES if p.is_file()), _CANDIDATES[0])
 
 
 def render_html() -> str:

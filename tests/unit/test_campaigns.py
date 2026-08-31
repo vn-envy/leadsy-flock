@@ -278,6 +278,7 @@ def test_blog_is_hackathon_essay() -> None:
     assert "purposes of entering" in text
     assert "All Things Agentic" in text
     assert "neighbourhood" in text.lower() or "grass roots" in text.lower() or "grass-roots" in text.lower()
+    assert "Google pointed the models" in text or "courtyard" in text.lower()
     assert "Gemini 3.5" in text
     assert "Google ADK" in text
     assert "Veo 3.1" in text

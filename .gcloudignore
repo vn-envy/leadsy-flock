@@ -13,6 +13,8 @@ tests
 .cursor
 *.md
 !README.md
+!app/blog.md
+!docs/blog.md
 AGENTS.md
 .agents-cli-spec.md
 deployment
