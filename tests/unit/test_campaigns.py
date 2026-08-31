@@ -36,6 +36,7 @@ def test_home_is_capture_form() -> None:
     assert "required" in res.text
     assert "Hire the flock" in res.text
     assert "observatory" in res.text
+    assert "allow-top-navigation-by-user-activation" in res.text
     assert "theater.css" in res.text
     assert "<form" not in res.text.lower()
     assert "<label" not in res.text.lower()
@@ -242,6 +243,7 @@ def test_kit_rebuilds_flock_bento(monkeypatch) -> None:
     assert "<table" not in res.text.lower()
     assert "₹" not in res.text
     assert "Glen" in res.text
+    assert 'target="_top"' in res.text
 
 
 def test_ops_requires_token(monkeypatch) -> None:

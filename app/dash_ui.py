@@ -27,7 +27,7 @@ def render_html(data: dict[str, Any] | None = None) -> str:
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Observatory · Leadsy Flock</title>
-  <link rel="stylesheet" href="{ASSET}/dash.css"/>
+  <link rel="stylesheet" href="{ASSET}/dash.css?v=craft"/>
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -38,10 +38,10 @@ def render_html(data: dict[str, Any] | None = None) -> str:
 <main class="sheet">
   <header class="mast">
     <a class="word" href="/">Leadsy Flock</a>
-    <nav class="quiet">
+    <nav>
       <a href="/">roost</a>
       <a href="/demo">seeded kit</a>
-      <span>observatory</span>
+      <span class="here">observatory</span>
     </nav>
   </header>
   <p class="quiet">Cloud Run · {service} · {region}</p>
@@ -81,7 +81,7 @@ def render_html(data: dict[str, Any] | None = None) -> str:
   <p class="note">{html.escape(str(boot.get("note") or ""))}</p>
 </main>
 <script>window.__DASH__ = {payload};</script>
-<script src="{ASSET}/dash.js"></script>
+<script src="{ASSET}/dash.js?v=craft"></script>
 </body>
 </html>
 """

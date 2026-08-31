@@ -116,7 +116,7 @@ def render_theater(
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Leadsy Flock</title>
-  <link rel="stylesheet" href="{ASSET}/theater.css"/>
+  <link rel="stylesheet" href="{ASSET}/theater.css?v=craft"/>
 </head>
 <body data-stage="roost">
 <div class="grain" aria-hidden="true"></div>
@@ -128,9 +128,9 @@ def render_theater(
   <div class="plate">
     <header class="mast">
       <a class="word" href="/">Leadsy Flock</a>
-      <nav class="quiet">
+      <nav>
         <a href="/dash">observatory</a>
-        <span id="status">roost</span>
+        <span class="here" id="status">roost</span>
       </nav>
     </header>
     <h1 class="headline" id="headline">The flock is already here.</h1>
@@ -158,11 +158,11 @@ def render_theater(
     <p class="note">Paste a listing you own. The Glen's Bakehouse kit is the seeded demo — do not contact the bakery.</p>
   </div>
   <section class="delivery" id="delivery">
-    <iframe id="kit-frame" title="Paste kit" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+    <iframe id="kit-frame" title="Paste kit" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation allow-downloads"></iframe>
   </section>
 </div>
 <script>window.__FLOCK__ = {payload};</script>
-<script src="{ASSET}/theater.js"></script>
+<script src="{ASSET}/theater.js?v=craft"></script>
 </body>
 </html>
 """

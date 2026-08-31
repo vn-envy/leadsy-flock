@@ -66,7 +66,7 @@ def render_kit(
         uri = html.escape(str(s.get("uri") or ""))
         title = html.escape(str(s.get("title") or "comparable"))
         ht = html.escape(str(s.get("hookType") or "craft"))
-        shelf_bits.append(f'<a class="chip" href="{uri}"><span>{ht}</span>{title}</a>')
+        shelf_bits.append(f'<a class="chip" href="{uri}" target="_blank" rel="noopener noreferrer"><span>{ht}</span>{title}</a>')
     shelf_html = "".join(shelf_bits) or '<p class="muted">No public comparables this run.</p>'
     cards = []
     for v in variants:
@@ -78,7 +78,7 @@ def render_kit(
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Kit · {business}</title>
-  <link rel="stylesheet" href="{ASSET}/kit.css"/>
+  <link rel="stylesheet" href="{ASSET}/kit.css?v=craft"/>
   <style>video.thumb[hidden] {{ display: none; }}</style>
 </head>
 <body>
@@ -89,16 +89,16 @@ def render_kit(
 </section>
 <main class="sheet">
   <header class="mast">
-    <a class="word" href="/">Leadsy Flock</a>
-    <nav class="quiet">
-      <a href="/dash">observatory</a>
-      <a href="{land_href}">landing</a>
-      <span>kit</span>
+    <a class="word" href="/" target="_top">Leadsy Flock</a>
+    <nav>
+      <a href="/dash" target="_top">observatory</a>
+      <a href="{land_href}" target="_top">landing</a>
+      <span class="here">kit</span>
     </nav>
   </header>
   <p class="quiet">{business} · {geo} · {lang_label}</p>
   <h1>{headline or "Paste kit"}</h1>
-  <p class="lede">{html.escape(str(copy.get("storyHook") or sub))} Remix a live shelf trope — do not fake UGC, do not clone pixels. Stills start from this shop's own photos, listing, menu, or site when we have them; Gemini only cleans or fills gaps. Copy stays off Veo. We do not autopost.</p>
+  <p class="lede">{html.escape(str(copy.get("storyHook") or sub))}. Remix a live shelf trope — do not fake UGC, do not clone pixels. Stills start from this shop's own photos, listing, menu, or site when we have them; Gemini only cleans or fills gaps. Copy stays off Veo. We do not autopost.</p>
   <div class="lines">
     <div class="quiet-card">
       <p class="label">Story hook · {lang_label}</p>
@@ -131,8 +131,15 @@ def render_kit(
         const body = await r.json();
         let pending = false;
         for (const v of videos) {{
-          if (body[v.dataset.slot]) v.hidden = false;
-          else pending = true;
+          if (body[v.dataset.slot]) {{
+            v.hidden = false;
+            const slot = v.closest(".film-slot");
+            if (slot) {{
+              slot.classList.add("on");
+              const link = slot.querySelector(".film-link");
+              if (link) link.hidden = false;
+            }}
+          }} else pending = true;
         }}
         if (!pending) return;
       }} catch (e) {{}}
@@ -155,16 +162,18 @@ def _step(receipts: list[dict[str, Any]], step: str) -> dict[str, Any]:
 
 
 def _frame(src: str, slot: str, label: str, aspect: str, size_label: str, cid: str) -> str:
+    del aspect  # films sit in a compact row; stills keep the ratio
     if not src:
         return ""
     fname = html.escape(download_name(cid, slot))
     return (
-        f'<figure class="frame" data-aspect="{aspect}">'
-        f'<span class="badge">{html.escape(label)} · {size_label}</span>'
+        f'<div class="film-slot">'
         f'<video class="thumb" data-slot="{html.escape(slot)}" src="{src}" '
         f'download="{fname}" muted playsinline controls loop hidden></video>'
-        f'<a class="dl" href="{src}" download="{fname}">Save {size_label}</a>'
-        f"</figure>"
+        f'<a class="film-link" href="{src}" download="{fname}" hidden '
+        f'aria-label="Save {html.escape(label)} {html.escape(size_label)}">'
+        f"Save {html.escape(size_label)}</a>"
+        f"</div>"
     )
 
 
@@ -185,30 +194,36 @@ def _card(
     pw = int(v.get("width") or 0)
     ph = int(v.get("height") or 0)
     size_label = f"{pw}×{ph}" if pw and ph else aspect
-    media_bits = ""
+    still_html = ""
     if still:
-        media_bits += (
-            f'<figure class="frame" data-aspect="{aspect}">'
+        still_html = (
+            f'<figure class="still" data-aspect="{aspect}">'
             f'<span class="badge">still · {size_label}</span>'
             f'<img class="thumb" src="{still}" alt="{vid} still" />'
             f"</figure>"
         )
+    films = []
     clip = html.escape(str(v.get("clip") or ""))
     if clip:
         slot = str(v.get("clipSlot") or clip.rsplit("/", 1)[-1])
-        media_bits += _frame(clip, slot, "place", aspect, size_label, cid)
+        films.append(_frame(clip, slot, "place", aspect, size_label, cid))
     clip_en = html.escape(str(v.get("clipEn") or ""))
     if clip_en:
-        media_bits += _frame(clip_en, str(v.get("clipSlotEn") or "clip-en"), "place EN", aspect, size_label, cid)
+        films.append(_frame(clip_en, str(v.get("clipSlotEn") or "clip-en"), "place EN", aspect, size_label, cid))
     proof = html.escape(str(v.get("proofClip") or ""))
     if proof:
-        media_bits += _frame(proof, str(v.get("proofClipSlot") or "clip-proof-feed"), "proof", aspect, size_label, cid)
+        films.append(_frame(proof, str(v.get("proofClipSlot") or "clip-proof-feed"), "proof", aspect, size_label, cid))
     proof_en = html.escape(str(v.get("proofClipEn") or ""))
     if proof_en:
-        media_bits += _frame(proof_en, str(v.get("proofClipSlotEn") or "clip-proof-en"), "proof EN", aspect, size_label, cid)
+        films.append(_frame(proof_en, str(v.get("proofClipSlotEn") or "clip-proof-en"), "proof EN", aspect, size_label, cid))
     if str(v.get("aspect") or "") == "9:16":
         cap = html.escape(f"/media/{cid}/clip-captioned")
-        media_bits += _frame(cap, "clip-captioned", "captions", aspect, size_label, cid)
+        films.append(_frame(cap, "clip-captioned", "captions", aspect, size_label, cid))
+    media = still_html
+    if films:
+        media += f'<div class="films">{"".join(films)}</div>'
+    if not media:
+        media = "<p class='muted'>Text only</p>"
     rsa = ""
     if v.get("headlines"):
         lines = "".join(f"<li>{html.escape(str(x))}</li>" for x in v["headlines"])
@@ -233,7 +248,7 @@ def _card(
     return f"""<article class="card" data-id="{vid}">
   <p class="kicker">{html.escape(str(kind))} · {aspect} · {size_label}</p>
   <h2>{vid}</h2>
-  <div class="thumbs">{media_bits or "<p class='muted'>Text only</p>"}</div>
+  <div class="media">{media or "<p class='muted'>Text only</p>"}</div>
   <p class="label">Headline</p><p class="copy">{h}</p>
   <p class="label">Primary</p><p class="copy">{p}</p>
   {loc_block}
