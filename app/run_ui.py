@@ -96,11 +96,13 @@ def render_theater(
     }
     boot: dict[str, Any] = {"play": play, "seed": seed}
     if campaign and campaign_id:
+        cfg = dict(campaign.get("engineConfig") or {})
+        cfg.pop("price_inr", None)
         boot["campaign"] = {
             "id": campaign_id,
             "status": campaign.get("status"),
             "brief": campaign.get("brief") or {},
-            "engineConfig": campaign.get("engineConfig") or {},
+            "engineConfig": cfg,
             "kitPath": campaign.get("kitPath"),
             "landingPath": campaign.get("landingPath"),
             "studioPath": f"/s/{campaign_id}?k={key}" if key else "",
@@ -126,7 +128,10 @@ def render_theater(
   <div class="plate">
     <header class="mast">
       <a class="word" href="/">Leadsy Flock</a>
-      <span class="quiet" id="status">roost</span>
+      <nav class="quiet">
+        <a href="/dash">observatory</a>
+        <span id="status">roost</span>
+      </nav>
     </header>
     <h1 class="headline" id="headline">The flock is already here.</h1>
     <p class="lede" id="lede">Drop a listing. Flo hires Scout, Inka, and Stella. The kit lands on this same roost. We never autopost.</p>
@@ -139,9 +144,8 @@ def render_theater(
     {err}
     <a class="chip" id="seed-chip" href="/?play=seed">{chip_img}Glen's Bakehouse · seeded kit</a>
     <div class="quote" id="quote">
-      <p class="quiet">Launch kit</p>
-      <p class="price" id="price">₹5997</p>
-      <p class="lede">Scout ₹1,999 · Inka ₹2,499 · Stella ₹1,499. Flo, Bri, and Ledge stay free.</p>
+      <p class="quiet">The flock is ready</p>
+      <p class="lede">Scout tracks. Inka paints. Stella hosts. Flo never autoposts.</p>
     </div>
     <div class="path" id="path" aria-hidden="true">{_path_html()}</div>
     <button type="button" class="linkish" id="more-toggle">or name the shop</button>

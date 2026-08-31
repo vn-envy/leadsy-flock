@@ -72,9 +72,6 @@ def render_html(campaign_id: str, campaign: dict[str, Any]) -> str:
     copy = data["copy"]
     headline = html.escape(str(copy.get("headline") or business))
     theme = resolve_theme(data.get("brand") or {})
-    cost = data["cost"]
-    quoted = html.escape(str(cost.get("quotedInr") or "—"))
-    band = html.escape(str(cost.get("productionBand") or ""))
     hit = data["hits"]
     hit_n = int(hit.get("count") or 0)
     variants = data["variants"] or []
@@ -115,11 +112,15 @@ def render_html(campaign_id: str, campaign: dict[str, Any]) -> str:
   <p class="copy utm">{u}</p>
 </article>"""
         )
+    max_hits = max((int(r.get("hits") or 0) for r in utm_rows), default=1) or 1
     utm_html = "".join(
-        f"<tr><td>{html.escape(r['content'])}</td><td>{html.escape(r['source'])}</td>"
-        f"<td>{r['hits']}</td></tr>"
+        (
+            f'<div class="hbar"><b>{html.escape(r["content"])}</b>'
+            f'<div class="track"><i style="width:{int(100 * int(r["hits"]) / max_hits)}%"></i></div>'
+            f"<em>{int(r['hits'])}</em></div>"
+        )
         for r in utm_rows
-    ) or "<tr><td class='muted' colspan='3'>No tracked clicks yet. Open a UTM from the kit to test.</td></tr>"
+    ) or "<p class='muted'>No tracked clicks yet. Open a UTM from the kit to test.</p>"
     cards_html = "\n".join(cards) or "<p class='muted'>Kit still rendering.</p>"
     return f"""<!doctype html>
 <html lang="en" data-theme="{html.escape(theme.id)}">
@@ -148,8 +149,10 @@ def render_html(campaign_id: str, campaign: dict[str, Any]) -> str:
     .copy {{ margin:0; font-size:.92rem; line-height:1.45; word-break:break-word; }}
     .utm {{ font-size:.78rem; color:var(--muted); }}
     .muted {{ color:var(--muted); font-size:.85rem; }}
-    table {{ width:100%; border-collapse:collapse; font-size:14px; }}
-    th, td {{ text-align:left; padding:.5rem .3rem; border-bottom:1px solid var(--line); }}
+    .hbar {{ display:grid; grid-template-columns:8rem 1fr auto; gap:.5rem; align-items:center; margin:.4rem 0; }}
+    .track {{ height:.45rem; background:var(--line); border-radius:99px; overflow:hidden; }}
+    .track i {{ display:block; height:100%; background:var(--accent); border-radius:99px; }}
+    .hbar em {{ font-style:normal; font-size:.8rem; color:var(--muted); }}
     .dl {{ font-size:.78rem; }}
     .note {{ margin-top:1.5rem; color:var(--muted); font-size:.85rem; }}
   </style>
@@ -163,22 +166,13 @@ def render_html(campaign_id: str, campaign: dict[str, Any]) -> str:
   <a href="{html.escape(str(data['landingPath']))}">Consent landing</a>.</p>
   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(18rem,1fr))">
     <section class="panel">
-      <p class="kicker">Quoted vs production</p>
-      <p class="copy">You were quoted <strong>₹{quoted}</strong>.</p>
-      <p class="copy">Our cost to run this kit: {band}</p>
-      <p class="muted">{html.escape(str(cost.get("note") or ""))}</p>
-    </section>
-    <section class="panel">
       <p class="kicker">Landing hits</p>
       <p class="copy">{hit_n} tracked UTM click{"s" if hit_n != 1 else ""}.</p>
       <p class="muted">Open a kit UTM on a second device to prove the path. Consent is still a checkbox on the landing.</p>
     </section>
   </div>
-  <p class="label">UTM tracking</p>
-  <table>
-    <thead><tr><th>utm_content</th><th>utm_source</th><th>Hits</th></tr></thead>
-    <tbody>{utm_html}</tbody>
-  </table>
+  <p class="label">utm_content</p>
+  {utm_html}
   <div class="grid">
     {cards_html}
   </div>

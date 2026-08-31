@@ -35,6 +35,7 @@ def test_home_is_capture_form() -> None:
     assert 'name="url"' in res.text
     assert "required" in res.text
     assert "Hire the flock" in res.text
+    assert "observatory" in res.text
     assert "theater.css" in res.text
     assert "<form" not in res.text.lower()
     assert "<label" not in res.text.lower()
@@ -48,6 +49,9 @@ def test_flock_hero_asset() -> None:
     assert res.status_code == 200
     assert "image/webp" in res.headers["content-type"]
     assert _client().get("/assets/flock/theater.css").status_code == 200
+    assert _client().get("/assets/flock/kit.css").status_code == 200
+    assert _client().get("/assets/flock/dash.css").status_code == 200
+    assert _client().get("/assets/flock/dash.js").status_code == 200
     assert _client().get("/assets/flock/../http_api.py").status_code == 404
 
 
@@ -93,7 +97,8 @@ def test_run_room_with_key(monkeypatch) -> None:
     res = _client().get("/r/listing-abcd1234?k=secret")
     assert res.status_code == 200
     assert "YES" in res.text
-    assert "5997" in res.text
+    assert "5997" not in res.text
+    assert "₹" not in res.text
     assert "creative_gate" in res.text
 
 
@@ -139,6 +144,104 @@ def test_infra_surfaces_home_and_run() -> None:
     assert surfaces["home"] == "/"
     assert surfaces["run"] == "/r/{id}?k="
     assert surfaces["seedKit"] == "/k/google-listing-eaf57cae"
+    assert surfaces["dash"] == "/dash"
+
+
+def test_dash_is_observatory_not_a_table(monkeypatch) -> None:
+    monkeypatch.setattr("app.observe.ledger.list_campaigns", lambda limit=40: [
+        {
+            "id": "google-listing-eaf57cae",
+            "status": "completed",
+            "brief": {"businessName": "Glen's Bakehouse"},
+            "kitPath": "/k/google-listing-eaf57cae",
+        }
+    ])
+    monkeypatch.setattr(
+        "app.observe.ledger.list_receipts",
+        lambda _id: [{"step": "scout", "status": "ok"}, {"step": "ad_kit", "status": "ok"}],
+    )
+    monkeypatch.setattr("app.observe.ledger.list_events", lambda *_a, **_k: [{"kind": "landing_hit"}])
+    monkeypatch.setenv("K_SERVICE", "flock-api")
+    monkeypatch.setenv("K_REVISION", "flock-api-00028-test")
+    monkeypatch.setenv("GCP_REGION", "asia-south1")
+    monkeypatch.setattr("app.observe._gcp_get", lambda *_a, **_k: None)
+    res = _client().get("/dash")
+    assert res.status_code == 200
+    assert "observatory" in res.text.lower()
+    assert "Cloud Run" in res.text
+    assert "flock-api-00028-test" in res.text
+    assert "<table" not in res.text.lower()
+    assert "₹" not in res.text
+    assert "5997" not in res.text
+    assert _client().get("/console", follow_redirects=False).status_code == 303
+    js = _client().get("/v1/dash")
+    assert js.status_code == 200
+    body = js.json()
+    assert "quotedInr" not in body
+    assert body["run"]["revision"] == "flock-api-00028-test"
+    assert body["totals"]["campaigns"] == 1
+    assert body["hits"][0]["kitPath"] == "/k/google-listing-eaf57cae"
+    assert "quotedInr" not in body["totals"]
+
+
+def test_kit_rebuilds_flock_bento(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "app.http_api.ledger.get_campaign",
+        lambda _id: {
+            "id": "google-listing-eaf57cae",
+            "brief": {"businessName": "Glen's Bakehouse", "geo": "Indiranagar"},
+            "landingPath": "/l/google-listing-eaf57cae",
+            "kitHtml": "<html>old paper kit</html>",
+        },
+    )
+    monkeypatch.setattr(
+        "app.kit_ui.ledger.list_receipts",
+        lambda _id: [
+            {
+                "step": "inka",
+                "payload": {
+                    "copy": {
+                        "headline": "Courtyard red velvet",
+                        "subhead": "Walk in.",
+                        "cta": "See the tray",
+                        "storyHook": "anti-influencer courtyard",
+                        "voEn": "Come in.",
+                        "voIndic": "आओ।",
+                    },
+                    "locale": {"bcp47": "hi-IN", "nativeName": "हिन्दी"},
+                    "shelf": [],
+                },
+            },
+            {
+                "step": "ad_kit",
+                "payload": {
+                    "variants": [
+                        {
+                            "id": "meta_feed",
+                            "platform": "meta",
+                            "aspect": "4:5",
+                            "headline": "H",
+                            "primaryText": "P",
+                            "utmUrl": "/l/x?utm_content=meta_feed",
+                            "still": "/media/x/still-feed",
+                            "width": 1080,
+                            "height": 1350,
+                        }
+                    ]
+                },
+            },
+            {"step": "stella", "payload": {"url": "/l/google-listing-eaf57cae"}},
+        ],
+    )
+    res = _client().get("/k/google-listing-eaf57cae")
+    assert res.status_code == 200
+    assert 'data-theme="flock"' in res.text
+    assert "kit.css" in res.text
+    assert "bento" in res.text
+    assert "old paper kit" not in res.text
+    assert "<table" not in res.text.lower()
+    assert "₹" not in res.text
+    assert "Glen" in res.text
 
 
 def test_ops_requires_token(monkeypatch) -> None:

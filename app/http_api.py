@@ -24,7 +24,10 @@ from app.campaigns import (
     screen_text,
 )
 from app.demo import render_html as render_demo
+from app.dash_ui import render_html as render_dash
 from app.derive import download_name
+from app.kit_ui import render_from_campaign
+from app.observe import snapshot as dash_snapshot
 from app.ops import configured as ops_configured
 from app.ops import extract_token as ops_extract_token
 from app.ops import render_html as render_ops
@@ -54,6 +57,9 @@ _FLOCK_ASSETS = {
     "stella.webp",
     "theater.css",
     "theater.js",
+    "kit.css",
+    "dash.css",
+    "dash.js",
     "art-brief.json",
 }
 _FLOCK_MIME = {
@@ -90,6 +96,7 @@ def attach_flock_routes(app: FastAPI) -> None:
                 "seedKit": "/k/google-listing-eaf57cae",
                 "seedLanding": "/l/google-listing-eaf57cae",
                 "ops": "/ops",
+                "dash": "/dash",
                 "studio": "/s/{id}?k=",
             },
         }
@@ -172,9 +179,29 @@ def attach_flock_routes(app: FastAPI) -> None:
     @app.get("/k/{campaign_id}", response_class=HTMLResponse)
     def kit(campaign_id: str) -> HTMLResponse:
         campaign = ledger.get_campaign(campaign_id)
-        if not campaign or not campaign.get("kitHtml"):
+        if not campaign:
             raise HTTPException(404, "kit not published")
-        return HTMLResponse(campaign["kitHtml"])
+        try:
+            live = render_from_campaign(campaign_id, campaign)
+        except Exception:  # noqa: BLE001 — fall back to the stored paste page
+            live = None
+        if live:
+            return HTMLResponse(live)
+        if campaign.get("kitHtml"):
+            return HTMLResponse(campaign["kitHtml"])
+        raise HTTPException(404, "kit not published")
+
+    @app.get("/dash", response_class=HTMLResponse)
+    def dash() -> HTMLResponse:
+        return HTMLResponse(render_dash())
+
+    @app.get("/v1/dash")
+    def dash_json() -> dict:
+        return dash_snapshot()
+
+    @app.get("/console", response_class=HTMLResponse)
+    def console() -> HTMLResponse:
+        return RedirectResponse("/dash", status_code=303)
 
     @app.get("/media/{campaign_id}/still")
     def campaign_still(campaign_id: str) -> Response:
@@ -250,10 +277,6 @@ def attach_flock_routes(app: FastAPI) -> None:
             raise HTTPException(status_code=403, detail={"error": "blocked", "verdict": exc.verdict}) from exc
         except KeyError:
             raise HTTPException(404, "campaign not found") from None
-
-    @app.get("/console", response_class=HTMLResponse)
-    def console() -> HTMLResponse:
-        return HTMLResponse(_CONSOLE_HTML)
 
     @app.post("/v1/telegram/webhook")
     async def telegram(request: Request) -> dict:
@@ -382,82 +405,3 @@ def _claim_root(app: FastAPI) -> None:
 
 def _safe_campaign_id(campaign_id: str) -> bool:
     return bool(re.fullmatch(r"[a-z0-9-]{3,80}", campaign_id or ""))
-
-
-_CONSOLE_HTML = """<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Mission Control · Leadsy Flock</title>
-  <style>
-    body { margin:0; background:#14181f; color:#f3eee6; font-family: system-ui, sans-serif; }
-    main { width: min(960px, calc(100% - 2rem)); margin: 0 auto; padding: 2.5rem 0 4rem; }
-    h1 { font-weight: 560; font-family: Georgia, serif; }
-    .kicker { letter-spacing: .2em; font-size: 12px; color:#c4a574; font-weight: 600; }
-    a { color:#c4a574; }
-    table { width:100%; border-collapse: collapse; }
-    th, td { text-align:left; padding: .7rem .4rem; border-bottom: 1px solid #2c3340; font-size: 14px; }
-    .muted { color:#b7aea2; }
-    .pill { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#c4a574; }
-  </style>
-</head>
-<body>
-<main>
-  <p class="kicker">LEADSY FLOCK · MISSION CONTROL</p>
-  <h1>Receipts</h1>
-  <p class="muted">Live from Firestore via flock-api. Capture is <a href="/">/</a>. Delivery is
-  <code>/r/{id}?k=</code> (studio also at <code>/s/{id}?k=</code>). Seeded kit:
-  <a href="/demo">/demo</a> · <a href="/k/google-listing-eaf57cae">Glen's Bakehouse</a>. Founder burn: <code>/ops</code>.</p>
-  <table>
-    <thead><tr><th>Campaign</th><th>Status</th><th>Updated</th><th></th></tr></thead>
-    <tbody id="rows"><tr><td class="muted" colspan="4">Loading…</td></tr></tbody>
-  </table>
-  <pre id="detail" class="muted"></pre>
-</main>
-<script>
-async function load() {
-  const res = await fetch("/v1/campaigns");
-  const body = await res.json();
-  const rows = document.getElementById("rows");
-  const list = body.campaigns || [];
-  if (!list.length) { rows.innerHTML = "<tr><td class='muted' colspan='4'>No campaigns yet.</td></tr>"; return; }
-  rows.innerHTML = list.map(c => {
-    const name = (c.brief && c.brief.businessName) || c.id;
-    const land = c.landingPath ? `<a href="${c.landingPath}">landing</a>` : "";
-    const kit = c.kitPath ? ` <a href="${c.kitPath}">kit</a>` : "";
-    return `<tr>
-      <td><a href="#" data-id="${c.id}">${name}</a><div class="muted">${c.id}</div></td>
-      <td class="pill">${c.status || ""}</td>
-      <td class="muted">${(c.updatedAt || "").slice(0,19)}</td>
-      <td>${land}${kit}</td>
-    </tr>`;
-  }).join("");
-  rows.querySelectorAll("a[data-id]").forEach(a => a.onclick = (e) => { e.preventDefault(); show(a.dataset.id); });
-}
-async function show(id) {
-  const res = await fetch("/v1/campaigns/" + id);
-  const c = await res.json();
-  const recs = (c.receipts || []).map(r => {
-    const p = r.payload || {};
-    return {
-      step: r.step,
-      status: r.status,
-      verdict: p.verdict,
-      draftRejected: p.draft && p.draft.rejected,
-      grounding: (p.groundingUris || []).slice(0, 4),
-      still: p.still,
-      landing: p.url || p.landing,
-      autopost: p.autopost,
-    };
-  });
-  const rec = recs.map(r => r.step + ":" + r.status).join(" → ");
-  document.getElementById("detail").textContent = rec + "\\n\\n" + JSON.stringify({
-    status: c.status, landingPath: c.landingPath, kitPath: c.kitPath, receipts: recs, hired: (c.engineConfig || {}).hired
-  }, null, 2);
-}
-load();
-</script>
-</body>
-</html>
-"""

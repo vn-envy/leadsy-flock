@@ -1,0 +1,158 @@
+:root {
+  --kora: #f7f5f0;
+  --chunnam: #eae6df;
+  --paper: #faf8f4;
+  --bougainvillea: #d49a9a;
+  --blush: #e5c1c1;
+  --silt: #5b6440;
+  --cardamom: #8d9972;
+  --slate: #4e5357;
+  --ash: #8a8f93;
+  --line: #ddd8d0;
+  --ink: #3a3d40;
+  --bg: #f7f5f0;
+  --fg: #4e5357;
+  --muted: #8a8f93;
+  --accent: #5b6440;
+  --surface: #faf8f4;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--kora); color: var(--slate); }
+body {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background:
+    radial-gradient(1000px 520px at 80% -10%, rgba(212,154,154,.28), transparent 55%),
+    radial-gradient(800px 420px at -8% 110%, rgba(91,100,64,.16), transparent 50%),
+    var(--kora);
+}
+h1, h2, .word {
+  font-family: Palatino, "Palatino Linotype", "Iowan Old Style", Georgia, serif;
+  font-weight: 500;
+}
+a { color: var(--silt); }
+.grain {
+  pointer-events: none; position: fixed; inset: 0; z-index: 8; opacity: .06;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+}
+.wash {
+  position: relative;
+  min-height: 28vh;
+  margin: .7rem;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: var(--chunnam) center/cover no-repeat;
+  box-shadow: 0 18px 40px rgba(62,64,58,.1);
+}
+.wash .veil {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 20%, rgba(247,245,240,.55) 70%, var(--kora) 100%);
+}
+.cast {
+  position: absolute; left: 50%; bottom: 1.1rem; transform: translateX(-50%);
+  display: flex; gap: .55rem; z-index: 2; justify-content: center;
+  width: min(40rem, calc(100% - 1.5rem));
+}
+.bird { width: 4.4rem; text-align: center; color: var(--ink); }
+.bird img, .bird .ph {
+  width: 4.4rem; height: 4.4rem; object-fit: cover; border-radius: 1rem;
+  border: 2px solid var(--paper); background: var(--paper); display: block; margin: 0 auto;
+  box-shadow: 0 8px 16px rgba(91,100,64,.16);
+}
+.bird b { display: block; font-size: .7rem; margin-top: .25rem; }
+.bird span {
+  display: block; font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ash);
+}
+.sheet {
+  width: min(76rem, calc(100% - 2rem));
+  margin: -2.4rem auto 2.5rem;
+  position: relative; z-index: 3;
+  background: rgba(250,248,244,.94);
+  border: 1px solid var(--line);
+  border-radius: 1.5rem;
+  padding: 1.3rem 1.4rem 1.8rem;
+  box-shadow: 0 18px 50px rgba(62,64,58,.08);
+}
+.mast { display: flex; justify-content: space-between; align-items: center; margin-bottom: .55rem; }
+.word { color: var(--ink); text-decoration: none; font-size: 1.05rem; }
+.quiet, .label, .kicker {
+  font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ash);
+}
+.mast nav { display: flex; gap: .85rem; align-items: center; }
+.mast nav a { color: var(--ash); text-decoration: none; }
+.mast nav a:hover { color: var(--bougainvillea); }
+h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); line-height: 1.1; margin: .2rem 0 .45rem; color: var(--ink); }
+.lede { color: var(--ash); line-height: 1.5; max-width: 46rem; margin: 0 0 1.2rem; }
+.lines {
+  display: grid; gap: .75rem;
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 1.2rem;
+}
+.quiet-card, .card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 1.05rem;
+  padding: .9rem 1rem 1rem;
+}
+.label { margin: .15rem 0 .35rem; }
+.copy { margin: 0; font-size: .92rem; line-height: 1.45; color: var(--ink); word-break: break-word; }
+.chips { display: flex; flex-wrap: wrap; gap: .45rem; margin: .3rem 0 1.2rem; }
+.chip {
+  display: inline-flex; gap: .4rem; align-items: center;
+  border: 1px solid var(--line); background: var(--paper);
+  border-radius: 999px; padding: .28rem .7rem; text-decoration: none; color: var(--ink); font-size: .82rem;
+}
+.chip span { color: var(--ash); letter-spacing: .08em; text-transform: uppercase; font-size: .62rem; }
+.bento {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr .9fr;
+  grid-auto-rows: minmax(11rem, auto);
+  gap: .85rem;
+}
+.card[data-id="meta_feed"] { grid-column: 1; grid-row: 1 / span 2; }
+.card[data-id="meta_square"] { grid-column: 2; grid-row: 1; }
+.card[data-id="meta_reel"] { grid-column: 3; grid-row: 1 / span 2; }
+.card[data-id="whatsapp_status"] { grid-column: 2; grid-row: 2; }
+.card[data-id="google_display"] { grid-column: 1 / span 2; }
+.card[data-id="google_rsa"] { grid-column: 3; }
+.card h2 { font-size: .95rem; margin: 0 0 .55rem; font-weight: 650; color: var(--ink); }
+.thumbs { display: grid; gap: .5rem; margin-bottom: .7rem; }
+.frame {
+  position: relative; width: 100%; background: var(--bg);
+  border: 1px solid var(--line); border-radius: .7rem; overflow: hidden;
+}
+.frame[data-aspect="4:5"] { aspect-ratio: 4 / 5; }
+.frame[data-aspect="1:1"] { aspect-ratio: 1 / 1; }
+.frame[data-aspect="9:16"] { aspect-ratio: 9 / 16; }
+.frame[data-aspect="1.91:1"] { aspect-ratio: 1.91 / 1; }
+.frame .thumb {
+  width: 100%; height: 100%; object-fit: contain; display: block;
+  background: var(--bg); max-height: none;
+}
+.frame .badge {
+  position: absolute; top: .4rem; left: .4rem; z-index: 1;
+  font-size: .62rem; letter-spacing: .08em; text-transform: uppercase;
+  background: var(--paper); color: var(--ash); border: 1px solid var(--line);
+  border-radius: .35rem; padding: .15rem .35rem;
+}
+.frame .dl { display: block; font-size: .72rem; padding: .35rem .5rem; color: var(--silt); }
+video.thumb[hidden] { display: none; }
+.utm { font-size: .78rem; color: var(--ash); }
+.muted { color: var(--ash); font-size: .85rem; }
+ul.rsa { margin: .2rem 0 .4rem 1.1rem; padding: 0; }
+.note { margin-top: 1.4rem; color: var(--ash); font-size: .82rem; }
+body.embed .wash { min-height: 9rem; margin: .45rem; }
+body.embed .cast { transform: translateX(-50%) scale(.82); transform-origin: bottom center; }
+body.embed .sheet { margin-top: -1.2rem; }
+@media (max-width: 900px) {
+  .lines, .bento { grid-template-columns: 1fr; }
+  .card[data-id="meta_feed"],
+  .card[data-id="meta_square"],
+  .card[data-id="meta_reel"],
+  .card[data-id="whatsapp_status"],
+  .card[data-id="google_display"],
+  .card[data-id="google_rsa"] { grid-column: 1; grid-row: auto; }
+  .cast { bottom: .7rem; }
+  .bird, .bird img { width: 3.3rem; height: auto; }
+  .bird img { height: 3.3rem; }
+}

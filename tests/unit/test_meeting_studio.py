@@ -175,7 +175,8 @@ def test_studio_html_is_delivery_room_not_autopost() -> None:
         html = render_studio("google-listing-eaf57cae", campaign)
     assert "delivery room" in html
     assert "We do not autopost" in html
-    assert "₹5997" in html or "5997" in html
+    assert "₹" not in html
+    assert "5997" not in html
     assert "utm_content" in html
     assert "meta_feed" in html
     assert "1080×1350" in html

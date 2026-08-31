@@ -83,8 +83,9 @@ def test_ad_kit_html_is_paste_guide_not_autopost() -> None:
     assert out["themeId"] == "paper"
     html = upsert.call_args.args[1]["kitHtml"]
     assert upsert.call_args.args[1]["kitPath"] == "/k/noya-1"
-    assert 'data-theme="paper"' in html
-    assert "--bg:#f7f1e8" in html
+    assert 'data-theme="flock"' in html
+    assert "kit.css" in html
+    assert "<table" not in html.lower()
     assert "We do not autopost" in html
     assert "/media/noya-1/still-feed" in html
     assert "/media/noya-1/clip-captioned" in html
@@ -104,6 +105,8 @@ def test_ad_kit_html_is_paste_guide_not_autopost() -> None:
     assert "google_rsa" in html
     assert "/media/noya-1/ready" in html
     assert "video.thumb[hidden]" in html
+    assert "bento" in html
+    assert "observatory" in html
     assert render_kit(
         {"id": "noya-1", "brief": {"businessName": "Noya Salon", "geo": "Gurgaon"}},
         inka_payload["copy"],

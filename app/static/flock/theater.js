@@ -61,10 +61,9 @@
     });
   }
 
-  function showQuote(price) {
+  function showQuote() {
     setStage("quote");
     quote.classList.add("show");
-    $("price").textContent = "₹" + (price || 5997);
     yesBtn.hidden = false;
     hireBtn.hidden = true;
     headline.textContent = campaign?.brief?.businessName || seed.name;
@@ -123,7 +122,7 @@
       }
       campaign = body;
       history.pushState({}, "", body.runPath || "/");
-      showQuote(body.engineConfig?.price_inr || body.quotedInr);
+      showQuote();
     } catch (e) {
       err.textContent = "Could not quote that listing.";
       hireBtn.disabled = false;
@@ -173,7 +172,7 @@
       $("goal").value = seed.goal;
       headline.textContent = seed.name;
       await new Promise((r) => setTimeout(r, 900));
-      showQuote(5997);
+      showQuote();
       return;
     }
     showWork();
@@ -217,16 +216,16 @@
   }
 
   if (campaign?.status === "completed" || campaign?.kitPath) {
-    showQuote(campaign.engineConfig?.price_inr);
+    showQuote();
     showWork();
     showKit(campaign.kitPath || campaign.studioPath);
     startPoll();
   } else if (campaign?.status === "running") {
-    showQuote(campaign.engineConfig?.price_inr);
+    showQuote();
     showWork();
     startPoll();
   } else if (campaign?.id) {
-    showQuote(campaign.engineConfig?.price_inr || 5997);
+    showQuote();
   } else if (boot.play === "kit") {
     urlInput.value = seed.url;
     headline.textContent = seed.name;

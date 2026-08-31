@@ -151,10 +151,13 @@ a { color: var(--silt); }
 }
 .quiet {
   font-size: .68rem;
-  letter-spacing: .2em;
+  letter-spacing: .16em;
   text-transform: uppercase;
   color: var(--ash);
 }
+.mast nav { display: flex; gap: .85rem; align-items: center; }
+.mast nav a { color: var(--ash); text-decoration: none; }
+.mast nav a:hover { color: var(--bougainvillea); }
 .headline {
   font-size: clamp(1.7rem, 4.2vw, 2.7rem);
   line-height: 1.08;
