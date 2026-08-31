@@ -1,7 +1,7 @@
 # Copyright 2026 Neekhil Vatsa
 # Licensed under the Apache License, Version 2.0
 
-"""Hackathon observatory: ledger health + Cloud Run proof. No prices. No tables."""
+"""Hackathon observatory: ledger health, seed burn, Cloud Run proof. No tables."""
 
 from __future__ import annotations
 
@@ -40,6 +40,7 @@ def snapshot(*, live: bool = True) -> dict[str, Any]:
     hits_by.sort(key=lambda r: r["hits"], reverse=True)
     run = cloud_run_proof(live=live)
     traffic = run.get("requests") or {}
+    seed = seed_trace()
     return {
         "generatedAt": datetime.now(UTC).isoformat(),
         "totals": {
@@ -51,13 +52,40 @@ def snapshot(*, live: bool = True) -> dict[str, Any]:
             "requests1h": traffic.get("count"),
             "latencyMsP50": traffic.get("p50ms"),
             "latencyMsP95": traffic.get("p95ms"),
+            "seedTokens": (seed.get("tokens") or {}).get("total"),
+            "seedCalls": seed.get("calls"),
+            "seedUsd": seed.get("estimatedUsd"),
         },
         "status": [{"id": k, "n": v} for k, v in statuses.most_common()],
         "engines": _engine_bars(steps),
         "hits": hits_by[:8],
+        "seed": seed,
         "run": run,
-        "note": "Public observatory. No prices. We do not autopost.",
+        "note": "Public observatory. Seed burn is Vertex list price, not an invoice. We do not autopost.",
     }
+
+
+def seed_trace() -> dict[str, Any]:
+    from app.cost import public_trace
+    from app.seed import DEMO_SHOP
+
+    cid = str(DEMO_SHOP["campaignId"])
+    try:
+        receipts = ledger.list_receipts(cid)
+    except Exception:  # noqa: BLE001
+        receipts = []
+    if not isinstance(receipts, list):
+        receipts = []
+    try:
+        campaign = ledger.get_campaign(cid)
+    except Exception:  # noqa: BLE001
+        campaign = None
+    if not isinstance(campaign, dict):
+        campaign = {}
+    trace = public_trace(cid, receipts, campaign)
+    trace["name"] = str((campaign.get("brief") or {}).get("businessName") or DEMO_SHOP["name"])
+    trace["kitPath"] = str(campaign.get("kitPath") or DEMO_SHOP["kitPath"])
+    return trace
 
 
 def cloud_run_proof(*, live: bool = True) -> dict[str, Any]:

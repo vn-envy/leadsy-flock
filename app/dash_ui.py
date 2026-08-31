@@ -1,7 +1,7 @@
 # Copyright 2026 Neekhil Vatsa
 # Licensed under the Apache License, Version 2.0
 
-"""Public observatory page — shadcn-quiet cards and bars. No tables. No prices."""
+"""Public observatory page — charts, seed burn, Cloud Run proof. No tables."""
 
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ def render_html(data: dict[str, Any] | None = None) -> str:
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Observatory · Leadsy Flock</title>
-  <link rel="stylesheet" href="{ASSET}/dash.css?v=submit"/>
+  <link rel="stylesheet" href="{ASSET}/dash.css?v=open"/>
 </head>
 <body>
 <section class="wash" style="background-image:url('{hero}')">
@@ -46,9 +46,22 @@ def render_html(data: dict[str, Any] | None = None) -> str:
   </header>
   <p class="quiet">Cloud Run · {service} · {region}</p>
   <h1>The flock, in the open.</h1>
-  <p class="lede">Revision <code id="revision">{rev}</code> is serving. Charts are live receipts and Cloud Run proof — not a spreadsheet. We do not autopost.</p>
+  <p class="lede">Revision <code id="revision">{rev}</code> is serving. The Glen's Bakehouse seed shows the tokens, tools, and Vertex list-price burn that made the kit — not a spreadsheet, not an invoice. We do not autopost.</p>
   <div class="stats" id="stats"></div>
   <div class="grid">
+    <section class="card span-2" id="seed-card">
+      <p class="quiet">Seed · Glen's Bakehouse</p>
+      <p class="seed-lede" id="seed-lede">Vertex list-price reconstruction from receipts. Not a Google invoice. Not a sell price.</p>
+      <div class="stats seed-stats" id="seed-stats"></div>
+      <div class="mix-row seed-mix">
+        <div class="donut" id="seed-donut" aria-hidden="true"></div>
+        <div class="stack" id="seed-kinds"></div>
+      </div>
+      <p class="quiet">Tools this run</p>
+      <div class="chips" id="seed-tools"></div>
+      <p class="quiet">Models</p>
+      <div class="chips" id="seed-models"></div>
+    </section>
     <section class="card span-2">
       <p class="quiet">Engine path</p>
       <div class="legend">
@@ -81,7 +94,7 @@ def render_html(data: dict[str, Any] | None = None) -> str:
   <p class="note">{html.escape(str(boot.get("note") or ""))}</p>
 </main>
 <script>window.__DASH__ = {payload};</script>
-<script src="{ASSET}/dash.js?v=submit"></script>
+<script src="{ASSET}/dash.js?v=open"></script>
 </body>
 </html>
 """

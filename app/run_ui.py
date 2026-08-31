@@ -116,7 +116,7 @@ def render_theater(
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Leadsy Flock</title>
-  <link rel="stylesheet" href="{ASSET}/theater.css?v=submit"/>
+  <link rel="stylesheet" href="{ASSET}/theater.css?v=story"/>
 </head>
 <body data-stage="roost">
 <div class="stage">
@@ -134,7 +134,29 @@ def render_theater(
       </nav>
     </header>
     <h1 class="headline" id="headline">The flock is already here.</h1>
-    <p class="lede" id="lede">Drop a listing. Flo hires Scout, Inka, and Stella. The kit lands on this same roost. We never autopost.</p>
+    <p class="lede" id="lede">Leadsy Flock is a five-bird studio for neighbourhood shops. Paste a listing you own. Scout reads the truth of it, Inka paints from this shop's own photos, Stella hands you the kit. We never autopost.</p>
+    <div class="story" aria-label="Who we are and what we unlock">
+      <article class="beat" style="--d:.08s">
+        <i class="glow" aria-hidden="true"></i>
+        <b>Who</b>
+        <span>Five birds. One roost. Built for India's SMBs.</span>
+      </article>
+      <article class="beat" style="--d:.16s">
+        <i class="glow" aria-hidden="true"></i>
+        <b>Listen</b>
+        <span>Scout grounds the listing, maps, and the shop's own site.</span>
+      </article>
+      <article class="beat" style="--d:.24s">
+        <i class="glow" aria-hidden="true"></i>
+        <b>Paint</b>
+        <span>Inka films the courtyard from this shop's photos — never fake UGC.</span>
+      </article>
+      <article class="beat" style="--d:.32s">
+        <i class="glow" aria-hidden="true"></i>
+        <b>Unlock</b>
+        <span>A paste kit for Meta, WhatsApp, Google. Flo never posts it.</span>
+      </article>
+    </div>
     <div class="capsule">
       <input id="url" name="url" type="url" required placeholder="A website or Google listing"
         value="{html.escape(url)}" autocomplete="url" aria-label="Shop listing URL"/>
@@ -162,7 +184,7 @@ def render_theater(
   </section>
 </div>
 <script>window.__FLOCK__ = {payload};</script>
-<script src="{ASSET}/theater.js?v=submit"></script>
+<script src="{ASSET}/theater.js?v=story"></script>
 </body>
 </html>
 """

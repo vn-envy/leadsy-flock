@@ -172,9 +172,14 @@ h1 { font-size: clamp(1.7rem, 4vw, 2.5rem); margin: .25rem 0 .4rem; color: var(-
 .proof { display: grid; gap: .45rem; margin-top: .55rem; }
 .proof p { margin: 0; font-size: .88rem; color: var(--ink); }
 .proof .quiet { margin-bottom: .1rem; }
+.seed-lede { color: var(--ash); line-height: 1.45; margin: .15rem 0 .85rem; max-width: 46rem; }
+.seed-stats .metric { font-size: clamp(1.15rem, 2.4vw, 1.65rem); }
+.seed-mix { margin-top: .2rem; margin-bottom: .85rem; }
+.chips { display: flex; flex-wrap: wrap; gap: .4rem; margin: .35rem 0 .75rem; }
 .chip {
-  display: inline-block; border: 1px solid var(--line); border-radius: 999px;
-  padding: .15rem .55rem; font-size: .72rem; color: var(--silt); background: var(--kora);
+  display: inline-flex; align-items: center;
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: .2rem .6rem; font-size: .72rem; color: var(--silt); background: var(--kora);
 }
 .note { margin-top: 1.2rem; color: var(--ash); font-size: .82rem; }
 .hbar a {

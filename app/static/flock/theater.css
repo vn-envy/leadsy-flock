@@ -205,9 +205,68 @@ a, button { touch-action: manipulation; }
 .lede {
   color: var(--ash);
   line-height: 1.45;
-  margin: 0 auto .85rem;
-  max-width: 32rem;
+  margin: 0 auto .7rem;
+  max-width: 34rem;
   font-size: .95rem;
+}
+.story {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .4rem;
+  margin: 0 0 .9rem;
+  text-align: left;
+}
+.beat {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 5.4rem;
+  padding: .55rem .6rem .7rem;
+  border-radius: .9rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  opacity: 0;
+  transform: translateY(8px) scale(0.97);
+  animation: beat-in 480ms var(--ease-out) forwards;
+  animation-delay: var(--d, 0s);
+}
+.beat b {
+  display: block;
+  font-size: .58rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ash);
+  margin-bottom: .28rem;
+}
+.beat span {
+  display: block;
+  font-size: .78rem;
+  line-height: 1.35;
+  color: var(--ink);
+}
+.beat .glow {
+  position: absolute;
+  left: .7rem; right: .7rem; bottom: .45rem;
+  height: 2px;
+  border-radius: 99px;
+  background: var(--bougainvillea);
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: rail 12.8s var(--ease-out) infinite;
+  animation-delay: var(--d, 0s);
+}
+.beat:nth-child(1) .glow { animation-delay: 0s; }
+.beat:nth-child(2) .glow { animation-delay: 3.2s; }
+.beat:nth-child(3) .glow { animation-delay: 6.4s; }
+.beat:nth-child(4) .glow { animation-delay: 9.6s; }
+@keyframes beat-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes rail {
+  0%, 6% { transform: scaleX(0); opacity: .3; }
+  10%, 22% { transform: scaleX(1); opacity: 1; }
+  28%, 100% { transform: scaleX(0); opacity: .3; }
 }
 .capsule {
   display: flex;
@@ -349,9 +408,10 @@ a, button { touch-action: manipulation; }
   .word:active, .mast nav a:active, .chip:active, .capsule button:active, .yes:active, .linkish:active {
     transform: none;
   }
-  .roost .mural, .bird, .delivery.show, .quote.show {
+  .roost .mural, .bird, .delivery.show, .quote.show, .beat, .beat .glow {
     animation: none;
   }
+  .beat { opacity: 1; transform: none; }
 }
 .err { color: #b56e7c; font-size: .88rem; margin: .4rem 0 0; min-height: 0; }
 @keyframes rise {
@@ -362,6 +422,9 @@ a, button { touch-action: manipulation; }
   from { transform: scale(1.08); }
   to { transform: scale(1.02); }
 }
+body[data-stage="quote"] .story,
+body[data-stage="work"] .story,
+body[data-stage="kit"] .story { display: none; }
 body[data-stage="quote"] .chip,
 body[data-stage="work"] .chip,
 body[data-stage="kit"] .chip,
@@ -394,6 +457,8 @@ body[data-stage="kit"] .capsule, body[data-stage="kit"] .quote, body[data-stage=
   .bird, .bird img { width: 3.5rem; height: auto; }
   .bird img { height: 3.5rem; }
   .plate { position: relative; left: auto; bottom: auto; transform: none; width: calc(100% - 1.4rem); margin: -3.2rem auto 1.4rem; }
+  .story { grid-template-columns: 1fr 1fr; }
+  .beat { min-height: 4.8rem; }
   .mast nav { width: 100%; margin-left: 0; }
   .delivery { position: relative; inset: auto; width: calc(100% - 1.4rem); margin: 0 auto 1.4rem; min-height: 70vh; }
   body[data-stage="kit"] .plate { position: relative; top: auto; }

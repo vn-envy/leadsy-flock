@@ -116,6 +116,84 @@ def owner_cost_blurb(est: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def public_trace(
+    campaign_id: str,
+    receipts: list[dict[str, Any]] | None = None,
+    campaign: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Judge-facing burn: tokens, tools, models, list-price USD. Not a sell price."""
+    est = estimate_campaign(campaign_id, receipts, campaign if campaign is not None else {})
+    if receipts is None:
+        receipts = []
+    lines = [x for x in (est.get("lines") or []) if isinstance(x, dict)]
+    token_in = sum(int(x.get("inputTokens") or 0) for x in lines)
+    token_out = sum(int(x.get("outputTokens") or 0) for x in lines)
+    kinds: dict[str, dict[str, Any]] = {}
+    models: list[str] = []
+    seen_models: set[str] = set()
+    for row in lines:
+        kind = str(row.get("kind") or "other")
+        bucket = kinds.setdefault(kind, {"id": kind, "n": 0, "usd": 0.0, "tokens": 0})
+        bucket["n"] += 1
+        bucket["usd"] = round(bucket["usd"] + float(row.get("usd") or 0), 4)
+        bucket["tokens"] += int(row.get("inputTokens") or 0) + int(row.get("outputTokens") or 0)
+        model = str(row.get("model") or "").strip()
+        if model and model not in seen_models:
+            seen_models.add(model)
+            models.append(model)
+    steps_ok = {
+        str(r.get("step") or "")
+        for r in receipts
+        if isinstance(r, dict) and r.get("status") == "ok"
+    }
+    tools = _tools_from(steps_ok, kinds, receipts if isinstance(receipts, list) else [])
+    return {
+        "campaignId": campaign_id,
+        "estimatedUsd": est.get("estimatedUsd") or 0,
+        "estimatedInr": est.get("estimatedInr") or 0,
+        "fx": est.get("fx") or USD_INR,
+        "note": est.get("note") or "Vertex list-price reconstruction, not a Google invoice.",
+        "tokens": {"input": token_in, "output": token_out, "total": token_in + token_out},
+        "calls": len(lines),
+        "models": models,
+        "tools": tools,
+        "kinds": sorted(kinds.values(), key=lambda r: r["usd"], reverse=True),
+    }
+
+
+def _tools_from(steps_ok: set[str], kinds: dict[str, dict[str, Any]], receipts: list[dict[str, Any]]) -> list[dict[str, str]]:
+    grounded = False
+    for rec in receipts:
+        payload = rec.get("payload") if isinstance(rec, dict) else None
+        if isinstance(payload, dict) and (payload.get("groundingUris") or payload.get("evidence")):
+            grounded = True
+            break
+    out: list[dict[str, str]] = []
+
+    def add(tid: str, label: str, step: str) -> None:
+        out.append({"id": tid, "label": label, "step": step})
+
+    if "scout" in steps_ok or grounded:
+        add("google_search", "Google Search", "scout")
+        add("google_maps", "Google Maps", "scout")
+        add("url_context", "URL context", "scout")
+    if kinds.get("text") or "inka" in steps_ok:
+        add("gemini_flash", "Gemini Flash", "inka")
+    if kinds.get("image"):
+        add("gemini_image", "Gemini Image", "inka")
+    if kinds.get("veo"):
+        add("veo", "Veo 3.1", "inka_harvest")
+    if kinds.get("tts"):
+        add("tts", "Gemini TTS", "inka")
+    if kinds.get("lyria"):
+        add("lyria", "Lyria", "inka_harvest")
+    if "ad_kit" in steps_ok:
+        add("ffmpeg", "ffmpeg derive", "ad_kit")
+    if "stella" in steps_ok:
+        add("stella", "Stella landing", "stella")
+    return out
+
+
 def rollup_campaign(campaign_id: str) -> dict[str, Any] | None:
     if not campaign_id:
         return None

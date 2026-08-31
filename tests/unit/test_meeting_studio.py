@@ -120,6 +120,45 @@ def test_usage_from_response_reads_metadata() -> None:
     assert row["usd"] > 0
 
 
+def test_public_trace_is_seed_burn_not_a_quote() -> None:
+    receipts = [
+        {
+            "step": "scout",
+            "status": "ok",
+            "payload": {
+                "groundingUris": ["https://example.test"],
+                "usage": [
+                    {
+                        "model": "gemini-3.5-flash",
+                        "kind": "text",
+                        "inputTokens": 1000,
+                        "outputTokens": 200,
+                        "usd": 0.003,
+                    }
+                ],
+            },
+        },
+        {
+            "step": "inka_harvest",
+            "status": "ok",
+            "payload": {
+                "clip": {"gcs": "gs://b/c.mp4", "voices": {"en": {"ok": True}, "indic": {"ok": True}}},
+            },
+        },
+        {"step": "ad_kit", "status": "ok"},
+    ]
+    from app.cost import public_trace
+
+    trace = public_trace("google-listing-eaf57cae", receipts, {})
+    assert "quotedInr" not in trace
+    assert trace["tokens"]["input"] == 1000
+    assert trace["calls"] >= 2
+    assert trace["estimatedUsd"] >= 3.2
+    assert any(t["id"] == "google_search" for t in trace["tools"])
+    assert any(t["id"] == "veo" for t in trace["tools"])
+    assert "invoice" in trace["note"].lower()
+
+
 def test_studio_key_is_compared() -> None:
     assert check_key({"studioKey": "abc"}, "abc") is True
     assert check_key({"studioKey": "abc"}, "xyz") is False

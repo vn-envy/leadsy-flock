@@ -36,6 +36,9 @@ def test_home_is_capture_form() -> None:
     assert "required" in res.text
     assert "Hire the flock" in res.text
     assert "observatory" in res.text
+    assert "neighbourhood shops" in res.text
+    assert 'class="story"' in res.text
+    assert "Unlock" in res.text
     assert "allow-top-navigation-by-user-activation" in res.text
     assert 'class="grain"' in res.text
     roost = res.text.find('id="roost"')
@@ -164,7 +167,48 @@ def test_dash_is_observatory_not_a_table(monkeypatch) -> None:
     ])
     monkeypatch.setattr(
         "app.observe.ledger.list_receipts",
-        lambda _id: [{"step": "scout", "status": "ok"}, {"step": "ad_kit", "status": "ok"}],
+        lambda _id: [
+            {
+                "step": "scout",
+                "status": "ok",
+                "payload": {
+                    "groundingUris": ["https://maps.google.com/?q=glens"],
+                    "usage": [
+                        {
+                            "model": "gemini-3.5-flash",
+                            "kind": "text",
+                            "inputTokens": 1800,
+                            "outputTokens": 420,
+                            "usd": 0.0065,
+                        }
+                    ],
+                },
+            },
+            {
+                "step": "inka_harvest",
+                "status": "ok",
+                "payload": {
+                    "clip": {
+                        "gcs": "gs://bucket/clip.mp4",
+                        "voices": {"en": {"ok": True}, "indic": {"ok": True}},
+                    },
+                    "clipProof": {
+                        "gcs": "gs://bucket/proof.mp4",
+                        "voices": {"en": {"ok": True}, "indic": {"ok": True}},
+                    },
+                },
+            },
+            {"step": "stella", "status": "ok"},
+            {"step": "ad_kit", "status": "ok"},
+        ],
+    )
+    monkeypatch.setattr(
+        "app.observe.ledger.get_campaign",
+        lambda _id: {
+            "id": "google-listing-eaf57cae",
+            "brief": {"businessName": "Glen's Bakehouse"},
+            "kitPath": "/k/google-listing-eaf57cae",
+        },
     )
     monkeypatch.setattr("app.observe.ledger.list_events", lambda *_a, **_k: [{"kind": "landing_hit"}])
     monkeypatch.setenv("K_SERVICE", "flock-api")
@@ -177,17 +221,27 @@ def test_dash_is_observatory_not_a_table(monkeypatch) -> None:
     assert "Cloud Run" in res.text
     assert "flock-api-00028-test" in res.text
     assert "<table" not in res.text.lower()
-    assert "₹" not in res.text
     assert "5997" not in res.text
+    assert "seed" in res.text.lower()
+    assert "Vertex list-price" in res.text or "list price" in res.text.lower()
     assert _client().get("/console", follow_redirects=False).status_code == 303
     js = _client().get("/v1/dash")
     assert js.status_code == 200
     body = js.json()
     assert "quotedInr" not in body
+    assert "quotedInr" not in (body.get("seed") or {})
     assert body["run"]["revision"] == "flock-api-00028-test"
     assert body["totals"]["campaigns"] == 1
     assert body["hits"][0]["kitPath"] == "/k/google-listing-eaf57cae"
     assert "quotedInr" not in body["totals"]
+    seed = body["seed"]
+    assert seed["campaignId"] == "google-listing-eaf57cae"
+    assert seed["tokens"]["total"] >= 1800
+    assert seed["calls"] >= 3
+    assert seed["estimatedUsd"] >= 6.4
+    assert any(t["id"] == "google_search" for t in seed["tools"])
+    assert any(t["id"] == "veo" for t in seed["tools"])
+    assert any(t["id"] == "ffmpeg" for t in seed["tools"])
 
 
 def test_kit_rebuilds_flock_bento(monkeypatch) -> None:
