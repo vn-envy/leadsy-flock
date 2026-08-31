@@ -78,12 +78,12 @@ def render_kit(
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Kit · {business}</title>
-  <link rel="stylesheet" href="{ASSET}/kit.css?v=craft"/>
+  <link rel="stylesheet" href="{ASSET}/kit.css?v=submit"/>
   <style>video.thumb[hidden] {{ display: none; }}</style>
 </head>
 <body>
-<div class="grain" aria-hidden="true"></div>
 <section class="wash" style="background-image:url('{hero}')">
+  <div class="grain" aria-hidden="true"></div>
   <div class="veil"></div>
   <div class="cast">{_cast_html()}</div>
 </section>
@@ -246,13 +246,17 @@ def _card(
             f"<p class='copy'>{html.escape(str(v.get('headlineLocalized')))}</p>"
         )
     return f"""<article class="card" data-id="{vid}">
-  <p class="kicker">{html.escape(str(kind))} · {aspect} · {size_label}</p>
-  <h2>{vid}</h2>
+  <header class="head">
+    <p class="kicker">{html.escape(str(kind))} · {aspect} · {size_label}</p>
+    <h2>{vid}</h2>
+  </header>
   <div class="media">{media or "<p class='muted'>Text only</p>"}</div>
+  <div class="copyblock">
   <p class="label">Headline</p><p class="copy">{h}</p>
   <p class="label">Primary</p><p class="copy">{p}</p>
   {loc_block}
   {rsa}
   <p class="label">UTM</p><p class="copy utm">{u}</p>
   <p class="muted">CTA: {html.escape(str(v.get("cta") or cta))}</p>
+  </div>
 </article>"""

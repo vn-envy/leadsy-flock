@@ -27,11 +27,11 @@ def render_html(data: dict[str, Any] | None = None) -> str:
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Observatory · Leadsy Flock</title>
-  <link rel="stylesheet" href="{ASSET}/dash.css?v=craft"/>
+  <link rel="stylesheet" href="{ASSET}/dash.css?v=submit"/>
 </head>
 <body>
-<div class="grain" aria-hidden="true"></div>
 <section class="wash" style="background-image:url('{hero}')">
+  <div class="grain" aria-hidden="true"></div>
   <div class="veil"></div>
   <div class="cast">{_cast_html()}</div>
 </section>
@@ -81,7 +81,7 @@ def render_html(data: dict[str, Any] | None = None) -> str:
   <p class="note">{html.escape(str(boot.get("note") or ""))}</p>
 </main>
 <script>window.__DASH__ = {payload};</script>
-<script src="{ASSET}/dash.js?v=craft"></script>
+<script src="{ASSET}/dash.js?v=submit"></script>
 </body>
 </html>
 """

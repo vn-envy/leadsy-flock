@@ -116,12 +116,12 @@ def render_theater(
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Leadsy Flock</title>
-  <link rel="stylesheet" href="{ASSET}/theater.css?v=craft"/>
+  <link rel="stylesheet" href="{ASSET}/theater.css?v=submit"/>
 </head>
 <body data-stage="roost">
-<div class="grain" aria-hidden="true"></div>
 <div class="stage">
   <section class="roost" id="roost">{hero_tag}
+    <div class="grain" aria-hidden="true"></div>
     <div class="veil"></div>
     <div class="cast">{_cast_html()}</div>
   </section>
@@ -162,7 +162,7 @@ def render_theater(
   </section>
 </div>
 <script>window.__FLOCK__ = {payload};</script>
-<script src="{ASSET}/theater.js?v=craft"></script>
+<script src="{ASSET}/theater.js?v=submit"></script>
 </body>
 </html>
 """
