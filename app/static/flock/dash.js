@@ -117,6 +117,7 @@
   }
 
   paint(boot);
+  if (boot.static) return;
   async function refresh() {
     try {
       const res = await fetch("/v1/dash");
