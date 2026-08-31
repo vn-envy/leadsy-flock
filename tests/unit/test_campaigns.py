@@ -79,6 +79,7 @@ def test_run_room_with_key(monkeypatch) -> None:
     assert res.status_code == 200
     assert "YES" in res.text
     assert "5997" in res.text
+    assert "creative_gate" in res.text
 
 
 def test_capture_post_redirects(monkeypatch) -> None:

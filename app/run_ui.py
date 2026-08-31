@@ -276,7 +276,7 @@ const STEPS = [
   {{id:"scout", label:"Scout"}},
   {{id:"inka", label:"Inka"}},
   {{id:"inka_harvest", label:"Harvest"}},
-  {{id:"gate", label:"Gate"}},
+  {{id:"creative_gate", label:"Gate"}},
   {{id:"stella", label:"Stella"}},
   {{id:"ad_kit", label:"Ad Kit"}},
 ];
