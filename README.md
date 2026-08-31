@@ -18,7 +18,7 @@ Hello Flo is live. The flock engines run on Pub/Sub + Cloud Run:
 - `GET /health` — liveness (`/healthz` is intercepted by Cloud Run's frontend)
 - `GET /v1/infra` — runtime inventory (Firestore, topics, Model Armor, Memory Bank)
 - `GET /console` — receipts Mission Control
-- `GET /demo` — clocked judge script (fictional Mira's Chai → the form)
+- `GET /demo` — seeded Glen's Bakehouse kit (`google-listing-eaf57cae`); do not contact the bakery
 - `GET /s/{campaignId}?k=` — owner studio (delivery room, UTM hits, quoted vs production band)
 - `GET /ops` — founder quoted vs burn (`OPS_TOKEN`)
 - `GET /l/{campaignId}` — Stella consent-first landing with still; clip/jingle unhide when harvest finishes; `utm_*` query records a hit

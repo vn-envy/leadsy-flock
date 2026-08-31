@@ -60,6 +60,8 @@ def attach_flock_routes(app: FastAPI) -> None:
                 "home": "/",
                 "run": "/r/{id}?k=",
                 "demo": "/demo",
+                "seedKit": "/k/google-listing-eaf57cae",
+                "seedLanding": "/l/google-listing-eaf57cae",
                 "ops": "/ops",
                 "studio": "/s/{id}?k=",
             },
@@ -367,8 +369,8 @@ _CONSOLE_HTML = """<!doctype html>
   <p class="kicker">LEADSY FLOCK · MISSION CONTROL</p>
   <h1>Receipts</h1>
   <p class="muted">Live from Firestore via flock-api. Capture is <a href="/">/</a>. Delivery is
-  <code>/r/{id}?k=</code> (studio also at <code>/s/{id}?k=</code>). Clocked judge path:
-  <a href="/demo">/demo</a>. Founder burn: <code>/ops</code>.</p>
+  <code>/r/{id}?k=</code> (studio also at <code>/s/{id}?k=</code>). Seeded kit:
+  <a href="/demo">/demo</a> · <a href="/k/google-listing-eaf57cae">Glen's Bakehouse</a>. Founder burn: <code>/ops</code>.</p>
   <table>
     <thead><tr><th>Campaign</th><th>Status</th><th>Updated</th><th></th></tr></thead>
     <tbody id="rows"><tr><td class="muted" colspan="4">Loading…</td></tr></tbody>

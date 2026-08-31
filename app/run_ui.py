@@ -179,7 +179,7 @@ def render_capture(
 <main class="wrap">
   <nav class="nav">
     <a class="word" href="/">Leadsy Flock</a>
-    <a class="pill ghost" href="/demo">Clock a fictional stall</a>
+    <a class="pill ghost" href="/demo">Seeded kit · Glen's Bakehouse</a>
   </nav>
   <section class="hero">
     <div>
@@ -195,11 +195,11 @@ def render_capture(
       <input id="url" name="url" type="url" required placeholder="https://share.google/… or your site"
         value="{html.escape(url)}" autocomplete="url"/>
       <label for="name">Shop name <span class="muted">(optional)</span></label>
-      <input id="name" name="name" type="text" placeholder="Mira's Chai" value="{html.escape(name)}"/>
+      <input id="name" name="name" type="text" placeholder="Glen's Bakehouse" value="{html.escape(name)}"/>
       <label for="geo">Area / city <span class="muted">(optional)</span></label>
-      <input id="geo" name="geo" type="text" placeholder="Koramangala, Bangalore" value="{html.escape(geo)}"/>
+      <input id="geo" name="geo" type="text" placeholder="Indiranagar, Bangalore" value="{html.escape(geo)}"/>
       <label for="goal">What success looks like <span class="muted">(optional)</span></label>
-      <input id="goal" name="goal" type="text" placeholder="Evening takeaway cups from office workers" value="{html.escape(goal)}"/>
+      <input id="goal" name="goal" type="text" placeholder="Walk-ins for mini red velvet cupcakes" value="{html.escape(goal)}"/>
       <label for="assets">Extra photos, menu PDFs, listing links <span class="muted">(optional)</span></label>
       <textarea id="assets" name="assets" placeholder="https://… one per line">{html.escape(assets)}</textarea>
       {err}

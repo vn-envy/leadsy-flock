@@ -21,7 +21,9 @@ def _client() -> TestClient:
 def test_demo_route_is_public() -> None:
     res = _client().get("/demo")
     assert res.status_code == 200
-    assert "Mira" in res.text
+    assert "Glen" in res.text
+    assert "google-listing-eaf57cae" in res.text
+    assert "Mira" not in res.text
     assert "do not autopost" in res.text.lower() or "never autopost" in res.text.lower()
     assert "Telegram is the meeting" not in res.text
     assert "Open Telegram" not in res.text
@@ -37,11 +39,11 @@ def test_home_is_capture_form() -> None:
 
 
 def test_home_prefills_query() -> None:
-    res = _client().get("/?name=Mira&goal=cups&geo=Koramangala")
+    res = _client().get("/?name=Glen&goal=cupcakes&geo=Indiranagar")
     assert res.status_code == 200
-    assert "Mira" in res.text
-    assert "cups" in res.text
-    assert "Koramangala" in res.text
+    assert "Glen" in res.text
+    assert "cupcakes" in res.text
+    assert "Indiranagar" in res.text
 
 
 def test_run_room_bad_id() -> None:
@@ -123,6 +125,7 @@ def test_infra_surfaces_home_and_run() -> None:
     surfaces = res.json()["surfaces"]
     assert surfaces["home"] == "/"
     assert surfaces["run"] == "/r/{id}?k="
+    assert surfaces["seedKit"] == "/k/google-listing-eaf57cae"
 
 
 def test_ops_requires_token(monkeypatch) -> None:

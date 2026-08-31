@@ -234,7 +234,7 @@ def last_campaign(chat_id: Any) -> str | None:
 
 _GREET = (
     "Flo here. Brief me like a local agency — business, city, what success looks like. "
-    "Example: Mira's Chai, Koramangala Bangalore, evening takeaway cups.\n\n"
+    "Example: Glen's Bakehouse, Indiranagar Bangalore, courtyard cakes. Seeded kit is /demo.\n\n"
     "I hire the flock and quote rupees. Reply YES to approve. "
     "When the kit is ready you get a studio URL. We never autopost.\n\n"
     "/approve · /status"

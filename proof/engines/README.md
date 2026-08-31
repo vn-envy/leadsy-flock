@@ -90,9 +90,9 @@ Owner frames were the previous campaign's stills, passed as `assetUris` (stand-i
 
 Does not overwrite `noya-salon-fff1d666` or `noya-salon-7384033d`. No real salon was contacted. Gemini still-from-scratch is only used when the shop has no usable visual evidence.
 
-## Glen's Bakehouse (live Google listing sanity check)
+## Glen's Bakehouse (seeded demo)
 
-Public listing `https://share.google/rLF34cfolz9TJA92F` on **28 Aug 2026**. Campaign **`google-listing-eaf57cae`**. **Do not contact this business.**
+Public listing `https://share.google/rLF34cfolz9TJA92F` on **28 Aug 2026**. Campaign **`google-listing-eaf57cae`**. This is the **hackathon seeded kit** on `/demo`. **Do not contact this business.**
 
 Scout opened the share link (urlContext), resolved **Glen's Bakehouse**, Indiranagar, vertical **food**. `glensbakehouse.com/menu.pdf` 404s; own frames came from the live homepage CSS `background-image` photos (6 frames). Gemini did **not** invent a shop.
 

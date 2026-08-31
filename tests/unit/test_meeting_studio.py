@@ -33,7 +33,7 @@ async def test_telegram_groups_are_refused(monkeypatch: pytest.MonkeyPatch) -> N
     out = await handle_update(
         {
             "message": {
-                "text": "Mira's Chai Koramangala",
+                "text": "Glen's Bakehouse Indiranagar",
                 "chat": {"id": 1, "type": "group"},
                 "from": {"id": 9},
             }
@@ -129,16 +129,16 @@ def test_studio_key_is_compared() -> None:
 def test_studio_html_is_delivery_room_not_autopost() -> None:
     campaign = {
         "status": "completed",
-        "brief": {"businessName": "Mira's Chai", "geo": "Bangalore"},
+        "brief": {"businessName": "Glen's Bakehouse", "geo": "Indiranagar"},
         "studioKey": "k",
-        "landingPath": "/l/mira-1",
-        "kitPath": "/k/mira-1",
+        "landingPath": "/l/google-listing-eaf57cae",
+        "kitPath": "/k/google-listing-eaf57cae",
     }
     receipts = [
         {
             "step": "inka",
             "payload": {
-                "copy": {"headline": "Evening cups", "primaryText": "Walk-past takeaway."},
+                "copy": {"headline": "Your quiet courtyard escape", "primaryText": "Mini red velvet cupcakes."},
                 "brandSpec": {"themeId": "paper"},
                 "locale": {"bcp47": "kn-IN", "nativeName": "ಕನ್ನಡ"},
             },
@@ -151,11 +151,11 @@ def test_studio_html_is_delivery_room_not_autopost() -> None:
                         "id": "meta_feed",
                         "platform": "meta",
                         "aspect": "4:5",
-                        "headline": "Evening cups",
-                        "primaryText": "Walk-past takeaway.",
-                        "utmUrl": "https://example.test/l/mira-1?utm_source=meta&utm_content=meta_feed",
-                        "still": "/media/mira-1/still-feed",
-                        "clip": "/media/mira-1/clip-feed",
+                        "headline": "Your quiet courtyard escape",
+                        "primaryText": "Mini red velvet cupcakes.",
+                        "utmUrl": "https://example.test/l/google-listing-eaf57cae?utm_source=meta&utm_content=meta_feed",
+                        "still": "/media/google-listing-eaf57cae/still-feed",
+                        "clip": "/media/google-listing-eaf57cae/clip-feed",
                         "clipSlot": "clip-feed",
                         "width": 1080,
                         "height": 1350,
@@ -172,7 +172,7 @@ def test_studio_html_is_delivery_room_not_autopost() -> None:
         patch("app.cost.ledger.get_campaign", return_value={"engineConfig": {"price_inr": 5997}}),
         patch("app.cost.ledger.list_receipts", return_value=receipts),
     ):
-        html = render_studio("mira-1", campaign)
+        html = render_studio("google-listing-eaf57cae", campaign)
     assert "delivery room" in html
     assert "We do not autopost" in html
     assert "₹5997" in html or "5997" in html
@@ -181,16 +181,18 @@ def test_studio_html_is_delivery_room_not_autopost() -> None:
     assert "1080×1350" in html
 
 
-def test_demo_page_is_fictional_and_clocked() -> None:
+def test_demo_page_is_seeded_bakehouse_kit() -> None:
     html = render_demo()
     assert DEMO_SHOP["name"] in html
-    assert "YES" in html
+    assert DEMO_SHOP["campaignId"] in html
+    assert DEMO_SHOP["kitPath"] in html
+    assert DEMO_SHOP["url"] in html
+    assert "do not tap yes" in html.lower()
     assert "autopost" in html.lower()
-    assert "Glen" not in html
+    assert "Mira" not in html
     assert "Telegram is the meeting" not in html
     assert "Open Telegram" not in html
     assert "/?" in html
-    assert "name=" in html
 
 
 def test_ops_token_extract_and_compare(monkeypatch: pytest.MonkeyPatch) -> None:

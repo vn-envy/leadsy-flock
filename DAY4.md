@@ -1,6 +1,6 @@
 # Day 4 — Meeting, delivery room, founder ops
 
-Exit criterion: *The capture form is the meeting. YES on `/r/{id}?k=` starts the flock. The same URL becomes the delivery room when the kit is ready. Founder `/ops` shows quoted vs burn. Judges can clock a fictional brief. No autopost. No outreach to a real shop. Telegram is off the hackathon door.*
+Exit criterion: *The capture form is the meeting. YES on `/r/{id}?k=` starts the flock. The same URL becomes the delivery room when the kit is ready. Founder `/ops` shows quoted vs burn. Judges open the seeded Glen's Bakehouse kit. No autopost. No outreach to a real shop. Telegram is off the hackathon door.*
 
 ## Surfaces
 
@@ -12,21 +12,22 @@ Exit criterion: *The capture form is the meeting. YES on `/r/{id}?k=` starts the
 | Paste kit | `GET /k/{id}` | public (same as before) |
 | Consent + UTM | `GET /l/{id}?utm_*` | public; `utm_*` writes `landing_hit` |
 | Founder | `GET /ops?token=` | `OPS_TOKEN` |
-| Judges | `GET /demo` | public, fictional Mira's Chai; prefill `/?name=&geo=&goal=` |
+| Judges | `GET /demo` | public, seeded Glen's Bakehouse kit `google-listing-eaf57cae` |
 | Receipts | `GET /console` | public Mission Control |
 
 Telegram (`POST /v1/telegram/webhook`) stays in the codebase and returns 501 without a bot token. It is **not** the event door. Pulse / OpenSEO is parked in [PULSE.md](PULSE.md).
 
-## Clocked judge script
+## Seeded judge script
 
-1. Open `/demo` and a stopwatch.
-2. Follow the prefilled form on `/`. Paste a listing or website **you own** (Mira's stall has none). Any public shop URL works for the clock.
-3. YES. Do not wait for a Friday email — the run URL is stable.
-4. Watch Scout → Inka → Gate → Stella → Ad Kit. Studio iframe opens on the same page.
-5. Click a kit UTM. Studio hit count moves. That is “run ads” without autopost.
-6. Founder tablet: `/ops?token=` quoted vs list-price burn (Veo is ~90% of COGS).
+The final demo is the **already-finished** Glen's Bakehouse campaign (`google-listing-eaf57cae`), not a fictional stall and not a second YES on this listing.
 
-Use a shop you own or this fictional stall plus a URL you control. Do not cold-contact Glen's Bakehouse or any live listing.
+1. Open `/demo`. Kit, still, place film, proof film, English + Hindi 9:16 are on the page.
+2. Open `/k/google-listing-eaf57cae`. Paste RSA / UTMs. Own bakery photos, not an invented shop.
+3. Second device: landing UTM on `/l/google-listing-eaf57cae?utm_source=meta&utm_content=meta_feed`. Consent is still a checkbox. That is “run ads” without autopost.
+4. Capture form at `/` can show the same listing prefilled so judges see the door. If you want a fresh YES, paste a shop **you own**.
+5. Founder tablet: `/ops?token=` quoted vs list-price burn (Veo is ~90% of COGS).
+
+Public listing used as a pipeline proof: `https://share.google/rLF34cfolz9TJA92F`. Do not email, call, review, or autopost.
 
 ## Parked (after the hackathon)
 

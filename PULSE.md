@@ -13,7 +13,7 @@ Upstream: [every-app/open-seo](https://github.com/every-app/open-seo) · MCP `ht
 3. **Scout stays qualitative** (photos, ownUris, shelf tropes). **Pulse stays quantitative** (volume, difficulty, SERP occupants, 3 presence fixes).
 4. **Fail-open.** No key, 402/429, or no website+listing → `pulse` receipt `skip`. Kit still ships.
 5. **Fixed recipe, not chat tools.** Max 6 MCP calls and ~$0.80/campaign. Never AI-visibility (~$1.09) or full site-audit crawl on this SKU.
-6. **No ranking promises, no autopost, no outreach lists.** Public SERP occupants only. Smoke on Mira's Chai / a listing we own — not a live shop we do not own.
+6. **No ranking promises, no autopost, no outreach lists.** Public SERP occupants only. Smoke on a listing we own — not a shop we do not operate.
 
 ## Pipeline when we build
 
@@ -30,7 +30,7 @@ Surfaces: Inka prompt block · Ad Kit **Search presence** card · studio table �
 1. `app/engines/openseo.py` — HTTP MCP client + fixtures. No live credits in CI.
 2. `app/engines/pulse.py` + worker step. Shape with Flash. Skip if no key.
 3. Planner, Inka, Ad Kit, studio, cost SKU, kit-ready sentence.
-4. Live smoke on a fictional stall. Then `--update-env-vars=OPENSEO_API_KEY=…` on Cloud Run.
+4. Live smoke on a shop we own. Then `--update-env-vars=OPENSEO_API_KEY=…` on Cloud Run.
 
 **Later, not hop 1:** owner-connected GSC, AI visibility add-on, weekly rank-track retain.
 
