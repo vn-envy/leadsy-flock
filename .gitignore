@@ -114,6 +114,7 @@ proof/trace/
 
 # Gemini source PNGs — the roost ships webp
 app/static/flock/*.png
+!app/static/flock/architecture.png
 
 # Cursor
 .cursor/

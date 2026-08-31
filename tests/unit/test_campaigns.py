@@ -62,6 +62,7 @@ def test_flock_hero_asset() -> None:
     assert _client().get("/assets/flock/kit.css").status_code == 200
     assert _client().get("/assets/flock/dash.css").status_code == 200
     assert _client().get("/assets/flock/dash.js").status_code == 200
+    assert _client().get("/assets/flock/architecture.png").status_code == 200
     assert _client().get("/assets/flock/../http_api.py").status_code == 404
 
 
@@ -258,6 +259,9 @@ def test_architecture_page_is_the_judge_diagram() -> None:
     assert "Veo 3.1" in html.text
     assert "<table" not in html.text.lower()
     assert "5997" not in html.text
+    asset = _client().get("/assets/flock/architecture.png")
+    assert asset.status_code == 200
+    assert "image/png" in asset.headers["content-type"]
     png = _client().get("/architecture.png")
     assert png.status_code == 200
     assert "image/png" in png.headers["content-type"]

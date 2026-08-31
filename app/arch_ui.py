@@ -9,7 +9,7 @@ import html
 
 from app.run_ui import ASSET, _cast_html, _src
 
-PNG = "/architecture.png"
+PNG = f"{ASSET}/architecture.png"
 
 
 def render_html() -> str:

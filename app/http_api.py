@@ -61,6 +61,7 @@ _FLOCK_ASSETS = {
     "kit.css",
     "dash.css",
     "dash.js",
+    "architecture.png",
     "art-brief.json",
 }
 _FLOCK_MIME = {
@@ -203,7 +204,9 @@ def attach_flock_routes(app: FastAPI) -> None:
 
     @app.get("/architecture.png")
     def architecture_png() -> FileResponse:
-        path = Path(__file__).resolve().parents[1] / "docs" / "architecture.png"
+        path = _FLOCK_DIR / "architecture.png"
+        if not path.is_file():
+            path = Path(__file__).resolve().parents[1] / "docs" / "architecture.png"
         if not path.is_file():
             raise HTTPException(404, "architecture diagram missing")
         return FileResponse(

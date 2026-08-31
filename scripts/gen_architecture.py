@@ -118,6 +118,8 @@ def main() -> Path:
     png = Path(str(OUT) + ".png")
     if not png.is_file():
         raise SystemExit(f"diagram was not written: {png}")
+    static = ROOT / "app" / "static" / "flock" / "architecture.png"
+    static.write_bytes(png.read_bytes())
     return png
 
 
