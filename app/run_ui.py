@@ -75,6 +75,7 @@ def render_theater(
     assets: str = "",
     error: str = "",
     play: str = "",
+    locked: bool = False,
     campaign: dict[str, Any] | None = None,
     campaign_id: str = "",
     key: str = "",
@@ -94,7 +95,7 @@ def render_theater(
         "utmPath": DEMO_SHOP.get("utmPath"),
         "markers": ["rLF34cfolz9TJA92F", "glensbakehouse.com", DEMO_SHOP["campaignId"]],
     }
-    boot: dict[str, Any] = {"play": play, "seed": seed}
+    boot: dict[str, Any] = {"play": play, "seed": seed, "locked": bool(locked)}
     if campaign and campaign_id:
         cfg = dict(campaign.get("engineConfig") or {})
         cfg.pop("price_inr", None)
@@ -116,9 +117,9 @@ def render_theater(
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Leadsy Flock</title>
-  <link rel="stylesheet" href="{ASSET}/theater.css?v=story"/>
+  <link rel="stylesheet" href="{ASSET}/theater.css?v=lock"/>
 </head>
-<body data-stage="roost">
+<body data-stage="roost"{" data-locked=\"1\"" if locked else ""}>
 <div class="stage">
   <section class="roost" id="roost">{hero_tag}
     <div class="grain" aria-hidden="true"></div>
@@ -127,7 +128,7 @@ def render_theater(
   </section>
   <div class="plate">
     <header class="mast">
-      <a class="word" href="/">Leadsy Flock</a>
+      <a class="word" href="/demo">Leadsy Flock</a>
       <nav>
         <a href="/dash">observatory</a>
         <a href="/architecture">architecture</a>
@@ -136,7 +137,7 @@ def render_theater(
       </nav>
     </header>
     <h1 class="headline" id="headline">The flock is already here.</h1>
-    <p class="lede" id="lede">Leadsy Flock is a five-bird studio for neighbourhood shops. Paste a listing you own. Scout reads the truth of it, Inka paints from this shop's own photos, Stella hands you the kit. We never autopost.</p>
+    <p class="lede" id="lede">Leadsy Flock is a five-bird studio for neighbourhood shops. The public roost is the seeded Glen's Bakehouse kit. Scout reads the listing, Inka paints from this shop's own photos, Stella hands you the kit. We never autopost. Hire is closed.</p>
     <div class="story" aria-label="Who we are and what we unlock">
       <article class="beat" style="--d:.08s">
         <i class="glow" aria-hidden="true"></i>
@@ -161,32 +162,32 @@ def render_theater(
     </div>
     <div class="capsule">
       <input id="url" name="url" type="url" required placeholder="A website or Google listing"
-        value="{html.escape(url)}" autocomplete="url" aria-label="Shop listing URL"/>
-      <button type="button" id="hire">Hire the flock</button>
+        value="{html.escape(url)}" autocomplete="url" aria-label="Shop listing URL"{" hidden" if locked else ""}/>
+      <button type="button" id="hire"{" hidden" if locked else ""}>Hire the flock</button>
       <button type="button" class="yes" id="yes" hidden>YES</button>
     </div>
     {err}
-    <a class="chip" id="seed-chip" href="/?play=seed">{chip_img}Glen's Bakehouse · seeded kit</a>
+    <a class="chip" id="seed-chip" href="/demo">{chip_img}Glen's Bakehouse · seeded kit</a>
     <div class="quote" id="quote">
       <p class="quiet">The flock is ready</p>
       <p class="lede">Scout tracks. Inka paints. Stella hosts. Flo never autoposts.</p>
     </div>
     <div class="path" id="path" aria-hidden="true">{_path_html()}</div>
-    <button type="button" class="linkish" id="more-toggle">or name the shop</button>
+    <button type="button" class="linkish" id="more-toggle"{" hidden" if locked else ""}>or name the shop</button>
     <div class="more" id="more">
       <input id="name" name="name" type="text" placeholder="Shop name" value="{html.escape(name)}" aria-label="Shop name"/>
       <input id="geo" name="geo" type="text" placeholder="Area / city" value="{html.escape(geo)}" aria-label="Area or city"/>
       <input id="goal" name="goal" type="text" placeholder="What success looks like" value="{html.escape(goal)}" aria-label="Goal"/>
       <input id="assets" name="assets" type="text" placeholder="Extra photo or menu URLs" value="{html.escape(assets)}" aria-label="Asset URLs"/>
     </div>
-    <p class="note">Paste a listing you own. The Glen's Bakehouse kit is the seeded demo — do not contact the bakery.</p>
+    <p class="note">The Glen's Bakehouse kit is the public roost — hire is closed. Do not contact the bakery.</p>
   </div>
   <section class="delivery" id="delivery">
     <iframe id="kit-frame" title="Paste kit" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation allow-downloads"></iframe>
   </section>
 </div>
 <script>window.__FLOCK__ = {payload};</script>
-<script src="{ASSET}/theater.js?v=story"></script>
+<script src="{ASSET}/theater.js?v=lock"></script>
 </body>
 </html>
 """

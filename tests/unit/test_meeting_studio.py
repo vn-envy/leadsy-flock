@@ -232,7 +232,9 @@ def test_demo_page_is_seeded_bakehouse_kit() -> None:
     assert "Mira" not in html
     assert "Telegram is the meeting" not in html
     assert "Open Telegram" not in html
-    assert "/?" in html
+    assert 'href="/demo"' in html
+    assert "Hire is closed" in html
+    assert '"locked": true' in html
 
 
 def test_ops_token_extract_and_compare(monkeypatch: pytest.MonkeyPatch) -> None:

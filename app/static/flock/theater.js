@@ -91,6 +91,10 @@
   async function createRun() {
     err.textContent = "";
     const url = (urlInput.value || "").trim();
+    if (boot.locked) {
+      await playSeed(false);
+      return;
+    }
     if (!url) {
       err.textContent = "Drop a website or Google listing.";
       return;
@@ -131,7 +135,7 @@
   }
 
   async function approve() {
-    if (!campaign?.id) return playSeed(true);
+    if (boot.locked || !campaign?.id) return playSeed(true);
     yesBtn.disabled = true;
     yesBtn.textContent = "Hiring…";
     const res = await fetch("/v1/campaigns/" + campaign.id + "/approve", { method: "POST" });

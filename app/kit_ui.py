@@ -89,7 +89,7 @@ def render_kit(
 </section>
 <main class="sheet">
   <header class="mast">
-    <a class="word" href="/" target="_top">Leadsy Flock</a>
+    <a class="word" href="/demo" target="_top">Leadsy Flock</a>
     <nav>
       <a href="/dash" target="_top">observatory</a>
       <a href="/architecture" target="_top">architecture</a>

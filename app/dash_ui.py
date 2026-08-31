@@ -37,9 +37,9 @@ def render_html(data: dict[str, Any] | None = None) -> str:
 </section>
 <main class="sheet">
   <header class="mast">
-    <a class="word" href="/">Leadsy Flock</a>
+    <a class="word" href="/demo">Leadsy Flock</a>
     <nav>
-      <a href="/">roost</a>
+      <a href="/demo">roost</a>
       <a href="/demo">seeded kit</a>
       <a href="/architecture">architecture</a>
       <a href="/blog">blog</a>

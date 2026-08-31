@@ -30,6 +30,9 @@ from app.blog_ui import render_html as render_blog
 from app.dash_ui import render_html as render_dash
 from app.derive import download_name
 from app.kit_ui import render_from_campaign
+from app.lock import enabled as public_lock_on
+from app.lock import install as install_public_lock
+from app.lock import is_seed_id
 from app.observe import snapshot as dash_snapshot
 from app.ops import configured as ops_configured
 from app.ops import extract_token as ops_extract_token
@@ -94,8 +97,8 @@ def attach_flock_routes(app: FastAPI) -> None:
             "telegram": telegram_configured(),
             "ops": ops_configured(),
             "surfaces": {
-                "home": "/",
-                "run": "/r/{id}?k=",
+                "home": "/demo" if public_lock_on() else "/",
+                "run": None if public_lock_on() else "/r/{id}?k=",
                 "demo": "/demo",
                 "seedKit": "/k/google-listing-eaf57cae",
                 "seedLanding": "/l/google-listing-eaf57cae",
@@ -103,8 +106,9 @@ def attach_flock_routes(app: FastAPI) -> None:
                 "dash": "/dash",
                 "architecture": "/architecture",
                 "blog": "/blog",
-                "studio": "/s/{id}?k=",
+                "studio": None if public_lock_on() else "/s/{id}?k=",
             },
+            "publicLock": public_lock_on(),
         }
 
     @app.post("/v1/screen")
@@ -145,6 +149,7 @@ def attach_flock_routes(app: FastAPI) -> None:
 
     @app.get("/l/{campaign_id}", response_class=HTMLResponse)
     def landing(campaign_id: str, request: Request) -> HTMLResponse:
+        _seed_only(campaign_id)
         campaign = ledger.get_campaign(campaign_id)
         if not campaign or not campaign.get("landingHtml"):
             raise HTTPException(404, "landing not published")
@@ -184,6 +189,7 @@ def attach_flock_routes(app: FastAPI) -> None:
 
     @app.get("/k/{campaign_id}", response_class=HTMLResponse)
     def kit(campaign_id: str) -> HTMLResponse:
+        _seed_only(campaign_id)
         campaign = ledger.get_campaign(campaign_id)
         if not campaign:
             raise HTTPException(404, "kit not published")
@@ -242,6 +248,7 @@ def attach_flock_routes(app: FastAPI) -> None:
 
     @app.get("/media/{campaign_id}/still")
     def campaign_still(campaign_id: str) -> Response:
+        _seed_only(campaign_id)
         if not _safe_campaign_id(campaign_id):
             raise HTTPException(400, "bad campaign id")
         found = media.get_campaign_still(campaign_id)
@@ -256,6 +263,7 @@ def attach_flock_routes(app: FastAPI) -> None:
 
     @app.get("/media/{campaign_id}/ready")
     def media_ready(campaign_id: str) -> dict:
+        _seed_only(campaign_id)
         if not _safe_campaign_id(campaign_id):
             raise HTTPException(400, "bad campaign id")
         return {
@@ -265,6 +273,7 @@ def attach_flock_routes(app: FastAPI) -> None:
 
     @app.api_route("/media/{campaign_id}/{slot}", methods=["GET", "HEAD"])
     def campaign_media_slot(campaign_id: str, slot: str, request: Request) -> Response:
+        _seed_only(campaign_id)
         if not _safe_campaign_id(campaign_id):
             raise HTTPException(400, "bad campaign id")
         if slot not in media.MEDIA_SLOTS:
@@ -418,7 +427,13 @@ def attach_flock_routes(app: FastAPI) -> None:
         mime = _FLOCK_MIME.get(path.suffix, "application/octet-stream")
         return FileResponse(path, media_type=mime, headers={"Cache-Control": "public, max-age=86400"})
 
+    install_public_lock(app)
     _claim_root(app)
+
+
+def _seed_only(campaign_id: str) -> None:
+    if public_lock_on() and not is_seed_id(campaign_id):
+        raise HTTPException(404, "not published")
 
 
 def _claim_root(app: FastAPI) -> None:

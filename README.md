@@ -28,24 +28,19 @@ python scripts/gen_architecture.py   # writes docs/architecture.png
 
 Hello Flo is live. The flock engines run on Pub/Sub + Cloud Run:
 
-- **API:** https://flock-api-533880600838.asia-south1.run.app — Flo (`gemini-3.5-flash`) + `/v1/campaigns`
+- **API:** https://flock-api-533880600838.asia-south1.run.app — public lock on. Hire, `/v1/campaigns`, ADK `/run_sse`, and `/docs` return 404. The seeded Glen's Bakehouse kit is the public door.
 - **Worker:** https://flock-worker-533880600838.asia-south1.run.app — Scout → Inka → Creative Gate → Stella → Ad Kit
-- `GET /` — capture form (website or Google listing URL). This is the hackathon door.
-- `GET /r/{campaignId}?k=` — run room (Bri quote, YES, tracker, studio)
-- `GET /health` — liveness (`/healthz` is intercepted by Cloud Run's frontend)
-- `GET /v1/infra` — runtime inventory (Firestore, topics, Model Armor, Memory Bank)
-- `GET /console` — receipts Mission Control
+- `GET /` — 303 to `/demo`
 - `GET /demo` — seeded Glen's Bakehouse kit (`google-listing-eaf57cae`); do not contact the bakery
-- `GET /s/{campaignId}?k=` — owner studio (delivery room, UTM hits, quoted vs production band)
+- `GET /k/google-listing-eaf57cae` — seeded paste kit
+- `GET /l/google-listing-eaf57cae` — seeded landing
+- `GET /health` — liveness (`/healthz` is intercepted by Cloud Run's frontend)
+- `GET /console` — receipts Mission Control (redirects to `/dash`)
 - `GET /ops` — founder quoted vs burn (`OPS_TOKEN`)
-- `GET /l/{campaignId}` — Stella consent-first landing with still; clip/jingle unhide when harvest finishes; `utm_*` query records a hit
-- `GET /k/{campaignId}` — agency paste kit (own-shop frames when we have them, 8s Veo, English + Indic VO, UTMs, no autopost)
-- `POST /v1/telegram/webhook` — parked for the event (501 without a bot token; not the product door)
-- `GET /media/{campaignId}/still` — Gemini 3.1 Flash Image (Imagen 3 successor)
-- `GET /media/{campaignId}/{slot}` — `still-*` crops, Veo `clip` / `clip-captioned` / `clip-story` / …, Lyria `jingle` once harvest writes GCS
-- `POST /v1/consents` — Model Armor on the way in
+- `GET /media/google-listing-eaf57cae/{slot}` — seeded stills and films
 - Notes: [DAY1.md](DAY1.md) · [DAY2.md](DAY2.md) · [DAY3.md](DAY3.md) · [DAY4.md](DAY4.md) · [design.md](design.md)
 - Parked: [PULSE.md](PULSE.md) — OpenSEO market intel after the hackathon
+- Closed to the public: `POST /`, `POST /v1/campaigns`, YES / run room `/r`, studio `/s`, consents, Telegram webhook, `/v1/infra`, OpenAPI, ADK `/run` `/run_sse` `/apps` `/a2a`
 
 ## Mandatory stack
 

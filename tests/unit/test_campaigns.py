@@ -27,14 +27,9 @@ def test_demo_route_is_public() -> None:
     assert "do not autopost" in res.text.lower() or "never autopost" in res.text.lower()
     assert "Telegram is the meeting" not in res.text
     assert "Open Telegram" not in res.text
-
-
-def test_home_is_capture_form() -> None:
-    res = _client().get("/")
-    assert res.status_code == 200
-    assert 'name="url"' in res.text
-    assert "required" in res.text
-    assert "Hire the flock" in res.text
+    assert "Hire is closed" in res.text
+    assert 'data-locked="1"' in res.text
+    assert 'id="hire" hidden' in res.text
     assert "observatory" in res.text
     assert "architecture" in res.text
     assert "blog" in res.text
@@ -51,8 +46,21 @@ def test_home_is_capture_form() -> None:
     assert "<form" not in res.text.lower()
     assert "<label" not in res.text.lower()
     assert "Get a quote" not in res.text
-    assert "Open Telegram" not in res.text
     assert "t.me" not in res.text.lower()
+    assert 'href="/demo"' in res.text
+
+
+def test_home_redirects_to_seeded_demo() -> None:
+    res = _client().get("/", follow_redirects=False)
+    assert res.status_code == 303
+    assert res.headers["location"] == "/demo"
+    query = _client().get("/?name=Glen&goal=cupcakes&geo=Indiranagar", follow_redirects=False)
+    assert query.status_code == 303
+    assert query.headers["location"] == "/demo"
+    landed = _client().get("/", follow_redirects=True)
+    assert landed.status_code == 200
+    assert "Glen" in landed.text
+    assert "Hire is closed" in landed.text
 
 
 def test_flock_hero_asset() -> None:
@@ -67,35 +75,13 @@ def test_flock_hero_asset() -> None:
     assert _client().get("/assets/flock/../http_api.py").status_code == 404
 
 
-def test_home_prefills_query() -> None:
-    res = _client().get("/?name=Glen&goal=cupcakes&geo=Indiranagar")
-    assert res.status_code == 200
-    assert "Glen" in res.text
-    assert "cupcakes" in res.text
-    assert "Indiranagar" in res.text
-
-
-def test_run_room_bad_id() -> None:
+def test_run_room_is_not_published() -> None:
     res = _client().get("/r/bad")
-    assert res.status_code == 400
+    assert res.status_code == 404
+    assert res.json()["error"] == "not published"
 
 
-def test_run_room_missing_key(monkeypatch) -> None:
-    monkeypatch.setattr(
-        "app.http_api.ledger.get_campaign",
-        lambda _id: {
-            "id": "listing-abcd1234",
-            "studioKey": "secret",
-            "status": "planned",
-            "brief": {"businessName": "listing"},
-            "engineConfig": {"hired": ["scout", "inka", "stella"], "price_inr": 5997},
-        },
-    )
-    res = _client().get("/r/listing-abcd1234")
-    assert res.status_code == 403
-
-
-def test_run_room_with_key(monkeypatch) -> None:
+def test_run_room_with_key_is_not_published(monkeypatch) -> None:
     monkeypatch.setattr(
         "app.http_api.ledger.get_campaign",
         lambda _id: {
@@ -107,14 +93,11 @@ def test_run_room_with_key(monkeypatch) -> None:
         },
     )
     res = _client().get("/r/listing-abcd1234?k=secret")
-    assert res.status_code == 200
-    assert "YES" in res.text
-    assert "5997" not in res.text
-    assert "₹" not in res.text
-    assert "creative_gate" in res.text
+    assert res.status_code == 404
+    assert res.json()["error"] == "not published"
 
 
-def test_capture_post_redirects(monkeypatch) -> None:
+def test_capture_post_is_not_published(monkeypatch) -> None:
     monkeypatch.setattr(
         "app.http_api.create_campaign",
         lambda brief, raw_text="": {
@@ -130,8 +113,32 @@ def test_capture_post_redirects(monkeypatch) -> None:
         data={"url": "https://shop.example/", "name": "Shop"},
         follow_redirects=False,
     )
-    assert res.status_code == 303
-    assert res.headers["location"] == "/r/listing-aa11bb22?k=abc"
+    assert res.status_code == 404
+    assert res.json()["error"] == "not published"
+
+
+def test_campaign_api_is_not_published() -> None:
+    client = _client()
+    assert client.post("/v1/campaigns", json={"url": "https://shop.example/"}).status_code == 404
+    assert client.get("/v1/campaigns").status_code == 404
+    assert client.get("/v1/campaigns/google-listing-eaf57cae").status_code == 404
+    assert client.post("/v1/campaigns/google-listing-eaf57cae/approve").status_code == 404
+    assert client.post("/v1/screen", json={"text": "hi"}).status_code == 404
+    assert client.post(
+        "/v1/consents",
+        json={
+            "campaignId": "google-listing-eaf57cae",
+            "name": "Ada",
+            "contact": "ada@example.com",
+            "consent": True,
+        },
+    ).status_code == 404
+    assert client.get("/docs").status_code == 404
+    assert client.get("/openapi.json").status_code == 404
+    assert client.post("/run_sse", json={}).status_code == 404
+    assert client.get("/s/google-listing-eaf57cae?k=secret").status_code == 404
+    evil = client.get("/k/google-listing-eaf57cae-evil")
+    assert evil.status_code == 404
 
 
 def test_create_campaign_classifies_listing(monkeypatch) -> None:
@@ -149,16 +156,16 @@ def test_create_campaign_classifies_listing(monkeypatch) -> None:
     assert out["brief"]["businessName"] == "listing"
 
 
-def test_infra_surfaces_home_and_run() -> None:
+def test_infra_is_not_published() -> None:
     res = _client().get("/v1/infra")
-    assert res.status_code == 200
-    surfaces = res.json()["surfaces"]
-    assert surfaces["home"] == "/"
-    assert surfaces["run"] == "/r/{id}?k="
-    assert surfaces["seedKit"] == "/k/google-listing-eaf57cae"
-    assert surfaces["dash"] == "/dash"
-    assert surfaces["architecture"] == "/architecture"
-    assert surfaces["blog"] == "/blog"
+    assert res.status_code == 404
+    assert res.json()["error"] == "not published"
+
+
+def test_worker_pubsub_still_reaches_handler() -> None:
+    res = _client().post("/internal/pubsub/campaign-steps", json={})
+    assert res.status_code in {400, 404}
+    assert res.json().get("error") != "not published"
 
 
 def test_dash_is_observatory_not_a_table(monkeypatch) -> None:
@@ -366,17 +373,12 @@ def test_ops_requires_token(monkeypatch) -> None:
     assert res.status_code == 501
 
 
-def test_telegram_webhook_501_without_token(monkeypatch) -> None:
-    monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
-    res = _client().post("/v1/telegram/webhook", json={"message": {}})
-    assert res.status_code == 501
-
-
-def test_telegram_webhook_403_bad_secret(monkeypatch) -> None:
+def test_telegram_webhook_is_not_published(monkeypatch) -> None:
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "tok")
     monkeypatch.setenv("TELEGRAM_WEBHOOK_SECRET", "shh")
     res = _client().post("/v1/telegram/webhook", json={"update_id": 1})
-    assert res.status_code == 403
+    assert res.status_code == 404
+    assert res.json()["error"] == "not published"
 
 
 def test_decode_pubsub_push_payload() -> None:

@@ -422,6 +422,10 @@ a, button { touch-action: manipulation; }
   from { transform: scale(1.08); }
   to { transform: scale(1.02); }
 }
+body[data-locked] .capsule input,
+body[data-locked] #hire,
+body[data-locked] #more-toggle,
+body[data-locked] .more { display: none !important; }
 body[data-stage="quote"] .story,
 body[data-stage="work"] .story,
 body[data-stage="kit"] .story { display: none; }

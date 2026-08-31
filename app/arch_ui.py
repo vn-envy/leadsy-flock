@@ -73,9 +73,9 @@ def render_html() -> str:
 </section>
 <main class="sheet">
   <header class="mast">
-    <a class="word" href="/">Leadsy Flock</a>
+    <a class="word" href="/demo">Leadsy Flock</a>
     <nav>
-      <a href="/">roost</a>
+      <a href="/demo">roost</a>
       <a href="/dash">observatory</a>
       <a href="/blog">blog</a>
       <span class="here">architecture</span>

@@ -8,7 +8,7 @@ Google’s 2026 stack changed the unit economics. Gemini 3.5 Flash on Vertex is 
 
 Leadsy Flock is a five-bird studio on that stack. Paste a Google listing you own. Scout grounds it. Inka films from **this shop’s own photos**. Stella hands you a paste kit for Meta, WhatsApp, and Google. Flo never autoposts. The owner says YES. That is the product.
 
-Live roost: [flock-api](https://flock-api-533880600838.asia-south1.run.app) · Architecture: [/architecture](https://flock-api-533880600838.asia-south1.run.app/architecture) · Observatory: [/dash](https://flock-api-533880600838.asia-south1.run.app/dash)
+Live roost: [Glen's Bakehouse seeded kit](https://flock-api-533880600838.asia-south1.run.app/demo) · Architecture: [/architecture](https://flock-api-533880600838.asia-south1.run.app/architecture) · Observatory: [/dash](https://flock-api-533880600838.asia-south1.run.app/dash)
 
 ## Grass roots, not a demo tenant
 

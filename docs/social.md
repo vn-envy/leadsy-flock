@@ -20,7 +20,7 @@ Leadsy Flock is a five-bird studio on that stack. Paste a listing you own. Scout
 
 I built this for Google's All Things Agentic hackathon.
 
-Roost: https://flock-api-533880600838.asia-south1.run.app
+Roost: https://flock-api-533880600838.asia-south1.run.app/demo
 How we built it: https://flock-api-533880600838.asia-south1.run.app/blog
 Architecture: https://flock-api-533880600838.asia-south1.run.app/architecture
 
@@ -48,4 +48,4 @@ Google’s stack, pointed at the shop downstairs.
 
 Built for Google's All Things Agentic hackathon.
 #AllThingsAgentic
-https://flock-api-533880600838.asia-south1.run.app
+https://flock-api-533880600838.asia-south1.run.app/demo
