@@ -17,7 +17,7 @@ def render_html() -> str:
     return render_theater(
         play="seed",
         locked=True,
-        url=DEMO_SHOP["url"],
+        url="",
         name=DEMO_SHOP["name"],
         geo=DEMO_SHOP["geo"],
         goal=DEMO_SHOP["goal"],

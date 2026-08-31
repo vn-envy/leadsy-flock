@@ -235,6 +235,9 @@ def test_demo_page_is_seeded_bakehouse_kit() -> None:
     assert 'href="/demo"' in html
     assert "Hire is closed" in html
     assert '"locked": true' in html
+    assert "Paste the Google listing" in html
+    assert 'id="cue"' in html
+    assert 'play": "seed"' in html or '"play": "seed"' in html
 
 
 def test_ops_token_extract_and_compare(monkeypatch: pytest.MonkeyPatch) -> None:

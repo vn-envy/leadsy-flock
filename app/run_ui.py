@@ -117,7 +117,7 @@ def render_theater(
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Leadsy Flock</title>
-  <link rel="stylesheet" href="{ASSET}/theater.css?v=lock"/>
+  <link rel="stylesheet" href="{ASSET}/theater.css?v=audition"/>
 </head>
 <body data-stage="roost"{" data-locked=\"1\"" if locked else ""}>
 <div class="stage">
@@ -137,7 +137,7 @@ def render_theater(
       </nav>
     </header>
     <h1 class="headline" id="headline">The flock is already here.</h1>
-    <p class="lede" id="lede">Leadsy Flock is a five-bird studio for neighbourhood shops. The public roost is the seeded Glen's Bakehouse kit. Scout reads the listing, Inka paints from this shop's own photos, Stella hands you the kit. We never autopost. Hire is closed.</p>
+    <p class="lede" id="lede">Leadsy Flock is a five-bird studio for neighbourhood shops. Watch a listing go into the box, then hire, then YES. The public roost is the seeded Glen's Bakehouse kit. We never autopost. Hire is closed — this audition does not start a real campaign.</p>
     <div class="story" aria-label="Who we are and what we unlock">
       <article class="beat" style="--d:.08s">
         <i class="glow" aria-hidden="true"></i>
@@ -160,10 +160,11 @@ def render_theater(
         <span>A paste kit for Meta, WhatsApp, Google. Flo never posts it.</span>
       </article>
     </div>
-    <div class="capsule">
+    <p class="cue" id="cue" aria-live="polite">1 · Paste the Google listing</p>
+    <div class="capsule" id="capsule">
       <input id="url" name="url" type="url" required placeholder="A website or Google listing"
-        value="{html.escape(url)}" autocomplete="url" aria-label="Shop listing URL"{" hidden" if locked else ""}/>
-      <button type="button" id="hire"{" hidden" if locked else ""}>Hire the flock</button>
+        value="{html.escape(url)}" autocomplete="url" aria-label="Shop listing URL"{" readonly" if locked else ""}/>
+      <button type="button" id="hire">Hire the flock</button>
       <button type="button" class="yes" id="yes" hidden>YES</button>
     </div>
     {err}
@@ -180,14 +181,14 @@ def render_theater(
       <input id="goal" name="goal" type="text" placeholder="What success looks like" value="{html.escape(goal)}" aria-label="Goal"/>
       <input id="assets" name="assets" type="text" placeholder="Extra photo or menu URLs" value="{html.escape(assets)}" aria-label="Asset URLs"/>
     </div>
-    <p class="note">The Glen's Bakehouse kit is the public roost — hire is closed. Do not contact the bakery.</p>
+    <p class="note">Watch the URL land in the box, then hire, then YES. Hire is closed — the seeded kit is already on the record. Do not contact the bakery.</p>
   </div>
   <section class="delivery" id="delivery">
     <iframe id="kit-frame" title="Paste kit" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation allow-downloads"></iframe>
   </section>
 </div>
 <script>window.__FLOCK__ = {payload};</script>
-<script src="{ASSET}/theater.js?v=lock"></script>
+<script src="{ASSET}/theater.js?v=audition"></script>
 </body>
 </html>
 """

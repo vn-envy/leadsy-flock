@@ -29,7 +29,16 @@ def test_demo_route_is_public() -> None:
     assert "Open Telegram" not in res.text
     assert "Hire is closed" in res.text
     assert 'data-locked="1"' in res.text
-    assert 'id="hire" hidden' in res.text
+    assert 'id="hire"' in res.text
+    assert 'id="hire" hidden' not in res.text
+    assert 'id="cue"' in res.text
+    assert "Paste the Google listing" in res.text
+    js = _client().get("/assets/flock/theater.js").text
+    assert "function playAudition" in js
+    assert "function typeUrl" in js
+    assert "await beat(1500)" in js
+    assert "await beat(3200)" in js
+    assert "playSeed(false).then" not in js
     assert "observatory" in res.text
     assert "architecture" in res.text
     assert "blog" in res.text

@@ -10,12 +10,12 @@
     markers: ["rLF34cfolz9TJA92F", "glensbakehouse.com", "google-listing-eaf57cae"],
   };
   const STEPS = [
-    { id: "scout", label: "Scout" },
-    { id: "inka", label: "Inka" },
-    { id: "inka_harvest", label: "Harvest" },
-    { id: "creative_gate", label: "Gate" },
-    { id: "stella", label: "Stella" },
-    { id: "ad_kit", label: "Kit" },
+    { id: "scout", label: "Scout", say: "Scout reads the listing, Maps, and the shop's own site." },
+    { id: "inka", label: "Inka", say: "Inka starts Veo from this shop's own photos — not fake UGC." },
+    { id: "inka_harvest", label: "Harvest", say: "Harvest polls Veo, muxes English and Hindi, crops the slots." },
+    { id: "creative_gate", label: "Gate", say: "Ledge fail-closes the copy. A reject does not ship." },
+    { id: "stella", label: "Stella", say: "Stella hosts a consent-first landing. Discovery is not consent." },
+    { id: "ad_kit", label: "Kit", say: "Ad Kit fans one master into Meta, WhatsApp, and Google. No autopost." },
   ];
 
   const $ = (id) => document.getElementById(id);
@@ -30,8 +30,23 @@
   const frame = $("kit-frame");
   const err = $("err");
   const status = $("status");
+  const cueEl = $("cue");
+  const capsule = $("capsule");
   let campaign = boot.campaign || null;
   let timer = null;
+  let auditioning = false;
+
+  function reduceMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function beat(ms) {
+    return new Promise((r) => setTimeout(r, reduceMotion() ? Math.min(ms, 280) : ms));
+  }
+
+  function cue(text) {
+    if (cueEl) cueEl.textContent = text;
+  }
 
   function setStage(name) {
     document.body.dataset.stage = name;
@@ -62,21 +77,26 @@
   }
 
   function showQuote() {
+    capsule?.classList.remove("typing", "ready");
+    hireBtn.classList.remove("press");
     setStage("quote");
     quote.classList.add("show");
     yesBtn.hidden = false;
     hireBtn.hidden = true;
     headline.textContent = campaign?.brief?.businessName || seed.name;
-    lede.textContent = "Scout, Inka, and Stella for a launch kit. Flo never autoposts.";
+    lede.textContent = "Scout, Inka, and Stella for a launch kit. Flo never autoposts. YES is the only expensive door.";
+    cue("3 · YES — nothing expensive runs until this");
   }
 
   function showWork() {
+    yesBtn.classList.remove("press");
     setStage("work");
     path.classList.add("show");
     path.setAttribute("aria-hidden", "false");
     yesBtn.disabled = true;
     yesBtn.textContent = "Hired";
     lede.textContent = "The flock is on the listing. Stay on this roost.";
+    cue("4 · The flock works");
   }
 
   function showKit(src) {
@@ -86,10 +106,83 @@
     if (frame.src !== next) frame.src = src;
     headline.textContent = "The kit is the roost.";
     lede.textContent = "Paste into Ads Manager. We do not autopost. Do not contact the bakery.";
+    cue("5 · Paste kit");
+  }
+
+  async function typeUrl(text) {
+    hireBtn.hidden = false;
+    yesBtn.hidden = true;
+    urlInput.value = "";
+    setStage("paste");
+    cue("1 · Paste the Google listing");
+    headline.textContent = "Paste a listing you own.";
+    lede.textContent =
+      "Watch the URL land in the box. This roost uses Glen's Bakehouse as a seeded kit. We never autopost. Hire is closed.";
+    capsule?.classList.add("typing");
+    capsule?.classList.remove("ready");
+    try {
+      urlInput.focus({ preventScroll: true });
+    } catch (e) {
+      /* ignore */
+    }
+    if (reduceMotion()) {
+      urlInput.value = text;
+    } else {
+      for (let i = 1; i <= text.length; i += 1) {
+        urlInput.value = text.slice(0, i);
+        await beat(i < 20 ? 42 : 78);
+      }
+    }
+    capsule?.classList.remove("typing");
+  }
+
+  async function playAudition() {
+    if (auditioning) return;
+    auditioning = true;
+    $("name").value = seed.name;
+    $("geo").value = seed.geo;
+    $("goal").value = seed.goal;
+    await beat(900);
+    await typeUrl(seed.url);
+    await beat(1800);
+    cue("2 · Hire the flock");
+    lede.textContent = "Hire the flock. Flo still waits for YES before Veo. This seeded roost does not start a real campaign.";
+    capsule?.classList.add("ready");
+    hireBtn.classList.add("press");
+    await beat(1600);
+    hireBtn.classList.remove("press");
+    capsule?.classList.remove("ready");
+    showQuote();
+    yesBtn.classList.add("press");
+    await beat(3200);
+    yesBtn.classList.remove("press");
+    await playWork();
+    auditioning = false;
+  }
+
+  async function playWork() {
+    showWork();
+    for (let i = 0; i < STEPS.length; i += 1) {
+      cue("4 · " + STEPS[i].label);
+      headline.textContent = STEPS[i].label;
+      lede.textContent = STEPS[i].say;
+      paintPath(
+        STEPS.slice(0, i).map((s) => ({ step: s.id, status: "ok" })),
+        "running",
+      );
+      await beat(1500);
+    }
+    paintPath(
+      STEPS.map((s) => ({ step: s.id, status: "ok" })),
+      "completed",
+    );
+    await beat(900);
+    showKit(seed.kitPath);
   }
 
   async function createRun() {
     err.textContent = "";
+    if (auditioning) return;
     const url = (urlInput.value || "").trim();
     if (boot.locked) {
       await playSeed(false);
@@ -135,7 +228,8 @@
   }
 
   async function approve() {
-    if (boot.locked || !campaign?.id) return playSeed(true);
+    if (auditioning) return;
+    if (boot.locked || !campaign?.id) return playWork();
     yesBtn.disabled = true;
     yesBtn.textContent = "Hiring…";
     const res = await fetch("/v1/campaigns/" + campaign.id + "/approve", { method: "POST" });
@@ -169,29 +263,13 @@
   }
 
   async function playSeed(fromYes) {
-    if (!fromYes) {
-      urlInput.value = seed.url;
-      $("name").value = seed.name;
-      $("geo").value = seed.geo;
-      $("goal").value = seed.goal;
-      headline.textContent = seed.name;
-      await new Promise((r) => setTimeout(r, 900));
-      showQuote();
-      return;
-    }
-    showWork();
-    for (let i = 0; i < STEPS.length; i += 1) {
-      paintPath(
-        STEPS.slice(0, i).map((s) => ({ step: s.id, status: "ok" })),
-        "running",
-      );
-      await new Promise((r) => setTimeout(r, 620));
-    }
-    paintPath(
-      STEPS.map((s) => ({ step: s.id, status: "ok" })),
-      "completed",
-    );
-    showKit(seed.kitPath);
+    if (fromYes) return playWork();
+    $("name").value = seed.name;
+    $("geo").value = seed.geo;
+    $("goal").value = seed.goal;
+    await typeUrl(seed.url);
+    await beat(1400);
+    showQuote();
   }
 
   hireBtn.addEventListener("click", (e) => {
@@ -207,7 +285,8 @@
   yesBtn.addEventListener("click", () => approve());
   $("seed-chip")?.addEventListener("click", (e) => {
     e.preventDefault();
-    playSeed(false);
+    if (auditioning) return;
+    playAudition();
   });
   $("more-toggle")?.addEventListener("click", () => {
     $("more").classList.toggle("open");
@@ -233,8 +312,8 @@
   } else if (boot.play === "kit") {
     urlInput.value = seed.url;
     headline.textContent = seed.name;
-    playSeed(true);
+    playWork();
   } else if (boot.play === "seed") {
-    playSeed(false).then(() => setTimeout(() => playSeed(true), 1800));
+    playAudition();
   }
 })();
