@@ -93,6 +93,7 @@ def render_kit(
     <nav>
       <a href="/dash" target="_top">observatory</a>
       <a href="/architecture" target="_top">architecture</a>
+      <a href="/blog" target="_top">blog</a>
       <a href="{land_href}" target="_top">landing</a>
       <span class="here">kit</span>
     </nav>

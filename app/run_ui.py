@@ -131,6 +131,7 @@ def render_theater(
       <nav>
         <a href="/dash">observatory</a>
         <a href="/architecture">architecture</a>
+        <a href="/blog">blog</a>
         <span class="here" id="status">roost</span>
       </nav>
     </header>

@@ -37,6 +37,7 @@ def test_home_is_capture_form() -> None:
     assert "Hire the flock" in res.text
     assert "observatory" in res.text
     assert "architecture" in res.text
+    assert "blog" in res.text
     assert "neighbourhood shops" in res.text
     assert 'class="story"' in res.text
     assert "Unlock" in res.text
@@ -157,6 +158,7 @@ def test_infra_surfaces_home_and_run() -> None:
     assert surfaces["seedKit"] == "/k/google-listing-eaf57cae"
     assert surfaces["dash"] == "/dash"
     assert surfaces["architecture"] == "/architecture"
+    assert surfaces["blog"] == "/blog"
 
 
 def test_dash_is_observatory_not_a_table(monkeypatch) -> None:
@@ -267,6 +269,27 @@ def test_architecture_page_is_the_judge_diagram() -> None:
     assert "image/png" in png.headers["content-type"]
     assert png.content[:8] == b"\x89PNG\r\n\x1a\n"
     assert b"quotedInr" not in png.content
+
+
+def test_blog_is_hackathon_essay() -> None:
+    res = _client().get("/blog")
+    assert res.status_code == 200
+    text = res.text
+    assert "purposes of entering" in text
+    assert "All Things Agentic" in text
+    assert "neighbourhood" in text.lower() or "grass roots" in text.lower() or "grass-roots" in text.lower()
+    assert "Gemini 3.5" in text
+    assert "Google ADK" in text
+    assert "Veo 3.1" in text
+    assert "Cloud Run" in text
+    assert "Pub/Sub" in text
+    assert "Model Armor" in text
+    assert "never autopost" in text.lower() or "do not autopost" in text.lower()
+    assert "5997" not in text
+    assert "<table" not in text.lower()
+    md = _client().get("/blog.md")
+    assert md.status_code == 200
+    assert b"purposes of entering" in md.content
 
 
 def test_kit_rebuilds_flock_bento(monkeypatch) -> None:

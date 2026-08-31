@@ -14,6 +14,7 @@ Paste a shop URL. A researched, gated, consented campaign out. Every action on t
 A neighbourhood shop pastes a listing it owns. **Flo** (Google ADK + Gemini 3.5 Flash) on Cloud Run `flock-api` waits for a human **YES**. Pub/Sub `campaign-steps` fans **Scout → Inka → Harvest → Ledge → Stella → Ad Kit** on `flock-worker`. Vertex supplies Search/Maps, Veo 3.1, Gemini Image, TTS, Lyria, and Gemma. Firestore receipts, Cloud Storage, Memory Bank, and Cloud Trace stay on the record. The owner pastes the kit. The flock never autoposts. The [observatory](https://flock-api-533880600838.asia-south1.run.app/dash) shows tokens, tools, and list-price burn.
 
 Live diagram: https://flock-api-533880600838.asia-south1.run.app/architecture
+Live blog (hackathon write-up): https://flock-api-533880600838.asia-south1.run.app/blog
 
 Regenerate with [mingrammer/diagrams](https://github.com/mingrammer/diagrams):
 

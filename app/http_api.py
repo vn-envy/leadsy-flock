@@ -25,6 +25,8 @@ from app.campaigns import (
 )
 from app.demo import render_html as render_demo
 from app.arch_ui import render_html as render_arch
+from app.blog_ui import POST as BLOG_MD
+from app.blog_ui import render_html as render_blog
 from app.dash_ui import render_html as render_dash
 from app.derive import download_name
 from app.kit_ui import render_from_campaign
@@ -100,6 +102,7 @@ def attach_flock_routes(app: FastAPI) -> None:
                 "ops": "/ops",
                 "dash": "/dash",
                 "architecture": "/architecture",
+                "blog": "/blog",
                 "studio": "/s/{id}?k=",
             },
         }
@@ -201,6 +204,20 @@ def attach_flock_routes(app: FastAPI) -> None:
     @app.get("/architecture", response_class=HTMLResponse)
     def architecture() -> HTMLResponse:
         return HTMLResponse(render_arch())
+
+    @app.get("/blog", response_class=HTMLResponse)
+    def blog() -> HTMLResponse:
+        return HTMLResponse(render_blog())
+
+    @app.get("/blog.md")
+    def blog_markdown() -> FileResponse:
+        if not BLOG_MD.is_file():
+            raise HTTPException(404, "blog missing")
+        return FileResponse(
+            BLOG_MD,
+            media_type="text/markdown; charset=utf-8",
+            headers={"Cache-Control": "public, max-age=3600"},
+        )
 
     @app.get("/architecture.png")
     def architecture_png() -> FileResponse:
