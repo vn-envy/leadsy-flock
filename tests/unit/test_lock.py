@@ -30,6 +30,8 @@ def test_seeded_surface_is_public() -> None:
         "/assets/flock/theater.js",
         "/blog",
         "/blog.md",
+        "/video",
+        "/video.md",
         "/dash",
         "/v1/dash",
         "/trace",

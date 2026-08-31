@@ -29,6 +29,8 @@ from app.blog_ui import POST as BLOG_MD
 from app.blog_ui import render_html as render_blog
 from app.dash_ui import render_html as render_dash
 from app.trace_ui import render_html as render_trace
+from app.video_ui import VIDEO as VIDEO_MD
+from app.video_ui import render_html as render_video
 from app.derive import download_name
 from app.kit_ui import render_from_campaign
 from app.lock import enabled as public_lock_on
@@ -228,6 +230,20 @@ def attach_flock_routes(app: FastAPI) -> None:
             BLOG_MD,
             media_type="text/markdown; charset=utf-8",
             headers={"Cache-Control": "public, max-age=3600"},
+        )
+
+    @app.get("/video", response_class=HTMLResponse)
+    def video_bible() -> HTMLResponse:
+        return HTMLResponse(render_video())
+
+    @app.get("/video.md")
+    def video_markdown() -> FileResponse:
+        if not VIDEO_MD.is_file():
+            raise HTTPException(404, "video bible missing")
+        return FileResponse(
+            VIDEO_MD,
+            media_type="text/markdown; charset=utf-8",
+            headers={"Cache-Control": "public, max-age=60"},
         )
 
     @app.get("/architecture.png")

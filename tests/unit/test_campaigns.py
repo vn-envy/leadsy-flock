@@ -392,6 +392,21 @@ def test_blog_is_hackathon_essay() -> None:
     assert b"purposes of entering" in md.content
 
 
+def test_video_bible_is_readable() -> None:
+    res = _client().get("/video")
+    assert res.status_code == 200
+    text = res.text
+    assert "You already live on Google" in text
+    assert "engine.scout" in text
+    assert "/trace" in text
+    assert "5997" not in text
+    assert "<table" in text.lower()
+    assert "<blockquote" in text.lower()
+    md = _client().get("/video.md")
+    assert md.status_code == 200
+    assert b"You already live on Google" in md.content
+
+
 def test_kit_rebuilds_flock_bento(monkeypatch) -> None:
     monkeypatch.setattr(
         "app.http_api.ledger.get_campaign",

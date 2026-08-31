@@ -14,7 +14,9 @@ tests
 *.md
 !README.md
 !app/blog.md
+!app/video.md
 !docs/blog.md
+!docs/demo-video.md
 AGENTS.md
 .agents-cli-spec.md
 deployment

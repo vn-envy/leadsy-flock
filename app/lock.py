@@ -30,6 +30,8 @@ _STORY_GET = frozenset(
         "/architecture.png",
         "/blog",
         "/blog.md",
+        "/video",
+        "/video.md",
         "/ops",
         f"/k/{SEED_ID}",
         f"/l/{SEED_ID}",

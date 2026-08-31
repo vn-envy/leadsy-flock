@@ -19,7 +19,22 @@ POST = next((p for p in _CANDIDATES if p.is_file()), _CANDIDATES[0])
 
 
 def render_html() -> str:
-    raw = POST.read_text(encoding="utf-8") if POST.is_file() else ""
+    return render_post(
+        POST,
+        kicker="All Things Agentic · August 2026",
+        here="blog",
+        md_href="/blog.md",
+    )
+
+
+def render_post(
+    source: Path,
+    *,
+    kicker: str,
+    here: str,
+    md_href: str,
+) -> str:
+    raw = source.read_text(encoding="utf-8") if source.is_file() else ""
     title, body = _split_title(raw)
     hero = _src("hero")
     return f"""<!doctype html>
@@ -56,10 +71,37 @@ def render_html() -> str:
       margin: 1.6rem 0 .5rem;
       color: var(--ink);
     }}
+    .post h3 {{
+      font-size: 1.02rem;
+      font-weight: 600;
+      margin: 1.2rem 0 .4rem;
+    }}
     .post p {{ margin: 0 0 .85rem; }}
     .post ol, .post ul {{ margin: 0 0 1rem; padding-left: 1.2rem; }}
     .post li {{ margin: 0 0 .4rem; }}
     .post em {{ color: var(--silt); }}
+    .post blockquote {{
+      margin: 0 0 1rem;
+      padding: .15rem 0 .15rem .9rem;
+      border-left: 3px solid var(--pink, #d49a9a);
+      color: var(--silt);
+    }}
+    .post hr {{
+      border: 0; border-top: 1px solid var(--line); margin: 1.4rem 0;
+    }}
+    .post table {{
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .88rem;
+      margin: 0 0 1rem;
+    }}
+    .post th, .post td {{
+      text-align: left;
+      vertical-align: top;
+      padding: .45rem .5rem;
+      border-bottom: 1px solid var(--line);
+    }}
+    .post th {{ color: var(--ash); font-weight: 500; }}
     .post .arch {{
       margin: .4rem 0 1.1rem;
       border-radius: 1.1rem;
@@ -84,15 +126,15 @@ def render_html() -> str:
       <a href="/dash">observatory</a>
       <a href="/trace">backend path</a>
       <a href="/architecture">architecture</a>
-      <span class="here">blog</span>
+      <span class="here">{html.escape(here)}</span>
     </nav>
   </header>
   <article class="post">
-    <p class="kicker">All Things Agentic · August 2026</p>
+    <p class="kicker">{html.escape(kicker)}</p>
     <h1>{html.escape(title)}</h1>
     {_article_html(body)}
   </article>
-  <p class="note">This article was created for the purposes of entering Google's All Things Agentic hackathon. Markdown: <a href="/blog.md">/blog.md</a>. We do not autopost.</p>
+  <p class="note">This article was created for the purposes of entering Google's All Things Agentic hackathon. Markdown: <a href="{html.escape(md_href)}">{html.escape(md_href)}</a>. We do not autopost.</p>
 </main>
 </body>
 </html>
@@ -145,15 +187,58 @@ def _article_html(md: str) -> str:
         list_kind = ""
 
     image = re.compile(r'^!\[([^\]]*)\]\(([^)]+)\)$')
+    table_rows: list[list[str]] = []
+
+    def flush_table() -> None:
+        nonlocal table_rows
+        if not table_rows:
+            return
+        head, *body = table_rows
+        def cells(row: list[str], tag: str) -> str:
+            return "".join(f"<{tag}>{_inline(c)}</{tag}>" for c in row)
+        thead = f"<thead><tr>{cells(head, 'th')}</tr></thead>"
+        tbody = "<tbody>" + "".join(f"<tr>{cells(r, 'td')}</tr>" for r in body) + "</tbody>"
+        chunks.append(f"<table>{thead}{tbody}</table>")
+        table_rows = []
+
+    def table_row(line: str) -> list[str] | None:
+        raw = line.strip()
+        if not raw.startswith("|"):
+            return None
+        bits = [c.strip() for c in raw.strip("|").split("|")]
+        if bits and all(set(c) <= set("-: ") and c for c in bits):
+            return []
+        return bits
 
     for line in md.splitlines():
         numbered = re.match(r"^(\d+)\.\s+(.*)$", line)
         bullet = re.match(r"^-\s+(.*)$", line)
         pic = image.match(line.strip())
-        if line.startswith("## "):
+        row = table_row(line)
+        quote = re.match(r"^>\s?(.*)$", line)
+        if row is not None:
+            flush_para()
+            flush_list()
+            if row:
+                table_rows.append(row)
+            continue
+        flush_table()
+        if line.strip() in {"---", "***", "***"}:
+            flush_para()
+            flush_list()
+            chunks.append("<hr/>")
+        elif line.startswith("### "):
+            flush_para()
+            flush_list()
+            chunks.append(f"<h3>{_inline(line[4:].strip())}</h3>")
+        elif line.startswith("## "):
             flush_para()
             flush_list()
             chunks.append(f"<h2>{_inline(line[3:].strip())}</h2>")
+        elif quote:
+            flush_para()
+            flush_list()
+            chunks.append(f"<blockquote><p>{_inline(quote.group(1))}</p></blockquote>")
         elif pic:
             flush_para()
             flush_list()
@@ -180,6 +265,7 @@ def _article_html(md: str) -> str:
             para.append(line.strip())
     flush_para()
     flush_list()
+    flush_table()
     return "\n".join(chunks)
 
 
