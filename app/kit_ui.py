@@ -78,7 +78,7 @@ def render_kit(
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Kit · {business}</title>
-  <link rel="stylesheet" href="{ASSET}/kit.css?v=submit"/>
+  <link rel="stylesheet" href="{ASSET}/kit.css?v=submit2"/>
   <style>video.thumb[hidden] {{ display: none; }}</style>
 </head>
 <body>

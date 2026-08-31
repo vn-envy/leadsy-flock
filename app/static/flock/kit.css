@@ -163,21 +163,30 @@ h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); line-height: 1.1; margin: .2rem 0 .4
 .card[data-id="google_rsa"] { grid-column: span 3; }
 .card .head { padding: .85rem 1rem .15rem; }
 .card h2 { font-size: .95rem; margin: .15rem 0 0; font-weight: 650; color: var(--ink); }
-.media { display: grid; gap: .55rem; margin: .55rem 0 .2rem; }
-.media .muted { padding: 0 1rem 0; }
+.media {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  gap: .45rem;
+  margin: 0;
+  min-height: 0;
+}
+.media .muted { padding: .55rem 1rem 0; }
 .still {
   position: relative;
   display: block;
   width: 100%;
+  flex: 1 1 auto;
+  min-height: 14rem;
   overflow: hidden;
-  aspect-ratio: 4 / 5;
   background: var(--chunnam);
   margin: 0;
 }
-.still[data-aspect="1.91:1"] { aspect-ratio: 1.91 / 1; }
+.still[data-aspect="1.91:1"] { min-height: 8rem; }
 .still .thumb {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
+  max-width: none; max-height: none;
   object-fit: cover; object-position: center;
   display: block;
 }
@@ -205,7 +214,7 @@ h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); line-height: 1.1; margin: .2rem 0 .4
   transition: transform 160ms var(--ease-out), background 150ms var(--ease-out);
 }
 video.thumb[hidden], .film-link[hidden] { display: none; }
-.copyblock { padding: .55rem 1rem 1rem; margin-top: auto; }
+.copyblock { padding: .55rem 1rem 1rem; }
 .utm { font-size: .78rem; color: var(--ash); }
 .muted { color: var(--ash); font-size: .85rem; }
 ul.rsa { margin: .2rem 0 .4rem 1.1rem; padding: 0; }

@@ -251,6 +251,10 @@ def test_kit_rebuilds_flock_bento(monkeypatch) -> None:
     assert 'target="_top"' in res.text
     assert "copyblock" in res.text
     assert 'class="head"' in res.text
+    css = _client().get("/assets/flock/kit.css").text
+    assert "object-fit: cover" in css
+    assert ".still .thumb" in css
+    assert "position: absolute" in css
 
 
 def test_ops_requires_token(monkeypatch) -> None:
