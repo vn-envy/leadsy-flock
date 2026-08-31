@@ -227,6 +227,10 @@
     startPoll();
   } else if (campaign?.id) {
     showQuote(campaign.engineConfig?.price_inr || 5997);
+  } else if (boot.play === "kit") {
+    urlInput.value = seed.url;
+    headline.textContent = seed.name;
+    playSeed(true);
   } else if (boot.play === "seed") {
     playSeed(false).then(() => setTimeout(() => playSeed(true), 1800));
   }

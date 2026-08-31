@@ -74,10 +74,11 @@ a { color: var(--silt); }
 .cast {
   position: absolute;
   left: 50%;
-  bottom: 11.5rem;
+  top: 1.05rem;
+  bottom: auto;
   transform: translateX(-50%);
   display: flex;
-  gap: .7rem;
+  gap: .65rem;
   z-index: 2;
   justify-content: center;
   width: min(44rem, calc(100% - 2rem));
@@ -86,9 +87,12 @@ a { color: var(--silt); }
   width: 5.1rem;
   text-align: center;
   color: var(--ink);
-  opacity: 0;
-  transform: translateY(18px);
-  animation: rise .9s ease forwards;
+  padding: .22rem .12rem .35rem;
+  border-radius: 1.2rem;
+  background: rgba(250, 248, 244, .82);
+  box-shadow: 0 8px 18px rgba(62,64,58,.1);
+  transform: translateY(10px);
+  animation: rise .8s ease forwards;
 }
 .bird img, .bird .ph {
   width: 5.1rem;
@@ -128,7 +132,7 @@ a { color: var(--silt); }
   text-align: center;
   padding: 1.05rem 1.15rem 1rem;
   border-radius: 1.45rem;
-  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  background: rgba(250, 248, 244, .94);
   border: 1px solid color-mix(in srgb, var(--paper) 70%, var(--line));
   box-shadow: 0 18px 50px rgba(62,64,58,.12);
   backdrop-filter: blur(16px);
@@ -196,6 +200,7 @@ a { color: var(--silt); }
   font-size: .95rem;
 }
 .capsule button:disabled, .yes:disabled { opacity: .5; cursor: not-allowed; }
+.capsule #yes,
 .yes {
   background: var(--bougainvillea);
   min-width: 6.4rem;
@@ -222,6 +227,7 @@ a { color: var(--silt); }
   font-size: clamp(2.3rem, 6vw, 3.6rem);
   margin: .05rem 0 .1rem;
   color: var(--silt);
+  font-weight: 600;
 }
 .path {
   display: none;
@@ -287,8 +293,8 @@ a { color: var(--silt); }
 }
 .err { color: #b56e7c; font-size: .88rem; margin: .4rem 0 0; min-height: 0; }
 @keyframes rise {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { transform: translateY(10px); }
+  to { transform: translateY(0); }
 }
 @keyframes mural-ease {
   from { transform: scale(1.08); }
@@ -297,13 +303,15 @@ a { color: var(--silt); }
 body[data-stage="quote"] .chip,
 body[data-stage="work"] .chip,
 body[data-stage="kit"] .chip,
+body[data-stage="quote"] .linkish,
 body[data-stage="work"] .linkish,
 body[data-stage="kit"] .linkish,
 body[data-stage="kit"] .note,
 body[data-stage="work"] .note { display: none; }
+body[data-stage="quote"] .capsule { justify-content: space-between; }
 body[data-stage="work"] .capsule input { display: none; }
 body[data-stage="kit"] .roost { filter: saturate(.75) brightness(.92); }
-body[data-stage="kit"] .cast { bottom: auto; top: .7rem; }
+body[data-stage="kit"] .cast { top: .55rem; }
 body[data-stage="kit"] .bird span, body[data-stage="kit"] .bird b { color: var(--paper); text-shadow: 0 1px 8px rgba(58,61,64,.45); }
 body[data-stage="kit"] .plate {
   top: .85rem;
@@ -320,11 +328,11 @@ body[data-stage="kit"] .capsule, body[data-stage="kit"] .quote, body[data-stage=
   .stage { height: auto; min-height: 100dvh; }
   .roost { position: relative; inset: auto; margin: .55rem; min-height: 46vh; }
   .roost .mural { min-height: 46vh; }
-  .cast { position: absolute; bottom: 1rem; }
+  .cast { position: absolute; top: .7rem; bottom: auto; }
   .bird, .bird img { width: 3.5rem; height: auto; }
   .bird img { height: 3.5rem; }
   .plate { position: relative; left: auto; bottom: auto; transform: none; width: calc(100% - 1.4rem); margin: -3.2rem auto 1.4rem; }
   .delivery { position: relative; inset: auto; width: calc(100% - 1.4rem); margin: 0 auto 1.4rem; min-height: 70vh; }
   body[data-stage="kit"] .plate { position: relative; top: auto; }
-  body[data-stage="kit"] .cast { position: absolute; top: auto; bottom: 1rem; }
+  body[data-stage="kit"] .cast { position: absolute; top: .55rem; bottom: auto; }
 }
