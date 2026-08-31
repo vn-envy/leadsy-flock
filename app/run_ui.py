@@ -130,6 +130,7 @@ def render_theater(
       <a class="word" href="/">Leadsy Flock</a>
       <nav>
         <a href="/dash">observatory</a>
+        <a href="/architecture">architecture</a>
         <span class="here" id="status">roost</span>
       </nav>
     </header>

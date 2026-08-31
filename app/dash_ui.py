@@ -41,6 +41,7 @@ def render_html(data: dict[str, Any] | None = None) -> str:
     <nav>
       <a href="/">roost</a>
       <a href="/demo">seeded kit</a>
+      <a href="/architecture">architecture</a>
       <span class="here">observatory</span>
     </nav>
   </header>

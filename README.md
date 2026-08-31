@@ -7,6 +7,22 @@ Paste a shop URL. A researched, gated, consented campaign out. Every action on t
 > **Hackathon entry** — Google All Things Agentic, 27–31 August 2026.
 > Concept lineage: an earlier prototype on a different stack. **This repo is a ground-up rebuild.** See [DISCLOSURE.md](DISCLOSURE.md).
 
+## Architecture
+
+![Leadsy Flock end-to-end architecture](docs/architecture.png)
+
+A neighbourhood shop pastes a listing it owns. **Flo** (Google ADK + Gemini 3.5 Flash) on Cloud Run `flock-api` waits for a human **YES**. Pub/Sub `campaign-steps` fans **Scout → Inka → Harvest → Ledge → Stella → Ad Kit** on `flock-worker`. Vertex supplies Search/Maps, Veo 3.1, Gemini Image, TTS, Lyria, and Gemma. Firestore receipts, Cloud Storage, Memory Bank, and Cloud Trace stay on the record. The owner pastes the kit. The flock never autoposts. The [observatory](https://flock-api-533880600838.asia-south1.run.app/dash) shows tokens, tools, and list-price burn.
+
+Live diagram: https://flock-api-533880600838.asia-south1.run.app/architecture
+
+Regenerate with [mingrammer/diagrams](https://github.com/mingrammer/diagrams):
+
+```bash
+sudo apt-get install -y graphviz
+uv pip install diagrams
+python scripts/gen_architecture.py   # writes docs/architecture.png
+```
+
 ## Status (27 Aug 2026)
 
 Hello Flo is live. The flock engines run on Pub/Sub + Cloud Run:

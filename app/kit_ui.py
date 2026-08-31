@@ -92,6 +92,7 @@ def render_kit(
     <a class="word" href="/" target="_top">Leadsy Flock</a>
     <nav>
       <a href="/dash" target="_top">observatory</a>
+      <a href="/architecture" target="_top">architecture</a>
       <a href="{land_href}" target="_top">landing</a>
       <span class="here">kit</span>
     </nav>

@@ -107,6 +107,7 @@ def test_ad_kit_html_is_paste_guide_not_autopost() -> None:
     assert "video.thumb[hidden]" in html
     assert "bento" in html
     assert "observatory" in html
+    assert "architecture" in html
     assert 'target="_top"' in html
     assert "film-slot" in html
     assert "copyblock" in html

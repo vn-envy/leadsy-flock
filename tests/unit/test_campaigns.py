@@ -36,6 +36,7 @@ def test_home_is_capture_form() -> None:
     assert "required" in res.text
     assert "Hire the flock" in res.text
     assert "observatory" in res.text
+    assert "architecture" in res.text
     assert "neighbourhood shops" in res.text
     assert 'class="story"' in res.text
     assert "Unlock" in res.text
@@ -154,6 +155,7 @@ def test_infra_surfaces_home_and_run() -> None:
     assert surfaces["run"] == "/r/{id}?k="
     assert surfaces["seedKit"] == "/k/google-listing-eaf57cae"
     assert surfaces["dash"] == "/dash"
+    assert surfaces["architecture"] == "/architecture"
 
 
 def test_dash_is_observatory_not_a_table(monkeypatch) -> None:
@@ -242,6 +244,25 @@ def test_dash_is_observatory_not_a_table(monkeypatch) -> None:
     assert any(t["id"] == "google_search" for t in seed["tools"])
     assert any(t["id"] == "veo" for t in seed["tools"])
     assert any(t["id"] == "ffmpeg" for t in seed["tools"])
+
+
+def test_architecture_page_is_the_judge_diagram() -> None:
+    html = _client().get("/architecture")
+    assert html.status_code == 200
+    assert "architecture.png" in html.text
+    assert "never autopost" in html.text.lower()
+    assert "Gemini 3.5" in html.text
+    assert "Google ADK" in html.text
+    assert "Model Armor" in html.text
+    assert "Memory Bank" in html.text
+    assert "Veo 3.1" in html.text
+    assert "<table" not in html.text.lower()
+    assert "5997" not in html.text
+    png = _client().get("/architecture.png")
+    assert png.status_code == 200
+    assert "image/png" in png.headers["content-type"]
+    assert png.content[:8] == b"\x89PNG\r\n\x1a\n"
+    assert b"quotedInr" not in png.content
 
 
 def test_kit_rebuilds_flock_bento(monkeypatch) -> None:

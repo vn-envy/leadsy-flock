@@ -24,6 +24,7 @@ from app.campaigns import (
     screen_text,
 )
 from app.demo import render_html as render_demo
+from app.arch_ui import render_html as render_arch
 from app.dash_ui import render_html as render_dash
 from app.derive import download_name
 from app.kit_ui import render_from_campaign
@@ -97,6 +98,7 @@ def attach_flock_routes(app: FastAPI) -> None:
                 "seedLanding": "/l/google-listing-eaf57cae",
                 "ops": "/ops",
                 "dash": "/dash",
+                "architecture": "/architecture",
                 "studio": "/s/{id}?k=",
             },
         }
@@ -194,6 +196,21 @@ def attach_flock_routes(app: FastAPI) -> None:
     @app.get("/dash", response_class=HTMLResponse)
     def dash() -> HTMLResponse:
         return HTMLResponse(render_dash())
+
+    @app.get("/architecture", response_class=HTMLResponse)
+    def architecture() -> HTMLResponse:
+        return HTMLResponse(render_arch())
+
+    @app.get("/architecture.png")
+    def architecture_png() -> FileResponse:
+        path = Path(__file__).resolve().parents[1] / "docs" / "architecture.png"
+        if not path.is_file():
+            raise HTTPException(404, "architecture diagram missing")
+        return FileResponse(
+            path,
+            media_type="image/png",
+            headers={"Cache-Control": "public, max-age=3600"},
+        )
 
     @app.get("/v1/dash")
     def dash_json() -> dict:
