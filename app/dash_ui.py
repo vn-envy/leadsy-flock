@@ -27,7 +27,7 @@ def render_html(data: dict[str, Any] | None = None) -> str:
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Observatory · Leadsy Flock</title>
-  <link rel="stylesheet" href="{ASSET}/dash.css?v=open"/>
+  <link rel="stylesheet" href="{ASSET}/dash.css?v=trace"/>
 </head>
 <body>
 <section class="wash" style="background-image:url('{hero}')">
@@ -40,7 +40,7 @@ def render_html(data: dict[str, Any] | None = None) -> str:
     <a class="word" href="/demo">Leadsy Flock</a>
     <nav>
       <a href="/demo">roost</a>
-      <a href="/demo">seeded kit</a>
+      <a href="/trace">backend path</a>
       <a href="/architecture">architecture</a>
       <a href="/blog">blog</a>
       <span class="here">observatory</span>
@@ -48,7 +48,7 @@ def render_html(data: dict[str, Any] | None = None) -> str:
   </header>
   <p class="quiet">Cloud Run · {service} · {region}</p>
   <h1>The flock, in the open.</h1>
-  <p class="lede">Revision <code id="revision">{rev}</code> is serving. The Glen's Bakehouse seed shows the tokens, tools, and Vertex list-price burn that made the kit — not a spreadsheet, not an invoice. We do not autopost.</p>
+  <p class="lede">Revision <code id="revision">{rev}</code> is serving. The Glen's Bakehouse seed shows the tokens, tools, and Vertex list-price burn that made the kit — not a spreadsheet, not an invoice. The <a href="/trace">backend path</a> is the receipt list plus Cloud Trace console links. We do not autopost.</p>
   <div class="stats" id="stats"></div>
   <div class="grid">
     <section class="card span-2" id="seed-card">
@@ -63,6 +63,12 @@ def render_html(data: dict[str, Any] | None = None) -> str:
       <div class="chips" id="seed-tools"></div>
       <p class="quiet">Models</p>
       <div class="chips" id="seed-models"></div>
+    </section>
+    <section class="card span-2" id="path-card">
+      <p class="quiet">What ran · Glen's Bakehouse</p>
+      <p class="seed-lede">Firestore receipts for the seeded kit. Worker spans are <code>engine.&lt;step&gt;</code> on <code>flock-worker</code>. <a href="/trace">Open the backend path</a>.</p>
+      <ol class="hops" id="hops"></ol>
+      <div class="chips" id="console-links"></div>
     </section>
     <section class="card span-2">
       <p class="quiet">Engine path</p>
@@ -96,7 +102,7 @@ def render_html(data: dict[str, Any] | None = None) -> str:
   <p class="note">{html.escape(str(boot.get("note") or ""))}</p>
 </main>
 <script>window.__DASH__ = {payload};</script>
-<script src="{ASSET}/dash.js?v=open"></script>
+<script src="{ASSET}/dash.js?v=trace"></script>
 </body>
 </html>
 """

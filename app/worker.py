@@ -57,6 +57,7 @@ def handle_step(message: dict[str, Any]) -> dict[str, Any]:
         payload={"idempotencyKey": message.get("idempotencyKey")},
     )
 
+    stamp: dict[str, str] = {}
     with tracer.start_as_current_span(f"engine.{step}") as span:
         span.set_attribute("campaign.id", campaign_id)
         span.set_attribute("engine.step", step)
@@ -67,6 +68,9 @@ def handle_step(message: dict[str, Any]) -> dict[str, Any]:
         except Exception as exc:  # noqa: BLE001 — ACK the push; do not 500-loop Pub/Sub
             result = {"ok": False, "error": f"{type(exc).__name__}:{exc}"}
         span.set_attribute("engine.status", result.get("verdict") or result.get("ok") or "ok")
+        stamp = _trace_stamp()
+        if stamp and isinstance(result, dict):
+            result = {**result, **stamp}
 
     receipt_status = "polling" if step in SIDECAR_STEPS and result.get("retry") else "ok"
     if (
@@ -81,6 +85,8 @@ def handle_step(message: dict[str, Any]) -> dict[str, Any]:
         result.setdefault("errors", [])
         if isinstance(result["errors"], list):
             result["errors"] = [*result["errors"], "kept_previous_resolvedName"]
+        if stamp:
+            result = {**result, **stamp}
         receipt_status = "ok"
     ledger.write_receipt(
         campaign_id=campaign_id,
@@ -195,6 +201,17 @@ def _revise_or_block(campaign_id: str, pipeline: list[str], result: dict[str, An
         "campaignId": campaign_id,
         "step": "creative_gate",
         "result": result,
+    }
+
+
+def _trace_stamp() -> dict[str, str]:
+    span = trace.get_current_span()
+    ctx = span.get_span_context() if span is not None else None
+    if ctx is None or not ctx.is_valid:
+        return {}
+    return {
+        "traceId": format(ctx.trace_id, "032x"),
+        "spanId": format(ctx.span_id, "016x"),
     }
 
 

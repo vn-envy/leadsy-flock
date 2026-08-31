@@ -32,6 +32,8 @@ def test_seeded_surface_is_public() -> None:
         "/blog.md",
         "/dash",
         "/v1/dash",
+        "/trace",
+        "/v1/trace",
         "/architecture",
         "/health",
         "/healthz",

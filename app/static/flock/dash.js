@@ -69,6 +69,7 @@
     ].join("");
 
     paintSeed(data.seed || {});
+    paintPath(data.path || {}, data.run || {});
 
     const maxN = Math.max(1, ...((data.engines || []).map((e) => e.n || 0)));
     document.getElementById("engines").innerHTML = (data.engines || [])
@@ -200,6 +201,45 @@
     if (tools) tools.innerHTML = chips(seed.tools, "No tools recorded yet.");
     const models = document.getElementById("seed-models");
     if (models) models.innerHTML = chips(seed.models, "No models recorded yet.");
+  }
+
+  function paintPath(path, run) {
+    const hopsEl = document.getElementById("hops");
+    if (hopsEl) {
+      const hops = path.hops || [];
+      hopsEl.innerHTML = hops.length
+        ? hops
+            .map((h) => {
+              const when = String(h.finishedAt || h.startedAt || "").slice(0, 19).replace("T", " ");
+              return `<li class="hop" data-status="${esc(h.status || "")}">
+                <p class="quiet">${esc(h.n)} · ${esc(h.service)} · ${esc(h.status)}</p>
+                <b>${esc(h.step)}</b>
+                <span>${esc(h.say || "")}</span>
+                <code>${esc(h.span || "")}</code>
+                <em>${esc(h.model || "—")} · ${esc(when)}</em>
+              </li>`;
+            })
+            .join("")
+        : `<p class="quiet">Waiting on seed receipts.</p>`;
+    }
+    const cons = document.getElementById("console-links");
+    if (cons) {
+      const c = path.console || (run && run.console) || {};
+      const rows = [
+        ["Worker traces", c.workerTraces],
+        ["API traces", c.apiTraces],
+        ["Trace explorer", c.traceExplorer],
+        ["Worker logs", c.workerLogs],
+      ].filter((row) => row[1]);
+      cons.innerHTML = rows.length
+        ? rows
+            .map(
+              ([label, href]) =>
+                `<a class="chip" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`,
+            )
+            .join("")
+        : `<p class="quiet">Console links need a GCP project.</p>`;
+    }
   }
 
   paint(boot);

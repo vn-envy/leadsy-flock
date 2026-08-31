@@ -40,6 +40,8 @@ def test_demo_route_is_public() -> None:
     assert "await beat(3200)" in js
     assert "playSeed(false).then" not in js
     assert "observatory" in res.text
+    assert "backend path" in res.text
+    assert 'href="/trace"' in res.text
     assert "architecture" in res.text
     assert "blog" in res.text
     assert "neighbourhood shops" in res.text
@@ -263,6 +265,87 @@ def test_dash_is_observatory_not_a_table(monkeypatch) -> None:
     assert any(t["id"] == "google_search" for t in seed["tools"])
     assert any(t["id"] == "veo" for t in seed["tools"])
     assert any(t["id"] == "ffmpeg" for t in seed["tools"])
+    path = body["path"]
+    assert path["campaignId"] == "google-listing-eaf57cae"
+    assert "quotedInr" not in path
+    hops = {h["step"]: h for h in path["hops"]}
+    assert hops["scout"]["span"] == "engine.scout"
+    assert hops["scout"]["service"] == "flock-worker"
+    assert hops["plan"]["span"] == "campaign.plan"
+    assert hops["inka_harvest"]["span"] == "engine.inka_harvest"
+    assert "/trace" in res.text
+    assert "backend path" in res.text.lower()
+
+
+def test_trace_page_is_the_backend_path(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "app.observe.ledger.list_receipts",
+        lambda _id: [
+            {
+                "step": "plan",
+                "status": "ok",
+                "engine": "bri",
+                "service": "flock-api",
+                "payload": {"model": "gemini-3.5-flash"},
+            },
+            {
+                "step": "approve",
+                "status": "ok",
+                "engine": "flo",
+                "service": "flock-api",
+            },
+            {
+                "step": "scout",
+                "status": "ok",
+                "engine": "scout",
+                "service": "flock-worker",
+                "attempt": 3,
+                "payload": {"traceId": "abc123", "model": "gemini-3.5-flash"},
+            },
+            {"step": "inka", "status": "ok", "service": "flock-worker"},
+            {"step": "inka_harvest", "status": "ok", "service": "flock-worker"},
+            {"step": "creative_gate", "status": "ok", "service": "flock-worker"},
+            {"step": "stella", "status": "ok", "service": "flock-worker"},
+            {"step": "ad_kit", "status": "ok", "service": "flock-worker"},
+        ],
+    )
+    monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "leadsy-flock")
+    monkeypatch.setenv("GCP_REGION", "asia-south1")
+    monkeypatch.setattr("app.observe._gcp_get", lambda *_a, **_k: None)
+    res = _client().get("/trace")
+    assert res.status_code == 200
+    assert "Glen" in res.text
+    assert "engine.scout" in res.text
+    assert "flock-worker" in res.text
+    assert "campaign.plan" in res.text
+    assert "campaign.approve" in res.text
+    assert "engine.inka_harvest" in res.text
+    assert "engine.creative_gate" in res.text
+    assert "google-listing-eaf57cae" in res.text
+    assert "console.cloud.google.com/run/detail/asia-south1/flock-worker" in res.text
+    assert "console.cloud.google.com/traces/explorer" in res.text
+    assert "<table" not in res.text.lower()
+    assert "5997" not in res.text
+    js = _client().get("/v1/trace")
+    assert js.status_code == 200
+    body = js.json()
+    hops = body["path"]["hops"]
+    assert [h["step"] for h in hops] == [
+        "plan",
+        "approve",
+        "scout",
+        "inka",
+        "inka_harvest",
+        "creative_gate",
+        "stella",
+        "ad_kit",
+    ]
+    assert hops[2]["span"] == "engine.scout"
+    assert hops[2]["service"] == "flock-worker"
+    assert hops[2]["traceId"] == "abc123"
+    assert "quotedInr" not in body["path"]
+    assert body["path"]["console"]["workerTraces"].endswith("project=leadsy-flock")
+    assert "5997" not in str(body)
 
 
 def test_architecture_page_is_the_judge_diagram() -> None:

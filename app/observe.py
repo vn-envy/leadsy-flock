@@ -10,7 +10,7 @@ import os
 from collections import Counter
 from datetime import UTC, datetime, timedelta
 from typing import Any
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 from urllib.request import Request, urlopen
 
 from app import ledger
@@ -41,6 +41,7 @@ def snapshot(*, live: bool = True) -> dict[str, Any]:
     run = cloud_run_proof(live=live)
     traffic = run.get("requests") or {}
     seed = seed_trace()
+    path = backend_path()
     return {
         "generatedAt": datetime.now(UTC).isoformat(),
         "totals": {
@@ -60,6 +61,7 @@ def snapshot(*, live: bool = True) -> dict[str, Any]:
         "engines": _engine_bars(steps),
         "hits": hits_by[:8],
         "seed": seed,
+        "path": path,
         "run": run,
         "note": "Public observatory. Seed burn is Vertex list price, not an invoice. We do not autopost.",
     }
@@ -104,6 +106,7 @@ def cloud_run_proof(*, live: bool = True) -> dict[str, Any]:
         "trafficPercent": 100 if os.environ.get("K_REVISION") else 0,
         "requests": {},
     }
+    proof["console"] = console_links(s.project_id, s.region)
     if not live or not s.project_id:
         return proof
     described = _run_service(s.project_id, s.region, service)
@@ -111,7 +114,146 @@ def cloud_run_proof(*, live: bool = True) -> dict[str, Any]:
         proof.update(described)
         proof["source"] = "run.googleapis.com"
     proof["requests"] = _run_metrics(s.project_id, s.region, service)
+    proof["console"] = console_links(s.project_id, s.region)
     return proof
+
+
+_PATH_ORDER = (
+    "plan",
+    "approve",
+    "scout",
+    "inka",
+    "inka_harvest",
+    "creative_gate",
+    "stella",
+    "ad_kit",
+)
+
+_PATH_COPY = {
+    "plan": "Bri quotes the kit. Flo still waits.",
+    "approve": "Human YES on flock-api. Nothing expensive before this.",
+    "scout": "Google Search + Maps + URL context. Evidence only.",
+    "inka": "Copy + own-photo stills. Veo LRO starts; no wait.",
+    "inka_harvest": "Poll Veo, mux English + Indic TTS, ffmpeg crops.",
+    "creative_gate": "Regex + Gemma classifier + Gemini judge. Fail closed.",
+    "stella": "Consent-first landing. Discovery is not consent.",
+    "ad_kit": "Paste kit. autopost: false.",
+}
+
+_SPAN = {
+    "plan": "campaign.plan",
+    "approve": "campaign.approve",
+    "scout": "engine.scout",
+    "inka": "engine.inka",
+    "inka_harvest": "engine.inka_harvest",
+    "creative_gate": "engine.creative_gate",
+    "stella": "engine.stella",
+    "ad_kit": "engine.ad_kit",
+}
+
+
+def console_links(project: str, region: str) -> dict[str, str]:
+    if not project:
+        return {}
+    worker_q = (
+        'resource.type="cloud_run_revision"\n'
+        'resource.labels.service_name="flock-worker"'
+    )
+    return {
+        "apiTraces": (
+            f"https://console.cloud.google.com/run/detail/{region}/flock-api"
+            f"/observability/traces?project={project}"
+        ),
+        "workerTraces": (
+            f"https://console.cloud.google.com/run/detail/{region}/flock-worker"
+            f"/observability/traces?project={project}"
+        ),
+        "traceExplorer": f"https://console.cloud.google.com/traces/explorer?project={project}",
+        "workerLogs": (
+            "https://console.cloud.google.com/logs/query;query="
+            f"{quote(worker_q, safe='')}?project={project}"
+        ),
+        "filter": 'span_name:"engine." campaign.id="google-listing-eaf57cae"',
+    }
+
+
+def backend_path() -> dict[str, Any]:
+    from app.seed import DEMO_SHOP
+
+    cid = str(DEMO_SHOP["campaignId"])
+    try:
+        receipts = ledger.list_receipts(cid)
+    except Exception:  # noqa: BLE001
+        receipts = []
+    if not isinstance(receipts, list):
+        receipts = []
+    by_step = {
+        str(r.get("step") or ""): r
+        for r in receipts
+        if isinstance(r, dict) and r.get("step")
+    }
+    hops = []
+    for i, step in enumerate(_PATH_ORDER, start=1):
+        rec = by_step.get(step) or {}
+        payload = rec.get("payload") if isinstance(rec.get("payload"), dict) else {}
+        hops.append(
+            {
+                "n": i,
+                "step": step,
+                "engine": rec.get("engine") or _SPAN[step].split(".", 1)[-1],
+                "status": rec.get("status") or "missing",
+                "attempt": rec.get("attempt") or 1,
+                "service": rec.get("service") or (
+                    "flock-api" if step in {"plan", "approve"} else "flock-worker"
+                ),
+                "span": _SPAN[step],
+                "startedAt": _when(rec.get("createdAt") or rec.get("updatedAt")),
+                "finishedAt": _when(rec.get("updatedAt")),
+                "model": _hop_model(step, payload),
+                "traceId": str(payload.get("traceId") or rec.get("traceId") or ""),
+                "say": _PATH_COPY[step],
+            }
+        )
+    s = load_settings()
+    return {
+        "campaignId": cid,
+        "name": DEMO_SHOP["name"],
+        "hops": hops,
+        "console": console_links(s.project_id, s.region),
+        "note": (
+            "Firestore receipts for the seeded Glen's run. Worker spans are "
+            "engine.<step> on Cloud Run flock-worker. Console links need a "
+            "Google account on this GCP project. We do not autopost."
+        ),
+    }
+
+
+def _when(value: Any) -> str:
+    if value is None or value == "":
+        return ""
+    if hasattr(value, "isoformat"):
+        try:
+            return str(value.isoformat())
+        except Exception:  # noqa: BLE001
+            return str(value)
+    return str(value)
+
+
+def _hop_model(step: str, payload: dict[str, Any]) -> str:
+    model = str(payload.get("model") or "").strip()
+    if model:
+        return model
+    if step == "creative_gate":
+        return "gemma + gemini-3.5-flash judge"
+    if step == "inka_harvest":
+        return "veo-3.1-generate-001 + gemini tts"
+    if step == "ad_kit":
+        return "ffmpeg"
+    if step == "stella":
+        return "template"
+    if step in {"plan", "approve"}:
+        return "gemini-3.5-flash"
+    return ""
 
 
 def _campaigns() -> list[dict[str, Any]]:

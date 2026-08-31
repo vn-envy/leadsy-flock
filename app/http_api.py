@@ -28,6 +28,7 @@ from app.arch_ui import render_html as render_arch
 from app.blog_ui import POST as BLOG_MD
 from app.blog_ui import render_html as render_blog
 from app.dash_ui import render_html as render_dash
+from app.trace_ui import render_html as render_trace
 from app.derive import download_name
 from app.kit_ui import render_from_campaign
 from app.lock import enabled as public_lock_on
@@ -207,6 +208,10 @@ def attach_flock_routes(app: FastAPI) -> None:
     def dash() -> HTMLResponse:
         return HTMLResponse(render_dash())
 
+    @app.get("/trace", response_class=HTMLResponse)
+    def backend_trace() -> HTMLResponse:
+        return HTMLResponse(render_trace())
+
     @app.get("/architecture", response_class=HTMLResponse)
     def architecture() -> HTMLResponse:
         return HTMLResponse(render_arch())
@@ -241,6 +246,12 @@ def attach_flock_routes(app: FastAPI) -> None:
     @app.get("/v1/dash")
     def dash_json() -> dict:
         return dash_snapshot()
+
+    @app.get("/v1/trace")
+    def trace_json() -> dict:
+        from app.observe import backend_path, cloud_run_proof
+
+        return {"path": backend_path(), "run": cloud_run_proof(live=False)}
 
     @app.get("/console", response_class=HTMLResponse)
     def console() -> HTMLResponse:

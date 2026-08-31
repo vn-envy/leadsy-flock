@@ -23,6 +23,8 @@ _STORY_GET = frozenset(
         "/demo",
         "/dash",
         "/v1/dash",
+        "/trace",
+        "/v1/trace",
         "/console",
         "/architecture",
         "/architecture.png",

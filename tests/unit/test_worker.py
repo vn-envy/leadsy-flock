@@ -119,6 +119,34 @@ def test_handle_step_engine_exception_still_acks(
     assert "ok" in statuses
 
 
+@patch("app.worker._trace_stamp", return_value={"traceId": "deadbeef", "spanId": "cafef00d"})
+@patch("app.worker.run_engine")
+@patch("app.worker.publish_next")
+@patch("app.worker.ledger")
+def test_ok_receipt_stamps_cloud_trace_ids(
+    ledger: MagicMock,
+    publish_next: MagicMock,
+    run_engine: MagicMock,
+    _stamp: MagicMock,
+) -> None:
+    ledger.get_receipt.return_value = None
+    ledger.get_campaign.return_value = {}
+    publish_next.return_value = "msg-2"
+    run_engine.return_value = {"evidence": []}
+    handle_step(
+        {
+            "campaignId": "c1",
+            "step": "scout",
+            "pipeline": ["scout", "inka"],
+            "attempt": 1,
+        }
+    )
+    ok_writes = [c for c in ledger.write_receipt.call_args_list if c.kwargs.get("status") == "ok"]
+    payload = ok_writes[-1].kwargs["payload"]
+    assert payload["traceId"] == "deadbeef"
+    assert payload["spanId"] == "cafef00d"
+
+
 @patch("app.worker.time.sleep")
 @patch("app.worker.publish_step")
 @patch("app.worker.run_engine")

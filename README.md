@@ -15,6 +15,8 @@
   &nbsp;·&nbsp;
   <a href="https://flock-api-533880600838.asia-south1.run.app/architecture">Architecture</a>
   &nbsp;·&nbsp;
+  <a href="https://flock-api-533880600838.asia-south1.run.app/trace">Backend path</a>
+  &nbsp;·&nbsp;
   <a href="https://flock-api-533880600838.asia-south1.run.app/dash">Observatory</a>
   &nbsp;·&nbsp;
   <a href="https://flock-api-533880600838.asia-south1.run.app/blog">Blog</a>
@@ -58,13 +60,45 @@ Wait on this page. Do not skip.
 | **Paste kit** — Meta / WhatsApp / Google slots, English + Hindi, UTMs, own-shop stills & films | [**/k/google-listing-eaf57cae**](https://flock-api-533880600838.asia-south1.run.app/k/google-listing-eaf57cae) |
 | **Landing** — consent checkbox, UTM hit on the record, no autopost | [**/l/google-listing-eaf57cae**](https://flock-api-533880600838.asia-south1.run.app/l/google-listing-eaf57cae) |
 | **Observatory** — tokens, tools, models, Vertex **list-price** burn **$6.41 · ₹545** (not a Google invoice) | [**/dash**](https://flock-api-533880600838.asia-south1.run.app/dash) |
+| **Backend path** — exact hops that ran, Cloud Run span names, Cloud Trace console | [**/trace**](https://flock-api-533880600838.asia-south1.run.app/trace) |
 | **Architecture diagram** | [**/architecture**](https://flock-api-533880600838.asia-south1.run.app/architecture) |
 | **Hackathon write-up** | [**/blog**](https://flock-api-533880600838.asia-south1.run.app/blog) |
 
 Optional second device:  
 [landing with UTM](https://flock-api-533880600838.asia-south1.run.app/l/google-listing-eaf57cae?utm_source=meta&utm_medium=paid&utm_campaign=google-listing-eaf57cae&utm_content=meta_feed) — that is “run ads” without posting.
 
-### 3. Please do not
+### 3. Verify the backend path (Cloud Run traces)
+
+The theatrical `/demo` does **not** start a new Vertex run. The Glen’s kit already ran. To see **what actually executed**:
+
+**Anyone (no GCP login)** — Firestore receipts, one hop per engine:
+
+**[https://flock-api-533880600838.asia-south1.run.app/trace](https://flock-api-533880600838.asia-south1.run.app/trace)**
+
+JSON: [`/v1/trace`](https://flock-api-533880600838.asia-south1.run.app/v1/trace)
+
+You should see this order, with Cloud Run service + OpenTelemetry span name:
+
+| Hop | Cloud Run | Span |
+|---|---|---|
+| plan | `flock-api` | `campaign.plan` |
+| approve (YES) | `flock-api` | `campaign.approve` |
+| scout | `flock-worker` | `engine.scout` |
+| inka | `flock-worker` | `engine.inka` |
+| inka_harvest | `flock-worker` | `engine.inka_harvest` |
+| creative_gate | `flock-worker` | `engine.creative_gate` |
+| stella | `flock-worker` | `engine.stella` |
+| ad_kit | `flock-worker` | `engine.ad_kit` |
+
+**Google account on this GCP project** — same page has console chips. Direct:
+
+- Cloud Run **flock-worker → Traces** (this is where `engine.*` spans live)
+- Cloud Run **flock-api → Traces** (the door)
+- **Cloud Trace Explorer** — search `engine.scout`, then the other `engine.*` names. Attribute `campaign.id` = `google-listing-eaf57cae`.
+
+The `/trace` page prints the live console URLs for this project. Worker logs are linked there too.
+
+### 4. Please do not
 
 - Contact Glen’s Bakehouse. Public listing, pipeline proof, not a customer.
 - Tap YES on a real campaign, or paste a shop you do not own.
@@ -145,7 +179,7 @@ The site stays up for the tweet. The **API does not**.
 | Open | Closed (404) |
 |---|---|
 | `/demo`, `/k/google-listing-eaf57cae`, `/l/google-listing-eaf57cae`, `/media/google-listing-eaf57cae/*` | `POST /`, `POST /v1/campaigns`, YES / `/r`, studio `/s` |
-| `/blog`, `/architecture`, `/dash`, `/health` | `/docs`, `/openapi.json`, ADK `/run` `/run_sse` `/apps` `/a2a` |
+| `/blog`, `/architecture`, `/dash`, `/trace`, `/health` | `/docs`, `/openapi.json`, ADK `/run` `/run_sse` `/apps` `/a2a` |
 
 Worker Pub/Sub push is unchanged.
 

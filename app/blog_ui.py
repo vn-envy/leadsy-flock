@@ -82,6 +82,7 @@ def render_html() -> str:
     <nav>
       <a href="/demo">roost</a>
       <a href="/dash">observatory</a>
+      <a href="/trace">backend path</a>
       <a href="/architecture">architecture</a>
       <span class="here">blog</span>
     </nav>

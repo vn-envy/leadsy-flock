@@ -8,7 +8,7 @@ Google’s 2026 stack changed the unit economics. Gemini 3.5 Flash on Vertex is 
 
 Leadsy Flock is a five-bird studio on that stack. Paste a Google listing you own. Scout grounds it. Inka films from **this shop’s own photos**. Stella hands you a paste kit for Meta, WhatsApp, and Google. Flo never autoposts. The owner says YES. That is the product.
 
-Live roost: [Glen's Bakehouse seeded kit](https://flock-api-533880600838.asia-south1.run.app/demo) · Architecture: [/architecture](https://flock-api-533880600838.asia-south1.run.app/architecture) · Observatory: [/dash](https://flock-api-533880600838.asia-south1.run.app/dash)
+Live roost: [Glen's Bakehouse seeded kit](https://flock-api-533880600838.asia-south1.run.app/demo) · Architecture: [/architecture](https://flock-api-533880600838.asia-south1.run.app/architecture) · Observatory: [/dash](https://flock-api-533880600838.asia-south1.run.app/dash) · Backend path: [/trace](https://flock-api-533880600838.asia-south1.run.app/trace)
 
 ## Grass roots, not a demo tenant
 
@@ -63,7 +63,7 @@ The architecture is one line. A shop pastes a listing. Cloud Run `flock-api` is 
 
 **ffmpeg** is not a Google model and that is the point. The lowest-cost engine is the one that refuses to regenerate pixels it already paid for.
 
-**Firestore** stores receipts. **Cloud Storage** stores films. **Memory Bank** keeps long context. **Cloud Trace / OpenTelemetry** is the audit the Fortified Enterprise Fleet track asked for. The [observatory](https://flock-api-533880600838.asia-south1.run.app/dash) shows tokens, tools, models, and list-price USD for the seed — because transparency is the product, not a PDF we would rather not show.
+**Firestore** stores receipts. **Cloud Storage** stores films. **Memory Bank** keeps long context. **Cloud Trace / OpenTelemetry** is the audit the Fortified Enterprise Fleet track asked for. The [observatory](https://flock-api-533880600838.asia-south1.run.app/dash) shows tokens, tools, models, and list-price USD for the seed. The [backend path](https://flock-api-533880600838.asia-south1.run.app/trace) lists the exact hops that ran (`engine.scout` on Cloud Run `flock-worker`, and so on) plus console links for anyone with the GCP project. Transparency is the product, not a PDF we would rather not show.
 
 **ffmpeg + Stella’s landing** finish the job the shop can actually run: paste into Ads Manager, a consent checkbox on `/l`, UTM hits on the record. No autopost. Discovery is not consent.
 
@@ -84,7 +84,7 @@ That is how a deterministic kit stays in the range of a neighbourhood P&L.
 
 Enterprise agent platforms are usually demoed on enterprise data. The grass roots already gave Google the other dataset: millions of listings, photos, hours, and reviews. The missing piece was an agent that treats that listing as a brief, spends a few dollars of Vertex like a producer, and hands the owner a kit they still control.
 
-We built that for the All Things Agentic hackathon. The roost is public. The architecture diagram is public. The observatory is public. The Glen’s Bakehouse kit is a seeded demo — do not email, call, or review the bakery.
+We built that for the All Things Agentic hackathon. The roost is public. The architecture diagram is public. The observatory is public. The backend path is public. The Glen’s Bakehouse kit is a seeded demo — do not email, call, or review the bakery.
 
 Paste a listing you own.
 
